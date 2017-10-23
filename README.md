@@ -10,7 +10,7 @@ The use of this repository is limited to the acts project.
 - [ESP-IDF](https://esp-idf.readthedocs.io/en/latest/get-started/index.html)
 
 ### Required Hardware
-- ESP32 wifi enabled micorcontroller
+- ESP32 wifi enabled microcontroller
 - SD Cardreader SPI
 - BMP280 Pressure & Temperture sensor
 - MPU-9250 9DOF magneto, Gyro, Accel
