@@ -6,7 +6,6 @@
 */
 #pragma once
 #include "BinaryBuffer.hpp"
-#include "DBException.hpp"
 #include "SDWriter.hpp"
 
 class DoubleBuffer{

@@ -6,7 +6,6 @@
 */
 #pragma once
 #include <vector>
-#include "BOException.hpp"
 
 typedef struct data{
 	float microTime;
@@ -29,7 +28,7 @@ public:
 	void readOnly();
 	void writeOnly();
 	void clear();
-	void add( data in );
+	bool add( data in );
 	data get();
 	bool isFull();
 	~BinaryBuffer();

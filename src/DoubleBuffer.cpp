@@ -13,9 +13,6 @@ void DoubleBuffer::storeData(data in){
 	else if(!next->isFull()){
 		this->swap();
 	}
-	else{
-		throw DBException();
-	}
 }
 
 void DoubleBuffer::swap(){
