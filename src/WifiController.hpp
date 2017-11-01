@@ -7,7 +7,7 @@
 #pragma once
 class  WifiController{
     public:
-        WifiControllerWifiController();
+        WifiController();
         ~WifiController();
     private:
 };

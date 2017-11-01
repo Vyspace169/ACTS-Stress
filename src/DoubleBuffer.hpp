@@ -2,10 +2,11 @@
 * @file doubleBuffer.hpp
 * @Author Jop van Buuren.
 * @data 21 september, 2017
-* @brief switching buffer 
+* @brief switching buffer
 */
 #pragma once
 #include "BinaryBuffer.hpp"
+#include "DBException.hpp"
 #include "SDWriter.hpp"
 
 class DoubleBuffer{
@@ -22,4 +23,3 @@ private:
 	BinaryBuffer * current;
 	BinaryBuffer * next;
 };
-

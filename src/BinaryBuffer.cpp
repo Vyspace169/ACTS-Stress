@@ -17,7 +17,7 @@ void BinaryBuffer::clear(){
 }
 
 void BinaryBuffer::add( data in ){
-	(state) ? buffer.push_back(in) : throw Exception;
+	(state) ? buffer.push_back(in) : throw BOException();
 }
 
 bool BinaryBuffer::isFull(){

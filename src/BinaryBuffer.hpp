@@ -6,6 +6,8 @@
 */
 #pragma once
 #include <vector>
+#include "BOException.hpp"
+
 typedef struct data{
 	float microTime;
 	float accelX;
@@ -36,4 +38,3 @@ private:
 	bool state;
 	std::vector<data> buffer;
 };
-

@@ -1,4 +1,5 @@
 #include "WifiController.hpp"
+
 WifiController::WifiController() {
 
 }

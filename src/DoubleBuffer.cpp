@@ -14,7 +14,7 @@ void DoubleBuffer::storeData(data in){
 		this->swap();
 	}
 	else{
-		throw();
+		throw DBException();
 	}
 }
 

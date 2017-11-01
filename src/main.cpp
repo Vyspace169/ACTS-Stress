@@ -10,7 +10,6 @@
 #include "esp_event_loop.h"
 #include "driver/gpio.h"
 #include "sdkconfig.h"
-#include "test.hpp"
 
 // Define led pin
 #define BLINK_GPIO 13
@@ -37,7 +36,6 @@ esp_err_t event_handler(void *ctx, system_event_t *event)
 
 extern "C" void app_main(void)
 {
-    test newTest;
     nvs_flash_init();
     tcpip_adapter_init();
     ESP_ERROR_CHECK( esp_event_loop_init(event_handler, NULL) );
