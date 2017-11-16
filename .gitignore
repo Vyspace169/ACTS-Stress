@@ -38,3 +38,6 @@
 
 # Project
 build/
+sdkconfig
+sdkconfig.old
+Makefile
