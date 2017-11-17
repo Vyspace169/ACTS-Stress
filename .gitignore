@@ -34,3 +34,10 @@
 .piolibdeps
 .clang_complete
 .gcc-flags.json
+/.metadata/
+
+# Project
+build/
+sdkconfig
+sdkconfig.old
+Makefile
