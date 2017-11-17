@@ -21,6 +21,7 @@
 							<builder arguments="${IDF_PATH}/tools/windows/eclipse_make.py -j 6" command="python" id="cdt.managedbuild.target.gnu.builder.cygwin.base.659736666" keepEnvironmentInBuildfile="false" managedBuildOn="false" name="Gnu Make Builder" superClass="cdt.managedbuild.target.gnu.builder.cygwin.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.assembler.cygwin.base.870758280" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.cygwin.base">
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1265650861" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.archiver.cygwin.base.690933577" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.cygwin.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.base.1886228056" name="Cygwin C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.cygwin.base">
