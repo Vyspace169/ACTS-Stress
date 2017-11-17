@@ -13,6 +13,8 @@
 #include "driver/gpio.h"
 #include "driver/i2c.h"
 
+#include "Sensor.hpp"
+
 #define WRITE_BIT              I2C_MASTER_WRITE /*!< I2C master write */
 #define READ_BIT               I2C_MASTER_READ  /*!< I2C master read */
 #define ACK_CHECK_EN           0x1              /*!< I2C master will check ack from slave*/
@@ -64,7 +66,7 @@
 //
 #define MPU9250_BYPASS_REG		0x37
 #define MPU9250_BYPASS_BIT		0x02
-
+#define OUTPUT_SIZE 9
 class mpu9250_data{
 public:
    unsigned short AccelerometerX;
@@ -79,10 +81,10 @@ public:
 };
 
 
-class Mpu9250Implementation {
+class Mpu9250Implementation: public Sensor{
 public:
 	Mpu9250Implementation();
-	mpu9250_data GetMpu9250Data();
+	short int[OUTPUT_SIZE] read() override;
 	~Mpu9250Implementation();
 private:
 protected:

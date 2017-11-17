@@ -9,10 +9,11 @@
 #include<DoubleDuffer>
 class  Sensor{
     public:
-        Sensor();
+        Sensor(int frequency): frequency{frequency} {}
         virtual short int [OUTPUT_SIZE] read();
         void setFrequency(int freq);
         int getFrequency();
         ~Sensor();
     private:
+        int frequency;
 };
