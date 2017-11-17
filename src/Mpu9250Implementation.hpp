@@ -84,7 +84,7 @@ public:
 class Mpu9250Implementation: public Sensor{
 public:
 	Mpu9250Implementation();
-	short int[OUTPUT_SIZE] read() override;
+	unsigned short [OUTPUT_SIZE] read() override;
 	~Mpu9250Implementation();
 private:
 protected:
