@@ -35,3 +35,9 @@
 .clang_complete
 .gcc-flags.json
 .cproject
+
+# Extra
+*/build/*
+*/sdconfig
+*/sdconfig.old
+*/Makefile
