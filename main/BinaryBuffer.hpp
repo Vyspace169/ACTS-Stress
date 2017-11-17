@@ -7,8 +7,8 @@
 #pragma once
 #include <vector>
 
-typedef struct data{
-	float microTime;
+typedef struct {
+	long long microTime;
 	float accelX;
 	float accelY;
 	float accelZ;
@@ -20,7 +20,7 @@ typedef struct data{
 	float magnetoZ;
 	float temp;
 	float pressure;
-};
+} data;
 
 class BinaryBuffer{
 public:
