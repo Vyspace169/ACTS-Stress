@@ -30,5 +30,5 @@ bool BinaryBuffer::isFull(){
 }
 
 BinaryBuffer::~BinaryBuffer(){
-	//Nothing to delete yet
+	//
 }

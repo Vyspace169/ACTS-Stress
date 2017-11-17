@@ -1,12 +1,4 @@
 eclipse.preferences.version=1
-environment/project/cdt.managedbuild.toolchain.gnu.base.1651560860/IDF_PATH/delimiter=\:
-environment/project/cdt.managedbuild.toolchain.gnu.base.1651560860/IDF_PATH/operation=replace
-environment/project/cdt.managedbuild.toolchain.gnu.base.1651560860/IDF_PATH/value=${IDF_PATH}
-environment/project/cdt.managedbuild.toolchain.gnu.base.1651560860/V/delimiter=\:
-environment/project/cdt.managedbuild.toolchain.gnu.base.1651560860/V/operation=append
-environment/project/cdt.managedbuild.toolchain.gnu.base.1651560860/V/value=1
-environment/project/cdt.managedbuild.toolchain.gnu.base.1651560860/append=true
-environment/project/cdt.managedbuild.toolchain.gnu.base.1651560860/appendContributed=true
 environment/project/cdt.managedbuild.toolchain.gnu.cygwin.base.2020044499/BATCH_BUILD/delimiter=;
 environment/project/cdt.managedbuild.toolchain.gnu.cygwin.base.2020044499/BATCH_BUILD/operation=append
 environment/project/cdt.managedbuild.toolchain.gnu.cygwin.base.2020044499/BATCH_BUILD/value=1

@@ -3,13 +3,19 @@
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include "freertos/event_groups.h"
+
 #include "esp_system.h"
 #include "esp_spi_flash.h"
-#include "nvs_flash.h"
 #include "esp_wifi.h"
 #include "esp_event_loop.h"
+
+#include "nvs_flash.h"
+
 #include "driver/gpio.h"
-#include "sdkconfig.h"
+
+#include "WifiModule.hpp"
+#include "Mpu9250Implementation.hpp"
 
 // Define led pin
 #define BLINK_GPIO 13
@@ -29,36 +35,53 @@ void blink_task(void *pvParameter)
     }
 }
 
-esp_err_t event_handler(void *ctx, system_event_t *event)
+void wifi_task(void *pvParameter) {
+
+	char* ip = "192.168.43.140";
+	char* subnet = "192.168.43.1";
+	char* mask = "255.255.255.0";
+	char* ssid = "Allyouare";
+	char* pass = "Meulen-2017";
+	WifiModule wificonnection;
+	wificonnection.ClientSetStaticIP(ip, subnet, mask);
+	wificonnection.ClientConfig(ssid, pass);
+	wificonnection.ClientConnect(10000);
+
+
+	while(1){
+		vTaskDelay(100 / portTICK_PERIOD_MS);
+	}
+}
+
+
+static void i2c_example_master_init()
 {
-  return ESP_OK;
+    i2c_config_t conf;
+    conf.mode = I2C_MODE_MASTER;
+    conf.sda_io_num = GPIO_NUM_18;
+    conf.sda_pullup_en = GPIO_PULLUP_ENABLE;
+    conf.scl_io_num = GPIO_NUM_19;
+    conf.scl_pullup_en = GPIO_PULLUP_ENABLE;
+    conf.master.clk_speed = 100000;
+    i2c_param_config(I2C_NUM_0, &conf);
+    i2c_driver_install(I2C_NUM_0, conf.mode, 0, 0, 0);
+}
+
+void i2c_task(void *pvParameter) {
+	i2c_example_master_init();
+
+	Mpu9250Implementation TestSensor;
+
+	while(1) {
+		TestSensor.GetMpu9250Data();
+		vTaskDelay(100 / portTICK_PERIOD_MS);
+	}
+
 }
 
 extern "C" void app_main(void)
 {
-    nvs_flash_init();
-    tcpip_adapter_init();
-    ESP_ERROR_CHECK( esp_event_loop_init(event_handler, NULL) );
-    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
-    ESP_ERROR_CHECK( esp_wifi_init(&cfg) );
-    ESP_ERROR_CHECK( esp_wifi_set_storage(WIFI_STORAGE_RAM) );
-    ESP_ERROR_CHECK( esp_wifi_set_mode(WIFI_MODE_STA) );
-    // wifi_config_t sta_config = {
-    //     .sta = {
-    //         .ssid = "access_point_name",
-    //         .password = "password",
-    //         .bssid_set = false
-    //     }
-    // };
-
-    // cxx 11+ intialization
-    wifi_config_t sta_config = {};
-    strcpy((char*)sta_config.sta.ssid, "access_point_name");
-    strcpy((char*)sta_config.sta.password, "password");
-    sta_config.sta.bssid_set = false;
-    ESP_ERROR_CHECK( esp_wifi_set_config(WIFI_IF_STA, &sta_config) );
-    ESP_ERROR_CHECK( esp_wifi_start() );
-    ESP_ERROR_CHECK( esp_wifi_connect() );
+	nvs_flash_init();
 
     printf("\n\n\nHello world!\n");
 
@@ -71,4 +94,13 @@ extern "C" void app_main(void)
 
     // Start blink task
     xTaskCreate(&blink_task, "blink_task", configMINIMAL_STACK_SIZE, NULL, 5, NULL);
+
+    xTaskCreate(&i2c_task, "i2c_task", 5000, NULL, 5, NULL);
+
+    //xTaskCreatePinnedToCore(&wifi_task, "wifi_task", 10000, NULL, 0, NULL, 0);
+
+
+
+
+    ESP_LOGI("MAIN", "Init done");
 }
