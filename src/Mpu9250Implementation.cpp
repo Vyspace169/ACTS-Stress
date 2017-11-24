@@ -110,7 +110,7 @@ static unsigned short switch_short(unsigned short value) {
 }
 
 Mpu9250Implementation::Mpu9250Implementation() {
-	memset((void*)&LocalMPUData, 0, sizeof(mpu9250_data));
+	memset((void*)&BackupMPUData, 0, sizeof(mpu9250_data));
 	MPUIsInitialized = false;
 	AKIsInitialized = false;
 
@@ -127,6 +127,7 @@ Mpu9250Implementation::Mpu9250Implementation() {
 		if(MPU9250ID == 113) {
 			MPUIsInitialized = true;
 		}
+		// enable bypass mode
 		i2c_sensor_write_byte(MPU9250_I2C_ADDRESS, MPU9250_REG_BYPASS, MPU9250_SET_BYPASS);
 	}
 
@@ -140,6 +141,7 @@ Mpu9250Implementation::Mpu9250Implementation() {
 		if(AK8936ID == 72) {
 			AKIsInitialized = true;
 		}
+		// trigger a signle sample
 		i2c_sensor_write_byte(AK8936_ADDRESS, AK8936_REG_CNTL1, AK8936_SET_16BIT | AK8936_SET_SING_SAMP);
 	}
 
@@ -147,32 +149,56 @@ Mpu9250Implementation::Mpu9250Implementation() {
 }
 
 mpu9250_data Mpu9250Implementation::GetMpu9250Data() {
-
 	mpu9250_data localdata;
 	memset(&localdata, 0, sizeof(mpu9250_data));
 
 	if(MPUIsInitialized) {
-		i2c_sensor_read_array(MPU9250_I2C_ADDRESS, MPU9250_REG_ACCEL_XL, 6, (unsigned char*)&localdata.AccelerometerX);
-		localdata.AccelerometerX = switch_short(localdata.AccelerometerX);
-		localdata.AccelerometerY = switch_short(localdata.AccelerometerY);
-		localdata.AccelerometerZ = switch_short(localdata.AccelerometerZ);
+		// read the data if device is initialized
+		if(i2c_sensor_read_array(MPU9250_I2C_ADDRESS, MPU9250_REG_ACCEL_XL, 6, (unsigned char*)&localdata.AccelerometerX) == ESP_OK) {
+			localdata.AccelerometerX = switch_short(localdata.AccelerometerX);
+			localdata.AccelerometerY = switch_short(localdata.AccelerometerY);
+			localdata.AccelerometerZ = switch_short(localdata.AccelerometerZ);
+			memcpy((void*)&BackupMPUData.AccelerometerX, (void*)&localdata.AccelerometerX, 6);
+		}
+		else {
+			// if the read fails, copy the last read into the data
+			memcpy((void*)&localdata.AccelerometerX, (void*)&BackupMPUData.AccelerometerX, 6);
+		}
 
-		i2c_sensor_read_array(MPU9250_I2C_ADDRESS, MPU9250_REG_GYRO_XL, 6, (unsigned char*)&localdata.GyroscopeX);
-		localdata.GyroscopeX = switch_short(localdata.GyroscopeX);
-		localdata.GyroscopeY = switch_short(localdata.GyroscopeY);
-		localdata.GyroscopeZ = switch_short(localdata.GyroscopeZ);
+		// read the data if device is initialized
+		if(i2c_sensor_read_array(MPU9250_I2C_ADDRESS, MPU9250_REG_GYRO_XL, 6, (unsigned char*)&localdata.GyroscopeX) == ESP_OK) {
+			localdata.GyroscopeX = switch_short(localdata.GyroscopeX);
+			localdata.GyroscopeY = switch_short(localdata.GyroscopeY);
+			localdata.GyroscopeZ = switch_short(localdata.GyroscopeZ);
+			memcpy((void*)&BackupMPUData.GyroscopeX, (void*)&localdata.GyroscopeX, 6);
+		}
+		else {
+			// if the read fails, copy the last read into the data
+			memcpy((void*)&localdata.GyroscopeX, (void*)&BackupMPUData.GyroscopeX, 6);
+		}
 	}
 
 	if(AKIsInitialized) {
+		// Check if there is data available
 		unsigned char status_reg_1 = 0;
 		i2c_sensor_read_byte(AK8936_ADDRESS, AK8936_REG_STATUS1, &status_reg_1);
-
 		if(status_reg_1)
 		{
-			i2c_sensor_read_array(AK8936_ADDRESS, AK8936_REG_XOUT_L, 6, (unsigned char*)&localdata.MagnetoX);
-			localdata.MagnetoX = switch_short(localdata.MagnetoX);
-			localdata.MagnetoY = switch_short(localdata.MagnetoY);
-			localdata.MagnetoZ = switch_short(localdata.MagnetoZ);
+			// read the data if device is initialized
+			if(i2c_sensor_read_array(AK8936_ADDRESS, AK8936_REG_XOUT_L, 6, (unsigned char*)&localdata.MagnetoX) == ESP_OK) {
+				localdata.MagnetoX = switch_short(localdata.MagnetoX);
+				localdata.MagnetoY = switch_short(localdata.MagnetoY);
+				localdata.MagnetoZ = switch_short(localdata.MagnetoZ);
+				memcpy((void*)&BackupMPUData.MagnetoX, (void*)&localdata.MagnetoX, 6);
+			}
+			else {
+				// if the read fails, copy the last read into the data
+				memcpy((void*)&localdata.MagnetoX, (void*)&BackupMPUData.MagnetoX, 6);
+			}
+		}
+		else {
+			// if the data is not yet ready, copy the last read into the data
+			memcpy((void*)&localdata.MagnetoX, (void*)&BackupMPUData.MagnetoX, 6);
 		}
 
 		i2c_sensor_write_byte(AK8936_ADDRESS, AK8936_REG_CNTL1, AK8936_SET_16BIT | AK8936_SET_SING_SAMP);

@@ -5,15 +5,15 @@
 #include "freertos/task.h"
 #include "freertos/event_groups.h"
 
+#include "nvs_flash.h"
 #include "esp_system.h"
 #include "esp_spi_flash.h"
 #include "esp_wifi.h"
 #include "esp_event_loop.h"
 
-#include "nvs_flash.h"
-
 #include "driver/gpio.h"
 
+#include "SDWriter.hpp"
 #include "WifiModule.hpp"
 #include "Mpu9250Implementation.hpp"
 
@@ -58,25 +58,71 @@ static void i2c_example_master_init()
 {
     i2c_config_t conf;
     conf.mode = I2C_MODE_MASTER;
-    conf.sda_io_num = GPIO_NUM_18;
+    conf.sda_io_num = GPIO_NUM_25;
     conf.sda_pullup_en = GPIO_PULLUP_ENABLE;
-    conf.scl_io_num = GPIO_NUM_19;
+    conf.scl_io_num = GPIO_NUM_26;
     conf.scl_pullup_en = GPIO_PULLUP_ENABLE;
     conf.master.clk_speed = 400000;
     i2c_param_config(I2C_NUM_0, &conf);
     i2c_driver_install(I2C_NUM_0, conf.mode, 0, 0, 0);
 }
 
-void i2c_task(void *pvParameter) {
-	i2c_example_master_init();
+mpu9250_data writable_data_1[500];
+mpu9250_data writable_data_2[500];
+int buffer_counter = 0;
+bool buffer_select = false;
+bool ready_to_write = false;
 
+void sample_task(void *pvParameter) {
+	i2c_example_master_init();
 	Mpu9250Implementation TestSensor;
 
 	while(1) {
-		TestSensor.GetMpu9250Data();
-		vTaskDelay(100 / portTICK_PERIOD_MS);
-	}
+		if(buffer_select) {
+			writable_data_1[buffer_counter++] = TestSensor.GetMpu9250Data();
+			if(buffer_counter == 500) {
+				buffer_select = false;
+				buffer_counter = 0;
+				ready_to_write = true;
+				ESP_LOGI("MAIN", "Ready to write");
+			}
+		}
+		else {
+			writable_data_2[buffer_counter++] = TestSensor.GetMpu9250Data();
+			if(buffer_counter == 500) {
+				buffer_select = true;
+				buffer_counter = 0;
+				ready_to_write = true;
+				ESP_LOGI("MAIN", "Ready to write");
+			}
+		}
 
+		vTaskDelay(8 / portTICK_PERIOD_MS);
+	}
+}
+
+SDWriter writer;
+
+void writer_task(void *pvParameter) {
+	writer.InitSDMMC();
+	time_t test_time = 0;
+	writer.SetFileName(test_time);
+
+	while(1) {
+		if(ready_to_write == true) {
+			writer.Open();
+			if(buffer_select == false) {
+				writer.Write(writable_data_1, (sizeof(mpu9250_data) * 500));
+			}
+			else {
+				writer.Write(writable_data_2, (sizeof(mpu9250_data) * 500));
+			}
+			writer.Close();
+			ready_to_write = false;
+			ESP_LOGI("MAIN", "Data written");
+		}
+		vTaskDelay(1000 / portTICK_PERIOD_MS);
+	}
 }
 
 extern "C" void app_main(void)
@@ -92,10 +138,15 @@ extern "C" void app_main(void)
     printf("silicon revision %d, ", chip_info.revision);
     printf("%dMB %s flash\n", spi_flash_get_chip_size() / (1024 * 1024), (chip_info.features & CHIP_FEATURE_EMB_FLASH) ? "embedded" : "external");
 
+
     // Start blink task
     xTaskCreate(&blink_task, "blink_task", configMINIMAL_STACK_SIZE, NULL, 5, NULL);
 
-    xTaskCreate(&i2c_task, "i2c_task", 5000, NULL, 5, NULL);
+    // start sampletask
+    xTaskCreate(&sample_task, "sample_task", 4092, NULL, 5, NULL);
+
+    //xTaskCreate(&writer_task, "writer_task", 4092, NULL, 5, NULL);
+
 
     //xTaskCreatePinnedToCore(&wifi_task, "wifi_task", 10000, NULL, 0, NULL, 0);
 

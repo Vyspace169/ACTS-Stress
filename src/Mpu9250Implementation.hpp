@@ -19,12 +19,10 @@
 
 #define WRITE_BIT              		I2C_MASTER_WRITE /*!< I2C master write */
 #define READ_BIT               		I2C_MASTER_READ  /*!< I2C master read */
-#define ACK_CHECK_EN           		0x1              /*!< I2C master will check ack from slave*/
-#define ACK_CHECK_DIS          		0x0              /*!< I2C master will not check ack from slave */
-#define ACK_VAL                		0x0              /*!< I2C ack value */
-#define NACK_VAL               		0x1              /*!< I2C nack value */
-#define I2C_MASTER_SCL_IO      		19               /*!< gpio number for I2C master clock */
-#define I2C_MASTER_SDA_IO      		18               /*!< gpio number for I2C master data  */
+#define ACK_CHECK_DIS          		0x00              /*!< I2C master will not check ack from slave */
+#define ACK_CHECK_EN           		0x01              /*!< I2C master will check ack from slave*/
+#define ACK_VAL                		0x00              /*!< I2C ack value */
+#define NACK_VAL               		0x01              /*!< I2C nack value */
 #define I2C_WRITE_BIT           	0x00
 #define I2C_READ_BIT            	0x01
 
@@ -91,7 +89,7 @@ public:
 	mpu9250_data GetMpu9250Data();
 	~Mpu9250Implementation();
 private:
-	mpu9250_data LocalMPUData;
+	mpu9250_data BackupMPUData;
 	bool MPUIsInitialized;
 	bool AKIsInitialized;
 protected:
