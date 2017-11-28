@@ -6,11 +6,11 @@
 */
 #pragma once
 #define OUTPUT_SIZE 4
-#include<DoubleDuffer>
+#include "DoubleBuffer.hpp"
 class  Sensor{
     public:
         Sensor(int frequency): frequency{frequency} {}
-        virtual unsigned short[OUTPUT_SIZE] read();
+        virtual unsigned short* /*[OUTPUT_SIZE]*/ read();
         void setFrequency(int freq);
         int getFrequency();
         ~Sensor();
