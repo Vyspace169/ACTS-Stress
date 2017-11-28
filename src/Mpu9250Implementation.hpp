@@ -17,6 +17,8 @@
 #include "driver/gpio.h"
 #include "driver/i2c.h"
 
+#include "Sensor.hpp"
+
 #define WRITE_BIT              		I2C_MASTER_WRITE /*!< I2C master write */
 #define READ_BIT               		I2C_MASTER_READ  /*!< I2C master read */
 #define ACK_CHECK_DIS          		0x00              /*!< I2C master will not check ack from slave */
@@ -83,13 +85,13 @@ public:
 };
 
 
-class Mpu9250Implementation {
+class Mpu9250Implementation : public Sensor {
 public:
 	Mpu9250Implementation();
-	mpu9250_data GetMpu9250Data();
+	unsigned short* SensorRead() override;
 	~Mpu9250Implementation();
 private:
-	mpu9250_data BackupMPUData;
+	unsigned short BackupMPUData[9];
 	bool MPUIsInitialized;
 	bool AKIsInitialized;
 protected:

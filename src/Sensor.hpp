@@ -10,7 +10,7 @@
 class Sensor{
 public:
      Sensor();
-     virtual unsigned short* /*[OUTPUT_SIZE]*/ read();
+     virtual unsigned short* /*[OUTPUT_SIZE]*/ SensorRead() = 0;
 /*     void setFrequency(int freq);
      int getFrequency();*/
      ~Sensor();

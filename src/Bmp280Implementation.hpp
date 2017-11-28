@@ -27,8 +27,9 @@ public:
 class Bmp280Implementation: public Sensor{
 public:
    Bmp280Implementation()  {}
+   unsigned short* /*[OUTPUT_SIZE]*/ SensorRead() override;
    ~Bmp280Implementation() {}
-   unsigned short* /*[OUTPUT_SIZE]*/ read() override;
+
 private:
 protected:
 };

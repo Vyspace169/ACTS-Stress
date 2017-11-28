@@ -43,8 +43,8 @@ SDWriterErrorCodes SDWriter::InitSDMMC() {
 	    return CARD_NOT_INITIALIZED;
 	}
 
-	// Card has been initialized, print its properties
 	//sdmmc_card_print_info(stdout, card);
+	ESP_LOGI("SD WRITER", "Card init OK");
 	CardIsInitialized = true;
 	return SD_WRITER_OK;
 }

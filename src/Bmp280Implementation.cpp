@@ -68,7 +68,7 @@ void BMP280_delay_msek(u32 msek)
 {
    vTaskDelay(msek/portTICK_PERIOD_MS);
 }
-unsigned short* Bmp280Implementation::read() {
+unsigned short* Bmp280Implementation::SensorRead() {
    struct bmp280_t bmp280;
    bmp280.bus_write = BMP280_I2C_bus_write;
    bmp280.bus_read = BMP280_I2C_bus_read;

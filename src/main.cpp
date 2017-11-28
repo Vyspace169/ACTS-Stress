@@ -13,9 +13,12 @@
 
 #include "driver/gpio.h"
 
+#include "Sensor.hpp"
 #include "SDWriter.hpp"
 #include "WifiModule.hpp"
 #include "Mpu9250Implementation.hpp"
+#include "Bmp280Implementation.hpp"
+
 
 // Define led pin
 #define BLINK_GPIO 13
@@ -67,19 +70,22 @@ static void i2c_example_master_init()
     i2c_driver_install(I2C_NUM_0, conf.mode, 0, 0, 0);
 }
 
-mpu9250_data writable_data_1[500];
-mpu9250_data writable_data_2[500];
+unsigned short writable_data_1[500];
+unsigned short writable_data_2[500];
 int buffer_counter = 0;
 bool buffer_select = false;
 bool ready_to_write = false;
 
 void sample_task(void *pvParameter) {
 	i2c_example_master_init();
-	Mpu9250Implementation TestSensor;
+	Sensor *TestMPU = new Mpu9250Implementation();
+	//Sensor *TestBMP = new Bmp280Implementation();
 
 	while(1) {
 		if(buffer_select) {
-			writable_data_1[buffer_counter++] = TestSensor.GetMpu9250Data();
+			memcpy(&writable_data_1[buffer_counter], TestMPU->SensorRead(), 18);
+			buffer_counter += 6;
+			//writable_data_1[buffer_counter++] = TestMPU->SensorRead();
 			if(buffer_counter == 500) {
 				buffer_select = false;
 				buffer_counter = 0;
@@ -88,7 +94,9 @@ void sample_task(void *pvParameter) {
 			}
 		}
 		else {
-			writable_data_2[buffer_counter++] = TestSensor.GetMpu9250Data();
+			memcpy(&writable_data_2[buffer_counter], TestMPU->SensorRead(), 18);
+			buffer_counter += 6;
+			//writable_data_2[buffer_counter++] = TestMPU->SensorRead();
 			if(buffer_counter == 500) {
 				buffer_select = true;
 				buffer_counter = 0;
@@ -142,10 +150,11 @@ extern "C" void app_main(void)
     // Start blink task
     xTaskCreate(&blink_task, "blink_task", configMINIMAL_STACK_SIZE, NULL, 5, NULL);
 
-    // start sampletask
+    // start sample task
     xTaskCreate(&sample_task, "sample_task", 4092, NULL, 5, NULL);
 
-    //xTaskCreate(&writer_task, "writer_task", 4092, NULL, 5, NULL);
+    // start writer task
+    xTaskCreatePinnedToCore(&writer_task, "writer_task", 4092, NULL, 5, NULL, 0);
 
 
     //xTaskCreatePinnedToCore(&wifi_task, "wifi_task", 10000, NULL, 0, NULL, 0);
