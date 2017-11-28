@@ -148,7 +148,7 @@ Mpu9250Implementation::Mpu9250Implementation() {
 	ESP_LOGI("I2C TASK", "MPU9250 ID: %i    AK8936 ID: %i", MPU9250ID, AK8936ID);
 }
 
-mpu9250_data Mpu9250Implementation::GetMpu9250Data() {
+mpu9250_data Mpu9250Implementation::read() {
 	mpu9250_data localdata;
 	memset(&localdata, 0, sizeof(mpu9250_data));
 

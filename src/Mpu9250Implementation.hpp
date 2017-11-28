@@ -86,7 +86,7 @@ public:
 class Mpu9250Implementation {
 public:
 	Mpu9250Implementation();
-	mpu9250_data GetMpu9250Data();
+	mpu9250_data read();
 	~Mpu9250Implementation();
 private:
 	mpu9250_data BackupMPUData;

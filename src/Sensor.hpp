@@ -6,7 +6,7 @@
 */
 #pragma once
 #define OUTPUT_SIZE 4
-#include<DoubleDuffer>
+#include <DoubleDuffer>
 class  Sensor{
     public:
         Sensor(int frequency): frequency{frequency} {}

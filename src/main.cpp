@@ -79,7 +79,7 @@ void sample_task(void *pvParameter) {
 
 	while(1) {
 		if(buffer_select) {
-			writable_data_1[buffer_counter++] = TestSensor.GetMpu9250Data();
+			writable_data_1[buffer_counter++] = TestSensor.read();
 			if(buffer_counter == 500) {
 				buffer_select = false;
 				buffer_counter = 0;
@@ -88,7 +88,7 @@ void sample_task(void *pvParameter) {
 			}
 		}
 		else {
-			writable_data_2[buffer_counter++] = TestSensor.GetMpu9250Data();
+			writable_data_2[buffer_counter++] = TestSensor.read();
 			if(buffer_counter == 500) {
 				buffer_select = true;
 				buffer_counter = 0;
@@ -142,10 +142,11 @@ extern "C" void app_main(void)
     // Start blink task
     xTaskCreate(&blink_task, "blink_task", configMINIMAL_STACK_SIZE, NULL, 5, NULL);
 
-    // start sampletask
+    // start sample task
     xTaskCreate(&sample_task, "sample_task", 4092, NULL, 5, NULL);
 
-    //xTaskCreate(&writer_task, "writer_task", 4092, NULL, 5, NULL);
+    // start writer task
+    xTaskCreatePinnedToCore(&writer_task, "writer_task", 4092, NULL, 5, NULL, 0);
 
 
     //xTaskCreatePinnedToCore(&wifi_task, "wifi_task", 10000, NULL, 0, NULL, 0);
