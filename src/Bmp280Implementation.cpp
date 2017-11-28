@@ -76,7 +76,7 @@ bmp280_data Bmp280Implementation::GetBmp280Data()   {
       .dev_addr = BMP280_I2C_ADDRESS2,
       .delay_msec = BMP280_delay_msek
    };*/
-
+   
    struct bmp280_t bmp280;
    bmp280.bus_write = BMP280_I2C_bus_write;
    bmp280.bus_read = BMP280_I2C_bus_read;
