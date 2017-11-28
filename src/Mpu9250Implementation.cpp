@@ -110,7 +110,7 @@ static unsigned short switch_short(unsigned short value) {
 }
 
 Mpu9250Implementation::Mpu9250Implementation() {
-	memset((void*)&BackupMPUData, 0, sizeof(mpu9250_data));
+	memset((void*)&BackupMPUData, 0, sizeof(unsigned short) * 9);
 	MPUIsInitialized = false;
 	AKIsInitialized = false;
 
@@ -148,33 +148,33 @@ Mpu9250Implementation::Mpu9250Implementation() {
 	ESP_LOGI("I2C TASK", "MPU9250 ID: %i    AK8936 ID: %i", MPU9250ID, AK8936ID);
 }
 
-mpu9250_data Mpu9250Implementation::read() {
-	mpu9250_data localdata;
-	memset(&localdata, 0, sizeof(mpu9250_data));
+unsigned short* Mpu9250Implementation::SensorRead() {
+	unsigned short* localdata = new unsigned short[9];
+	memset(&localdata, 0, sizeof(unsigned short) * 9);
 
 	if(MPUIsInitialized) {
 		// read the data if device is initialized
-		if(i2c_sensor_read_array(MPU9250_I2C_ADDRESS, MPU9250_REG_ACCEL_XL, 6, (unsigned char*)&localdata.AccelerometerX) == ESP_OK) {
-			localdata.AccelerometerX = switch_short(localdata.AccelerometerX);
-			localdata.AccelerometerY = switch_short(localdata.AccelerometerY);
-			localdata.AccelerometerZ = switch_short(localdata.AccelerometerZ);
-			memcpy((void*)&BackupMPUData.AccelerometerX, (void*)&localdata.AccelerometerX, 6);
+		if(i2c_sensor_read_array(MPU9250_I2C_ADDRESS, MPU9250_REG_ACCEL_XL, 6, (unsigned char*)&localdata[0]) == ESP_OK) {
+			localdata[0] = switch_short(localdata[0]);
+			localdata[1] = switch_short(localdata[1]);
+			localdata[2] = switch_short(localdata[2]);
+			memcpy((void*)&BackupMPUData[0], (void*)&localdata, 6);
 		}
 		else {
 			// if the read fails, copy the last read into the data
-			memcpy((void*)&localdata.AccelerometerX, (void*)&BackupMPUData.AccelerometerX, 6);
+			memcpy((void*)&localdata, (void*)&BackupMPUData, 6);
 		}
 
 		// read the data if device is initialized
-		if(i2c_sensor_read_array(MPU9250_I2C_ADDRESS, MPU9250_REG_GYRO_XL, 6, (unsigned char*)&localdata.GyroscopeX) == ESP_OK) {
-			localdata.GyroscopeX = switch_short(localdata.GyroscopeX);
-			localdata.GyroscopeY = switch_short(localdata.GyroscopeY);
-			localdata.GyroscopeZ = switch_short(localdata.GyroscopeZ);
-			memcpy((void*)&BackupMPUData.GyroscopeX, (void*)&localdata.GyroscopeX, 6);
+		if(i2c_sensor_read_array(MPU9250_I2C_ADDRESS, MPU9250_REG_GYRO_XL, 6, (unsigned char*)&localdata[3]) == ESP_OK) {
+			localdata[3] = switch_short(localdata[3]);
+			localdata[4] = switch_short(localdata[4]);
+			localdata[5] = switch_short(localdata[5]);
+			memcpy((void*)&BackupMPUData[3], (void*)&localdata[3], 6);
 		}
 		else {
 			// if the read fails, copy the last read into the data
-			memcpy((void*)&localdata.GyroscopeX, (void*)&BackupMPUData.GyroscopeX, 6);
+			memcpy((void*)&BackupMPUData[3], (void*)&localdata[3], 6);
 		}
 	}
 
@@ -185,35 +185,35 @@ mpu9250_data Mpu9250Implementation::read() {
 		if(status_reg_1)
 		{
 			// read the data if device is initialized
-			if(i2c_sensor_read_array(AK8936_ADDRESS, AK8936_REG_XOUT_L, 6, (unsigned char*)&localdata.MagnetoX) == ESP_OK) {
-				localdata.MagnetoX = switch_short(localdata.MagnetoX);
-				localdata.MagnetoY = switch_short(localdata.MagnetoY);
-				localdata.MagnetoZ = switch_short(localdata.MagnetoZ);
-				memcpy((void*)&BackupMPUData.MagnetoX, (void*)&localdata.MagnetoX, 6);
+			if(i2c_sensor_read_array(AK8936_ADDRESS, AK8936_REG_XOUT_L, 6, (unsigned char*)&localdata[6]) == ESP_OK) {
+				localdata[6] = switch_short(localdata[6]);
+				localdata[7] = switch_short(localdata[7]);
+				localdata[8] = switch_short(localdata[8]);
+				memcpy((void*)&BackupMPUData[6], (void*)&localdata[6], 6);
 			}
 			else {
 				// if the read fails, copy the last read into the data
-				memcpy((void*)&localdata.MagnetoX, (void*)&BackupMPUData.MagnetoX, 6);
+				memcpy((void*)&BackupMPUData[6], (void*)&localdata[6], 6);
 			}
 		}
 		else {
 			// if the data is not yet ready, copy the last read into the data
-			memcpy((void*)&localdata.MagnetoX, (void*)&BackupMPUData.MagnetoX, 6);
+			memcpy((void*)&BackupMPUData[6], (void*)&localdata[6], 6);
 		}
 
 		i2c_sensor_write_byte(AK8936_ADDRESS, AK8936_REG_CNTL1, AK8936_SET_16BIT | AK8936_SET_SING_SAMP);
 	}
 
 	ESP_LOGI("I2C TASK", "Value: \t %i, \t %i, \t %i, \t %i, \t %i, \t %i, \t %d, \t %d, \t %d \t",
-		localdata.AccelerometerX/100,
-		localdata.AccelerometerY/100,
-		localdata.AccelerometerZ/100,
-		localdata.GyroscopeX/100,
-		localdata.GyroscopeY/100,
-		localdata.GyroscopeZ/100,
-		localdata.MagnetoX/100,
-		localdata.MagnetoY/100,
-		localdata.MagnetoZ/100);
+		localdata[0]/100,
+		localdata[1]/100,
+		localdata[2]/100,
+		localdata[3]/100,
+		localdata[4]/100,
+		localdata[5]/100,
+		localdata[6]/100,
+		localdata[7]/100,
+		localdata[8]/100);
 
 	return localdata;
 }
