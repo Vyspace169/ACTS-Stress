@@ -68,16 +68,69 @@ void BMP280_delay_msek(u32 msek)
 {
    vTaskDelay(msek/portTICK_PERIOD_MS);
 }
+unsigned short* Bmp280Implementation::read() {
+   struct bmp280_t bmp280;
+   bmp280.bus_write = BMP280_I2C_bus_write;
+   bmp280.bus_read = BMP280_I2C_bus_read;
+   bmp280.dev_addr = BMP280_I2C_ADDRESS2;
+   bmp280.delay_msec = BMP280_delay_msek;
 
-bmp280_data Bmp280Implementation::GetBmp280Data()   {
+   s32 com_rslt;
+   s32 v_uncomp_pressure_s32;
+   s32 v_uncomp_temperature_s32;
+   //s32 v_uncomp_humidity_s32;
+
+   com_rslt = bmp280_init(&bmp280);
+
+   com_rslt += bmp280_set_oversamp_pressure(BMP280_OVERSAMP_16X);
+   com_rslt += bmp280_set_oversamp_temperature(BMP280_OVERSAMP_2X);
+   //com_rslt += bmp280_set_oversamp_humidity(BMP280_OVERSAMP_1X);
+
+   com_rslt += bmp280_set_standby_durn(BMP280_STANDBY_TIME_1_MS);
+   com_rslt += bmp280_set_filter(BMP280_FILTER_COEFF_16);
+
+   com_rslt += bmp280_set_power_mode(BMP280_NORMAL_MODE);
+   unsigned short* rValue = new unsigned short[4];
+   rValue[0] = 0;
+   rValue[1] = 0;
+   rValue[2] = 0;
+   rValue[3] = 0;
+   if (com_rslt == SUCCESS) {
+      vTaskDelay(40/portTICK_PERIOD_MS);
+      com_rslt = bmp280_read_uncomp_pressure_temperature(&v_uncomp_pressure_s32, &v_uncomp_temperature_s32);
+      // com_rslt = bme280_read_uncomp_pressure_temperature_humidity(
+      //    &v_uncomp_pressure_s32, &v_uncomp_temperature_s32, &v_uncomp_humidity_s32);
+
+      if (com_rslt == SUCCESS) {
+         ESP_LOGI(TAG_BMP280, "%.2f degrees Celsius / %.3f hPa / ",
+            bmp280_compensate_temperature_double(v_uncomp_temperature_s32),
+            bmp280_compensate_pressure_double(v_uncomp_pressure_s32)/100); // Pa -> hPa
+            return rValue;
+         /*return bmp280_data(bmp280_compensate_temperature_double(v_uncomp_temperature_s32), 
+            bmp280_compensate_pressure_double(v_uncomp_pressure_s32)/100);*/
+            //bme280_compensate_humidity_double(v_uncomp_humidity_s32));
+      } else {
+         ESP_LOGE(TAG_BMP280, "measure error. code: %d", (int)com_rslt);
+      }
+      // while(true) {
+
+      // }
+   } else {
+      ESP_LOGE(TAG_BMP280, "init or setting error. code: %d", (int)com_rslt);
+   }
+   
+   return rValue;
+   //return bmp280_data(0, 0);
+}
+//bmp280_data Bmp280Implementation::GetBmp280Data()   {
 /*   struct bmp280_t bmp280 = {
       .bus_write = BMP280_I2C_bus_write,
       .bus_read = BMP280_I2C_bus_read,
       .dev_addr = BMP280_I2C_ADDRESS2,
       .delay_msec = BMP280_delay_msek
    };*/
-   
-   struct bmp280_t bmp280;
+
+   /*struct bmp280_t bmp280;
    bmp280.bus_write = BMP280_I2C_bus_write;
    bmp280.bus_read = BMP280_I2C_bus_read;
    bmp280.dev_addr = BMP280_I2C_ADDRESS2;
@@ -122,4 +175,4 @@ bmp280_data Bmp280Implementation::GetBmp280Data()   {
    }
    return bmp280_data(0, 0);
    //vTaskDelete(NULL);
-}
+}*/
