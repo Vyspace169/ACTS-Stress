@@ -24,7 +24,6 @@ public:
    bmp280_data(float temp, float hPa) : temp{temp}, hPa{hPa} {}
 };
 
-
 class Bmp280Implementation: public Sensor{
 public:
    Bmp280Implementation()  {}
