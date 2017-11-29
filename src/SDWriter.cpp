@@ -145,7 +145,7 @@ SDWriterErrorCodes SDWriter::Close() {
 	fclose(FileForData);
 
 	// feedback
-	ESP_LOGI("SD WRITER", "Closing file");
+	ESP_LOGI("SD WRITER", "File closed");
 
 	FileIsOpen = false;
 	return SD_WRITER_OK;

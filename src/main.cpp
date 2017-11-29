@@ -65,13 +65,13 @@ static void i2c_example_master_init()
     conf.sda_pullup_en = GPIO_PULLUP_ENABLE;
     conf.scl_io_num = GPIO_NUM_26;
     conf.scl_pullup_en = GPIO_PULLUP_ENABLE;
-    conf.master.clk_speed = 400000;
+    conf.master.clk_speed = 100000;
     i2c_param_config(I2C_NUM_0, &conf);
     i2c_driver_install(I2C_NUM_0, conf.mode, 0, 0, 0);
 }
 
-unsigned short writable_data_1[500];
-unsigned short writable_data_2[500];
+unsigned short writable_data_1[9 * 500];
+unsigned short writable_data_2[9 * 500];
 int buffer_counter = 0;
 bool buffer_select = false;
 bool ready_to_write = false;
@@ -84,34 +84,30 @@ void sample_task(void *pvParameter) {
 	while(1) {
 		if(buffer_select) {
 			memcpy(&writable_data_1[buffer_counter], TestMPU->SensorRead(), 18);
-			buffer_counter += 6;
+			buffer_counter += 9;
 			//writable_data_1[buffer_counter++] = TestMPU->SensorRead();
-			if(buffer_counter == 500) {
+			if(buffer_counter >= 500) {
 				buffer_select = false;
 				buffer_counter = 0;
 				ready_to_write = true;
-				ESP_LOGI("MAIN", "Ready to write");
 			}
 		}
 		else {
 			memcpy(&writable_data_2[buffer_counter], TestMPU->SensorRead(), 18);
-			buffer_counter += 6;
+			buffer_counter += 9;
 			//writable_data_2[buffer_counter++] = TestMPU->SensorRead();
-			if(buffer_counter == 500) {
+			if(buffer_counter >= 500) {
 				buffer_select = true;
 				buffer_counter = 0;
 				ready_to_write = true;
-				ESP_LOGI("MAIN", "Ready to write");
 			}
 		}
-
 		vTaskDelay(8 / portTICK_PERIOD_MS);
 	}
 }
 
-SDWriter writer;
-
 void writer_task(void *pvParameter) {
+	SDWriter writer;
 	writer.InitSDMMC();
 	time_t test_time = 0;
 	writer.SetFileName(test_time);
@@ -120,14 +116,23 @@ void writer_task(void *pvParameter) {
 		if(ready_to_write == true) {
 			writer.Open();
 			if(buffer_select == false) {
-				writer.Write(writable_data_1, (sizeof(mpu9250_data) * 500));
+				if(writer.Write(writable_data_1, (sizeof(unsigned short) * 8 * 500)) == SD_WRITER_OK) {
+					ESP_LOGI("MAIN", "Data written");
+				}
+				else {
+					ESP_LOGI("MAIN", "Data not written");
+				}
 			}
 			else {
-				writer.Write(writable_data_2, (sizeof(mpu9250_data) * 500));
+				if(writer.Write(writable_data_2, (sizeof(unsigned short) * 8 * 500)) == SD_WRITER_OK) {
+					ESP_LOGI("MAIN", "Data written");
+				}
+				else {
+					ESP_LOGI("MAIN", "Data not written");
+				}
 			}
 			writer.Close();
 			ready_to_write = false;
-			ESP_LOGI("MAIN", "Data written");
 		}
 		vTaskDelay(1000 / portTICK_PERIOD_MS);
 	}
@@ -151,7 +156,7 @@ extern "C" void app_main(void)
     xTaskCreate(&blink_task, "blink_task", configMINIMAL_STACK_SIZE, NULL, 5, NULL);
 
     // start sample task
-    xTaskCreate(&sample_task, "sample_task", 4092, NULL, 5, NULL);
+    xTaskCreatePinnedToCore(&sample_task, "sample_task", 8192, NULL, 5, NULL, 0);
 
     // start writer task
     xTaskCreatePinnedToCore(&writer_task, "writer_task", 4092, NULL, 5, NULL, 0);
