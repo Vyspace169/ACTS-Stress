@@ -27,6 +27,7 @@
 #define NACK_VAL               		0x01              /*!< I2C nack value */
 #define I2C_WRITE_BIT           	0x00
 #define I2C_READ_BIT            	0x01
+#define I2C_TIMEOUT					100
 
 // I2C addresses
 #define MPU9250_I2C_ADDRESS     	0x68
@@ -71,26 +72,15 @@
 #define AK8936_SET_16BIT			0x10
 #define AK8963_SET_RESET			0x01
 
-class mpu9250_data{
-public:
-   short AccelerometerX;
-   short AccelerometerY;
-   short AccelerometerZ;
-   short GyroscopeX;
-   short GyroscopeY;
-   short GyroscopeZ;
-   short MagnetoX;
-   short MagnetoY;
-   short MagnetoZ;
-};
+void simple_test();
 
-
-class Mpu9250Implementation : public Sensor {
+class Mpu9250Implementation: public Sensor{
 public:
 	Mpu9250Implementation();
-	unsigned short* SensorRead() override;
-	~Mpu9250Implementation();
+	unsigned short* SensorRead();
+	~Mpu9250Implementation() {}
 private:
+	unsigned short MPUData[9];
 	unsigned short BackupMPUData[9];
 	bool MPUIsInitialized;
 	bool AKIsInitialized;

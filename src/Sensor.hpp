@@ -9,11 +9,14 @@
 #include "DoubleBuffer.hpp"
 class Sensor{
 public:
-     Sensor();
-     virtual unsigned short* /*[OUTPUT_SIZE]*/ SensorRead() = 0;
-/*     void setFrequency(int freq);
-     int getFrequency();*/
-     ~Sensor();
+     Sensor() {}
+     virtual unsigned short* /*[OUTPUT_SIZE]*/ SensorRead();
+     ~Sensor() {}
+
+     /*
+     void setFrequency(int freq);
+     int getFrequency();
+     */
 private:
 protected:
         // int frequency;
