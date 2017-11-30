@@ -15,23 +15,16 @@
 #define I2C_MASTER_ACK 0
 #define I2C_MASTER_NACK 1
 
-#define OUTPUT_SIZE 4
-
-class bmp280_data{
-public:
-   float temp;
-   float hPa;
-   bmp280_data(float temp, float hPa) : temp{temp}, hPa{hPa} {}
-};
-
-
 class Bmp280Implementation: public Sensor{
 public:
-   Bmp280Implementation()  {}
-   unsigned short* /*[OUTPUT_SIZE]*/ SensorRead() override;
+   Bmp280Implementation();
+   unsigned short* SensorRead() override;
    ~Bmp280Implementation() {}
-
 private:
+   struct bmp280_t bmp280_com_functions;
+   unsigned short BMPData[4];
+   unsigned short BackupBMPData[4];
+   bool IsInitialized;
 protected:
 };
 

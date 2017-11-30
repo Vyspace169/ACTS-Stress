@@ -82,6 +82,11 @@ Mpu9250Implementation::Mpu9250Implementation(){
 	memset(&MPUData, 0, sizeof(unsigned short) * 9);
 	MPUIsInitialized = false;
 	AKIsInitialized = false;
+	SensIsInitialized = false;
+	AK8936SenseX = 0;
+	AK8936SenseY = 0;
+	AK8936SenseZ = 0;
+
 	uint8_t AK8936ID = 0;
 	uint8_t MPU9250ID = 0;
 
@@ -110,9 +115,21 @@ Mpu9250Implementation::Mpu9250Implementation(){
 		if(AK8936ID == 72) {
 			AKIsInitialized = true;
 		}
-		// trigger a signle sample
+
+		// Get sense values from magnetometer
+		i2c_sensor_write_byte(AK8936_ADDRESS, AK8936_REG_CNTL1, AK8936_SET_FUSE_MODE);
+		if( i2c_sensor_read_byte(AK8936_ADDRESS, AK8963_REG_SENSE_X, &AK8936SenseX) == ESP_OK) {
+			if( i2c_sensor_read_byte(AK8936_ADDRESS, AK8963_REG_SENSE_Y, &AK8936SenseY) == ESP_OK) {
+				if(i2c_sensor_read_byte(AK8936_ADDRESS, AK8963_REG_SENSE_Z, &AK8936SenseZ) == ESP_OK) {
+					SensIsInitialized = true;
+				}
+			}
+		}
+
+		// trigger a single sample
 		i2c_sensor_write_byte(AK8936_ADDRESS, AK8936_REG_CNTL1, AK8936_SET_16BIT | AK8936_SET_SING_SAMP);
 	}
+
 	ESP_LOGI("I2C TASK", "MPU9250 ID: %i    AK8936 ID: %i", MPU9250ID, AK8936ID);
 }
 
@@ -155,6 +172,11 @@ unsigned short* Mpu9250Implementation::SensorRead() {
 				MPUData[6] = switch_short(MPUData[6]);
 				MPUData[7] = switch_short(MPUData[7]);
 				MPUData[8] = switch_short(MPUData[8]);
+				if(SensIsInitialized == true) {
+					MPUData[6] *= ((((AK8936SenseX - 128) * 0.5) / 128) + 1);
+					MPUData[7] *= ((((AK8936SenseY - 128) * 0.5) / 128) + 1);
+					MPUData[8] *= ((((AK8936SenseZ - 128) * 0.5) / 128) + 1);
+				}
 				memcpy((void*)&BackupMPUData[6], (void*)&MPUData[6], 6);
 			}
 			else {

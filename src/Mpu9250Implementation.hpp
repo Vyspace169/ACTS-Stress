@@ -64,11 +64,15 @@
 #define AK8936_REG_XOUT_L       	0x03
 #define AK8936_REG_CNTL1        	0x0A
 #define AK8963_REG_CNTL2			0x0B
+#define AK8963_REG_SENSE_X			0x10
+#define AK8963_REG_SENSE_Y			0x11
+#define AK8963_REG_SENSE_Z			0x12
 
 // AK8936 settings
 #define AK8936_SET_SING_SAMP		0x01
 #define AK8936_SET_CONT_MODE_1		0x02
 #define AK8936_SET_CONT_MODE_2		0x06
+#define AK8936_SET_FUSE_MODE		0x0F
 #define AK8936_SET_16BIT			0x10
 #define AK8963_SET_RESET			0x01
 
@@ -82,6 +86,10 @@ public:
 private:
 	unsigned short MPUData[9];
 	unsigned short BackupMPUData[9];
+	unsigned char AK8936SenseX;
+	unsigned char AK8936SenseY;
+	unsigned char AK8936SenseZ;
+	bool SensIsInitialized;
 	bool MPUIsInitialized;
 	bool AKIsInitialized;
 protected:

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 #include "freertos/FreeRTOS.h"
@@ -13,6 +14,7 @@
 
 #include "driver/gpio.h"
 
+#include "DoubleBuffer.hpp"
 #include "Sensor.hpp"
 #include "SDWriter.hpp"
 #include "WifiModule.hpp"
@@ -70,39 +72,46 @@ static void i2c_example_master_init()
     i2c_driver_install(I2C_NUM_0, conf.mode, 0, 0, 0);
 }
 
-unsigned short writable_data_1[9 * 500];
-unsigned short writable_data_2[9 * 500];
-int buffer_counter = 0;
-bool buffer_select = false;
-bool ready_to_write = false;
-
 void sample_task(void *pvParameter) {
 	i2c_example_master_init();
+
 	Sensor *TestMPU = new Mpu9250Implementation();
-	//Sensor *TestBMP = new Bmp280Implementation();
+	Sensor *TestBMP = new Bmp280Implementation();
+	data SensorData;
+	short MPUData[9];
+	int BMPData[2];
 
 	while(1) {
-		if(buffer_select) {
-			memcpy(&writable_data_1[buffer_counter], TestMPU->SensorRead(), 18);
-			buffer_counter += 9;
-			//writable_data_1[buffer_counter++] = TestMPU->SensorRead();
-			if(buffer_counter >= 500) {
-				buffer_select = false;
-				buffer_counter = 0;
-				ready_to_write = true;
-			}
-		}
-		else {
-			memcpy(&writable_data_2[buffer_counter], TestMPU->SensorRead(), 18);
-			buffer_counter += 9;
-			//writable_data_2[buffer_counter++] = TestMPU->SensorRead();
-			if(buffer_counter >= 500) {
-				buffer_select = true;
-				buffer_counter = 0;
-				ready_to_write = true;
-			}
-		}
-		vTaskDelay(8 / portTICK_PERIOD_MS);
+		memcpy(MPUData, TestMPU->SensorRead(), sizeof(unsigned short) * 9);
+		memcpy(BMPData, TestBMP->SensorRead(), sizeof(int) * 2);
+
+		SensorData.accelX = (float)MPUData[0];
+		SensorData.accelY = (float)MPUData[1];
+		SensorData.accelZ = (float)MPUData[2];
+		SensorData.gyroX = (float)MPUData[3];
+		SensorData.gyroY = (float)MPUData[4];
+		SensorData.gyroZ = (float)MPUData[5];
+		SensorData.magnetoX = (float)MPUData[6];
+		SensorData.magnetoY = (float)MPUData[7];
+		SensorData.magnetoZ = (float)MPUData[8];
+		SensorData.temp = (float)BMPData[0];
+		SensorData.pressure = (float)BMPData[1];
+
+		ESP_LOGI("I2C TASK", "Value: \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f \t",
+				SensorData.accelX/100,
+				SensorData.accelY/100,
+				SensorData.accelZ/100,
+				SensorData.gyroX/100,
+				SensorData.gyroY/100,
+				SensorData.gyroZ/100,
+				SensorData.magnetoX/100,
+				SensorData.magnetoY/100,
+				SensorData.magnetoZ/100,
+				SensorData.temp,
+				SensorData.pressure);
+
+
+		vTaskDelay(6 / portTICK_PERIOD_MS);
 	}
 }
 
@@ -113,27 +122,6 @@ void writer_task(void *pvParameter) {
 	writer.SetFileName(test_time);
 
 	while(1) {
-		if(ready_to_write == true) {
-			writer.Open();
-			if(buffer_select == false) {
-				if(writer.Write(writable_data_1, (sizeof(unsigned short) * 8 * 500)) == SD_WRITER_OK) {
-					ESP_LOGI("MAIN", "Data written");
-				}
-				else {
-					ESP_LOGI("MAIN", "Data not written");
-				}
-			}
-			else {
-				if(writer.Write(writable_data_2, (sizeof(unsigned short) * 8 * 500)) == SD_WRITER_OK) {
-					ESP_LOGI("MAIN", "Data written");
-				}
-				else {
-					ESP_LOGI("MAIN", "Data not written");
-				}
-			}
-			writer.Close();
-			ready_to_write = false;
-		}
 		vTaskDelay(1000 / portTICK_PERIOD_MS);
 	}
 }
@@ -151,7 +139,6 @@ extern "C" void app_main(void)
     printf("silicon revision %d, ", chip_info.revision);
     printf("%dMB %s flash\n", spi_flash_get_chip_size() / (1024 * 1024), (chip_info.features & CHIP_FEATURE_EMB_FLASH) ? "embedded" : "external");
 
-
     // Start blink task
     xTaskCreate(&blink_task, "blink_task", configMINIMAL_STACK_SIZE, NULL, 5, NULL);
 
@@ -159,7 +146,7 @@ extern "C" void app_main(void)
     xTaskCreatePinnedToCore(&sample_task, "sample_task", 8192, NULL, 5, NULL, 0);
 
     // start writer task
-    xTaskCreatePinnedToCore(&writer_task, "writer_task", 4092, NULL, 5, NULL, 0);
+    //xTaskCreatePinnedToCore(&writer_task, "writer_task", 4092, NULL, 5, NULL, 0);
 
 
     //xTaskCreatePinnedToCore(&wifi_task, "wifi_task", 10000, NULL, 0, NULL, 0);
