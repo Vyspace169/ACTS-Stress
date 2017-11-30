@@ -24,9 +24,12 @@ bool BinaryBuffer::add( data in ){
 		return false;
 	}
 }
+const std::vector<data>& BinaryBuffer::get()	{
+	return buffer;
+}
 
 bool BinaryBuffer::isFull(){
-	return buffer.size()>=BUFFER_SIZE;
+	return buffer.size()>=100;
 }
 
 BinaryBuffer::~BinaryBuffer(){

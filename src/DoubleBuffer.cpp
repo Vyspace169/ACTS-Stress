@@ -22,16 +22,17 @@ void DoubleBuffer::swap(){
 	this->next = tmp;
 	this->next->readOnly();
 }
-void DoubleBuffer::WriteToSd()	{
+
+void DoubleBuffer::writeToSd(){
 
 	// standard default name for now
 	writer.SetFileName(0);
 	// write all elements to the file using the SdWriter
-	for(std::vector<data>::iterator it = this->next.buffer.begin(); it != this->next.buffer.end(); ++it) {
-   	writer.Write(*it);
+	for(auto it = this->next->get().begin(); it != this->next->get().end(); ++it) {
+		writer.Write(*it);
 	}
 	// Clear the buffer for the next swap
-	this->next.buffer.clear();
+	this->next->clear();
 	
 }
 

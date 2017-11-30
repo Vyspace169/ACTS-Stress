@@ -6,7 +6,7 @@
 */
 #pragma once
 #include <vector>
-const int BUFFER_SIZE = 50000/(12*2); // 50000 bytes / 12 values * 2 bytes (float size) 
+
 typedef struct {
 	long long microTime;
 	float accelX;
@@ -29,7 +29,7 @@ public:
 	void writeOnly();
 	void clear();
 	bool add( data in );
-	data get();
+	const std::vector<data>& get(); // should perhaps be a pointer, copy could be too slow on large scale operations?
 	bool isFull();
 	~BinaryBuffer();
 private:
