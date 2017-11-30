@@ -10,13 +10,14 @@
 
 class DoubleBuffer{
 public:
-	DoubleBuffer(SDWriter);
+	DoubleBuffer(SDWriter&);
 	void storeData( data in );
 	void swap();
 	void emptyBuffer();
+	void writeToSd();
 	~DoubleBuffer();
 private:
-	SDWriter writer;
+	SDWriter &writer;
 	BinaryBuffer * firstBuffer;
 	BinaryBuffer * secondBuffer;
 	BinaryBuffer * current;

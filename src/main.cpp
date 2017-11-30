@@ -21,6 +21,30 @@
 #include "Mpu9250Implementation.hpp"
 #include "Bmp280Implementation.hpp"
 
+#include "freertos/event_groups.h"
+
+#include "DoubleBuffer.hpp"
+#include "SDWriter.hpp"
+
+#define BIT_0  ( 1 << 0 )
+#define BIT_4  ( 1 << 4 )
+
+// -------Flags for Tasks----------------------------
+// Flag for SensorTask to act upon
+const EventBits_t SensorMeasurementFlag = ( 1 << 0 );
+
+// Flag for SdWriterTask to act upon
+const EventBits_t SensorBufferSdReady   = ( 1 << 4 );
+
+// Flags for WifiTask to act upon
+const EventBits_t WifiActivateFlag      = (1 << 1);
+const EventBits_t WifiReadyFlag         = (1 << 2);
+
+// Flags for system alive (watchdog timer)
+const EventBits_t SystemAlive          = (1 << 3);
+//-------------------------------------------------
+
+EventGroupHandle_t evg;
 
 // Define led pin
 #define BLINK_GPIO 13
@@ -52,12 +76,10 @@ void wifi_task(void *pvParameter) {
 	wificonnection.ClientConfig(ssid, pass);
 	wificonnection.ClientConnect(10000);
 
-
 	while(1){
 		vTaskDelay(100 / portTICK_PERIOD_MS);
 	}
 }
-
 
 static void i2c_example_master_init()
 {
@@ -116,19 +138,47 @@ void sample_task(void *pvParameter) {
 }
 
 void writer_task(void *pvParameter) {
-	SDWriter writer;
-	writer.InitSDMMC();
-	time_t test_time = 0;
-	writer.SetFileName(test_time);
-
+   
 	while(1) {
-		vTaskDelay(1000 / portTICK_PERIOD_MS);
+      EventBits_t uxBits;
+      uxBits = xEventGroupWaitBits(evg, SensorBufferSdReady /*| SystemAlive*/, pdTRUE, pdFALSE, portMAX_DELAY );
+
+      ESP_LOGI("MAIN", "Stopped waiting...");
+      if(uxBits & SensorBufferSdReady){
+         // Todo handle writing of buffer to sd card...
+         ESP_LOGI("MAIN", "SensorBufferSdReady");
+         db.writeToSd();
+
+      }
+      /*else if(uxBits & SystemAlive) {
+         // Do nothing
+         vTaskDelay(100 / portTICK_PERIOD_MS);
+         ESP_LOGI("MAIN", "SystemAlive set");
+      }*/
+      else {
+         ESP_LOGI("WRITER TASK", "Value: \t %i", uxBits);
+         vTaskDelay(100 / portTICK_PERIOD_MS);
+         // Should not occur (only SensorBufferSdReady bit has been set)
+      }
 	}
 }
 
 extern "C" void app_main(void)
 {
 	nvs_flash_init();
+
+   // xCreatedEventGroup = xEventGroupCreate();
+   evg = xEventGroupCreate();
+
+   if(evg == NULL)   {
+      ESP_LOGE("ERROR", "Failed to create event group!");
+   }
+
+/*   TimerHandle_t wifi_poll_timer = NULL;
+   wifi_poll_timer = xTimerCreate("sensor_poll_clock",  pdMS_TO_TICKS( 500 ), pdTRUE, 0,
+   set_sensor_measurement_bit
+   );
+   xTimerStart( wifi_poll_timer, 0 );*/
 
     printf("\n\n\nHello world!\n");
 
@@ -140,19 +190,16 @@ extern "C" void app_main(void)
     printf("%dMB %s flash\n", spi_flash_get_chip_size() / (1024 * 1024), (chip_info.features & CHIP_FEATURE_EMB_FLASH) ? "embedded" : "external");
 
     // Start blink task
-    xTaskCreate(&blink_task, "blink_task", configMINIMAL_STACK_SIZE, NULL, 5, NULL);
+    //xTaskCreate(&blink_task, "blink_task", configMINIMAL_STACK_SIZE, NULL, 5, NULL);
 
     // start sample task
-    xTaskCreatePinnedToCore(&sample_task, "sample_task", 8192, NULL, 5, NULL, 0);
+    xTaskCreatePinnedToCore(&sample_task, "sample_task", 8192, NULL, 2, NULL, 1);
 
     // start writer task
     //xTaskCreatePinnedToCore(&writer_task, "writer_task", 4092, NULL, 5, NULL, 0);
 
 
     //xTaskCreatePinnedToCore(&wifi_task, "wifi_task", 10000, NULL, 0, NULL, 0);
-
-
-
 
     ESP_LOGI("MAIN", "Init done");
 }

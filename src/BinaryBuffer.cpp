@@ -26,7 +26,7 @@ bool BinaryBuffer::add( data in ){
 }
 
 bool BinaryBuffer::isFull(){
-	return buffer.size()>=100;
+	return buffer.size()>=BUFFER_SIZE;
 }
 
 BinaryBuffer::~BinaryBuffer(){

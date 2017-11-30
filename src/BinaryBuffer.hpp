@@ -6,7 +6,7 @@
 */
 #pragma once
 #include <vector>
-
+const int BUFFER_SIZE = 50000/(12*2); // 50000 bytes / 12 values * 2 bytes (float size) 
 typedef struct {
 	long long microTime;
 	float accelX;
