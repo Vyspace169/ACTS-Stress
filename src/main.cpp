@@ -85,17 +85,15 @@ extern "C" void app_main(void)
 
     i2c_example_master_init();
 
+    SDWriter writer;
+    writer.InitSDMMC();
+
     GlobalEventGroupHandle = xEventGroupCreate();
 
     SDWriter *GlobalSDWriter = new SDWriter;
-    GlobalSDWriter->InitSDMMC();
-    GlobalSDWriter->SetFileName(0);
-    GlobalSDWriter->Open();
-    GlobalSDWriter->Close();
-    while(1){}
-    //GlobalSDWriter->Open();
+    DataProcessor *GlobalDataHandler = new DataProcessor;
     DoubleBuffer *GlobalDoubleBuffer = new DoubleBuffer(*GlobalSDWriter);
-    SensorTask *st = new SensorTask(1, *GlobalDoubleBuffer);
+    SensorTask *st = new SensorTask(1, *GlobalDoubleBuffer, *GlobalDataHandler);
 
     // Start blink task
     xTaskCreate(&blink_task, "blink_task", configMINIMAL_STACK_SIZE, NULL, 5, NULL);

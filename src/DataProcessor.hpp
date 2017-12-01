@@ -5,9 +5,27 @@
 * @brief
 */
 #pragma once
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "esp_log.h"
+
+#include "DoubleBuffer.hpp"
+
 class  DataProcessor{
-    public:
-        DataProcessor();
-        ~DataProcessor();
-    private:
+public:
+    DataProcessor();
+    void SetTrigger(float triggerx, float triggery, float triggerz);
+    void ResetActivityData();
+    void HandleData(data NewData);
+    double GetActivityData();
+    ~DataProcessor();
+private:
+    data OldData;
+    double ActivityData;
+    float TriggerValueX;
+    float TriggerValueY;
+    float TriggerValueZ;
 };
