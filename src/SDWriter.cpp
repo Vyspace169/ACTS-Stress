@@ -52,8 +52,6 @@ SDWriterErrorCodes SDWriter::InitSDMMC() {
 void SDWriter::SetFileName(time_t TimeReceivedFromWifi) {
 	strcpy(FileNameCharArray,"/sdcard/mother.bin");
 	FileNameIsSet = true;
-	//strcpy(FileNameCharArray,"/sdcard/");
-	//strcat(FileNameCharArray, itoa(TimeReceivedFromWifi));
 }
 
 SDWriterErrorCodes SDWriter::Open() {
