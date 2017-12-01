@@ -14,6 +14,7 @@ void DoubleBuffer::storeData(data in){
 	}
 	else if(!next->isFull()){
 		this->swap();
+		xEventGroupSetBits(GlobalEventGroupHandle, SensorBufferSdReady);
 	}
 }
 

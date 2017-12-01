@@ -5,6 +5,8 @@
 * @brief switching buffer
 */
 #pragma once
+
+#include "BaseTask.hpp"
 #include "BinaryBuffer.hpp"
 #include "SDWriter.hpp"
 

@@ -8,8 +8,8 @@ void sensor_handle_task(void *args)  {
 	Sensor *TestBMP = new Bmp280Implementation();
 	data SensorData;
 	EventBits_t uxBits;
-	short MPUData[9];
-	int BMPData[2];
+	short MPUData[sTask->DATA_SIZE_MPU];
+	int BMPData[sTask->DATA_SIZE_BMP];
 
     while(1) {
 
@@ -18,20 +18,20 @@ void sensor_handle_task(void *args)  {
 
         if(uxBits & SensorMeasurementFlag)  {
             //SensorMeasurementFlag has been set
-        	memcpy(MPUData, TestMPU->SensorRead(), sizeof(unsigned short) * 9);
-        	memcpy(BMPData, TestBMP->SensorRead(), sizeof(int) * 2);
+        	memcpy(MPUData, TestMPU->SensorRead(), TestMPU->DataSize());
+        	memcpy(BMPData, TestBMP->SensorRead(), TestBMP->DataSize());
 
-        	SensorData.accelX = (float)MPUData[0];
-        	SensorData.accelY = (float)MPUData[1];
-        	SensorData.accelZ = (float)MPUData[2];
-        	SensorData.gyroX = (float)MPUData[3];
-        	SensorData.gyroY = (float)MPUData[4];
-        	SensorData.gyroZ = (float)MPUData[5];
-        	SensorData.magnetoX = (float)MPUData[6];
-        	SensorData.magnetoY = (float)MPUData[7];
-        	SensorData.magnetoZ = (float)MPUData[8];
-        	SensorData.temp = (float)BMPData[0];
-        	SensorData.pressure = (float)BMPData[1];
+        	SensorData.accelX = 	(float)MPUData[sTask->DATA_OFFSET_ACCELERO_X];
+        	SensorData.accelY = 	(float)MPUData[sTask->DATA_OFFSET_ACCELERO_Y];
+        	SensorData.accelZ = 	(float)MPUData[sTask->DATA_OFFSET_ACCELERO_Z];
+        	SensorData.gyroX = 		(float)MPUData[sTask->DATA_OFFSET_GYRO_X];
+        	SensorData.gyroY = 		(float)MPUData[sTask->DATA_OFFSET_GYRO_Y];
+        	SensorData.gyroZ = 		(float)MPUData[sTask->DATA_OFFSET_GYRO_Z];
+        	SensorData.magnetoX = 	(float)MPUData[sTask->DATA_OFFSET_MAGNETO_X];
+        	SensorData.magnetoY = 	(float)MPUData[sTask->DATA_OFFSET_MAGNETO_Y];
+        	SensorData.magnetoZ = 	(float)MPUData[sTask->DATA_OFFSET_MAGNETO_Z];
+        	SensorData.temp = 		(float)BMPData[sTask->DATA_OFFSET_TEMPERATURE];
+        	SensorData.pressure = 	(float)BMPData[sTask->DATA_OFFSET_PRESSURE];
 
         	sTask->DBHandle.storeData(SensorData);
 
@@ -51,6 +51,7 @@ void sensor_handle_task(void *args)  {
     }
 }
 
+
 void set_sensor_measurement_bit( TimerHandle_t xTimer )  {
     //Todo set bit 4
     xEventGroupSetBits(GlobalEventGroupHandle, SensorMeasurementFlag);
@@ -60,7 +61,11 @@ void SensorTask::main_task() {
 	ESP_LOGI("SENSOR TASK", "Task starting...");
 
 	TimerHandle_t wifi_poll_timer = NULL;
-    wifi_poll_timer = xTimerCreate("sensor_poll_clock", Timer_100hz, pdTRUE, 0, set_sensor_measurement_bit);
+    wifi_poll_timer = xTimerCreate("sensor_poll_clock",
+    								SENSORTASK_FREQ_100HZ,
+									pdTRUE,
+									SENSORTASK_TIMER_ID,
+									set_sensor_measurement_bit);
     xTimerStart( wifi_poll_timer, 0 );
 
     if(wifi_poll_timer == NULL) {
@@ -72,7 +77,14 @@ void SensorTask::main_task() {
 
     TaskHandle_t xHandle = NULL;
     void* thisTask = static_cast<void*>(this);
-    BaseType_t xReturned = xTaskCreatePinnedToCore(sensor_handle_task, "sensor_task", 2048, thisTask, 2, &xHandle, 1);
+    BaseType_t xReturned = xTaskCreatePinnedToCore(sensor_handle_task,
+    												"sensor_task",
+													SENSORTASK_STACK_SIZE,
+													thisTask,
+													SENSORTASK_PRIORITY,
+													&xHandle,
+													SENSORTASK_CORE_NUM);
+
 
     if(xHandle == NULL) {
     	// Handle assignment has failed
