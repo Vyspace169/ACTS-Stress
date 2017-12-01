@@ -18,6 +18,7 @@
 class Bmp280Implementation: public Sensor{
 public:
    Bmp280Implementation();
+   int DataSize() override;
    unsigned short* SensorRead() override;
    ~Bmp280Implementation() {}
 private:

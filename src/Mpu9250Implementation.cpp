@@ -133,6 +133,10 @@ Mpu9250Implementation::Mpu9250Implementation(){
 	ESP_LOGI("I2C TASK", "MPU9250 ID: %i    AK8936 ID: %i", MPU9250ID, AK8936ID);
 }
 
+int Mpu9250Implementation::DataSize() {
+	return sizeof(unsigned short) * 9;
+}
+
 unsigned short* Mpu9250Implementation::SensorRead() {
 
 	if(MPUIsInitialized) {

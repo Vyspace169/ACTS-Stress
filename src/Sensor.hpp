@@ -10,7 +10,8 @@
 class Sensor{
 public:
      Sensor() {}
-     virtual unsigned short* /*[OUTPUT_SIZE]*/ SensorRead();
+     virtual int DataSize();
+     virtual unsigned short* SensorRead();
      ~Sensor() {}
 
      /*

@@ -81,7 +81,8 @@ void simple_test();
 class Mpu9250Implementation: public Sensor{
 public:
 	Mpu9250Implementation();
-	unsigned short* SensorRead();
+	int DataSize() override;
+	unsigned short* SensorRead() override;
 	~Mpu9250Implementation() {}
 private:
 	unsigned short MPUData[9];

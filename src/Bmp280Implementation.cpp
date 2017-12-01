@@ -120,6 +120,10 @@ Bmp280Implementation::Bmp280Implementation() {
 	ESP_LOGI(TAG_BMP280, "BMP init ok");
 }
 
+int Bmp280Implementation::DataSize() {
+	return sizeof(int) * 2;
+}
+
 unsigned short* Bmp280Implementation::SensorRead() {
 
 	s32 v_uncomp_pressure_s32;
