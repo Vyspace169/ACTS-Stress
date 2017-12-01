@@ -14,30 +14,32 @@
 
 #include "driver/gpio.h"
 
-#include "DoubleBuffer.hpp"
+#include "SystemVariables.hpp"
+
 #include "Sensor.hpp"
 #include "SDWriter.hpp"
 #include "WifiModule.hpp"
+#include "DoubleBuffer.hpp"
 #include "Mpu9250Implementation.hpp"
 #include "Bmp280Implementation.hpp"
+
 #include "BaseTask.hpp"
 #include "SensorTask.hpp"
 
-
 // Define led pin
-#define BLINK_GPIO 13
+#define BLINK_GPIO  GPIO_NUM_13
 
 void blink_task(void *pvParameter)
 {
-    gpio_pad_select_gpio((gpio_num_t)BLINK_GPIO);
+    gpio_pad_select_gpio(BLINK_GPIO);
     // Set the GPIO as a push/pull output
-    gpio_set_direction((gpio_num_t)BLINK_GPIO, (gpio_mode_t)GPIO_MODE_OUTPUT);
+    gpio_set_direction(BLINK_GPIO, (gpio_mode_t)GPIO_MODE_OUTPUT);
     while(1) {
         // Blink off (output low)
-        gpio_set_level((gpio_num_t)BLINK_GPIO, 0);
+        gpio_set_level(BLINK_GPIO, 0);
         vTaskDelay(1000 / portTICK_PERIOD_MS);
         // Blink on (output high)
-        gpio_set_level((gpio_num_t)BLINK_GPIO, 1);
+        gpio_set_level(BLINK_GPIO, 1);
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
 }
@@ -74,81 +76,23 @@ static void i2c_example_master_init()
     i2c_driver_install(I2C_NUM_0, conf.mode, 0, 0, 0);
 }
 
-void sample_task(void *pvParameter) {
-	i2c_example_master_init();
-
-	Sensor *TestMPU = new Mpu9250Implementation();
-	Sensor *TestBMP = new Bmp280Implementation();
-	data SensorData;
-	short MPUData[9];
-	int BMPData[2];
-
-	while(1) {
-		memcpy(MPUData, TestMPU->SensorRead(), sizeof(unsigned short) * 9);
-		memcpy(BMPData, TestBMP->SensorRead(), sizeof(int) * 2);
-
-		SensorData.accelX = (float)MPUData[0];
-		SensorData.accelY = (float)MPUData[1];
-		SensorData.accelZ = (float)MPUData[2];
-		SensorData.gyroX = (float)MPUData[3];
-		SensorData.gyroY = (float)MPUData[4];
-		SensorData.gyroZ = (float)MPUData[5];
-		SensorData.magnetoX = (float)MPUData[6];
-		SensorData.magnetoY = (float)MPUData[7];
-		SensorData.magnetoZ = (float)MPUData[8];
-		SensorData.temp = (float)BMPData[0];
-		SensorData.pressure = (float)BMPData[1];
-
-		ESP_LOGI("I2C TASK", "Value: \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f \t",
-				SensorData.accelX/100,
-				SensorData.accelY/100,
-				SensorData.accelZ/100,
-				SensorData.gyroX/100,
-				SensorData.gyroY/100,
-				SensorData.gyroZ/100,
-				SensorData.magnetoX/100,
-				SensorData.magnetoY/100,
-				SensorData.magnetoZ/100,
-				SensorData.temp,
-				SensorData.pressure);
-
-
-		vTaskDelay(6 / portTICK_PERIOD_MS);
-	}
-}
-
-void writer_task(void *pvParameter) {
-	SDWriter writer;
-	writer.InitSDMMC();
-	time_t test_time = 0;
-	writer.SetFileName(test_time);
-
-	while(1) {
-		vTaskDelay(1000 / portTICK_PERIOD_MS);
-	}
-}
-
 EventGroupHandle_t GlobalEventGroupHandle;
 
 extern "C" void app_main(void)
 {
-	nvs_flash_init();
+    ESP_LOGI("MAIN", "Booting completed\n");
 
-    printf("\n\n\nHello world!\n");
-
-    // Print chip information
-    esp_chip_info_t chip_info;
-    esp_chip_info(&chip_info);
-    printf("This is ESP32 chip with %d CPU cores, WiFi%s%s, ", chip_info.cores, (chip_info.features & CHIP_FEATURE_BT) ? "/BT" : "", (chip_info.features & CHIP_FEATURE_BLE) ? "/BLE" : "");
-    printf("silicon revision %d, ", chip_info.revision);
-    printf("%dMB %s flash\n", spi_flash_get_chip_size() / (1024 * 1024), (chip_info.features & CHIP_FEATURE_EMB_FLASH) ? "embedded" : "external");
+    nvs_flash_init();
 
     i2c_example_master_init();
+
     GlobalEventGroupHandle = xEventGroupCreate();
 
-    SDWriter *Writer = new SDWriter;
-    DoubleBuffer *db = new DoubleBuffer(*Writer);
-    SensorTask *st = new SensorTask(1, *db);
+    SDWriter *GlobalSDWriter = new SDWriter;
+    DoubleBuffer *GlobalDoubleBuffer = new DoubleBuffer(*GlobalSDWriter);
+    SensorTask *st = new SensorTask(1, *GlobalDoubleBuffer);
+
+
 
     // Start blink task
     xTaskCreate(&blink_task, "blink_task", configMINIMAL_STACK_SIZE, NULL, 5, NULL);

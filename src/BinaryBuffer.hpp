@@ -7,6 +7,8 @@
 #pragma once
 #include <vector>
 
+#include "esp_log.h"
+
 typedef struct {
 	long long microTime;
 	float accelX;
@@ -36,4 +38,5 @@ private:
 	bool readState();
 	bool state;
 	std::vector<data> buffer;
+	const int BufferSize = 1000;
 };

@@ -3,22 +3,21 @@
 SensorTask::SensorTask(unsigned int task_priority, DoubleBuffer &db) : BaseTask(task_priority), DBHandle{db}  {main_task();}
 
 void sensor_handle_task(void *args)  {
-
+	SensorTask *sTask = static_cast<SensorTask*>(args);
 	Sensor *TestMPU = new Mpu9250Implementation();
 	Sensor *TestBMP = new Bmp280Implementation();
 	data SensorData;
+	EventBits_t uxBits;
 	short MPUData[9];
 	int BMPData[2];
-	SensorTask* sTask = (SensorTask*)args;
 
-    while(1)    {
+    while(1) {
 
-    	EventBits_t uxBits;
+    	// wait for flag to be set
         uxBits = xEventGroupWaitBits(GlobalEventGroupHandle, SensorMeasurementFlag, pdTRUE, pdFALSE, portMAX_DELAY);
 
         if(uxBits & SensorMeasurementFlag)  {
             //SensorMeasurementFlag has been set
-
         	memcpy(MPUData, TestMPU->SensorRead(), sizeof(unsigned short) * 9);
         	memcpy(BMPData, TestBMP->SensorRead(), sizeof(int) * 2);
 
@@ -33,10 +32,10 @@ void sensor_handle_task(void *args)  {
         	SensorData.magnetoZ = (float)MPUData[8];
         	SensorData.temp = (float)BMPData[0];
         	SensorData.pressure = (float)BMPData[1];
-        	//sTask->DBHandle.storeData(SensorData);
-        	//sTask->DBHandle.writeToSd();
 
-        	ESP_LOGI("I2C TASK", "Value: \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f \t",
+        	sTask->DBHandle.storeData(SensorData);
+
+        	/*ESP_LOGI("I2C TASK", "Value: \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f \t",
         			SensorData.accelX/100,
         			SensorData.accelY/100,
         			SensorData.accelZ/100,
@@ -47,7 +46,7 @@ void sensor_handle_task(void *args)  {
         			SensorData.magnetoY/100,
         			SensorData.magnetoZ/100,
         			SensorData.temp,
-        			SensorData.pressure);
+        			SensorData.pressure);*/
         }
     }
 }
@@ -58,31 +57,36 @@ void set_sensor_measurement_bit( TimerHandle_t xTimer )  {
 }
 
 void SensorTask::main_task() {
+	ESP_LOGI("SENSOR TASK", "Task starting...");
 
 	TimerHandle_t wifi_poll_timer = NULL;
     wifi_poll_timer = xTimerCreate("sensor_poll_clock", Timer_100hz, pdTRUE, 0, set_sensor_measurement_bit);
     xTimerStart( wifi_poll_timer, 0 );
+
     if(wifi_poll_timer == NULL) {
-      // Something has failed creating the timer
+    	// Something has failed creating the timer
     	ESP_LOGI("SENSOR TASK", "Timer creation failed");
+    } else {
+    	ESP_LOGI("SENSOR TASK", "Timer created");
     }
 
     TaskHandle_t xHandle = NULL;
+    void* thisTask = static_cast<void*>(this);
+    BaseType_t xReturned = xTaskCreatePinnedToCore(sensor_handle_task, "sensor_task", 2048, thisTask, 2, &xHandle, 1);
 
-    BaseType_t xReturned = xTaskCreatePinnedToCore(sensor_handle_task, "sensor_task", 2048, (void*)&(*this), 2, &xHandle, 1);
-
-    if(xHandle != NULL) {
-      // xHandle works
+    if(xHandle == NULL) {
+    	// Handle assignment has failed
+    	ESP_LOGI("SENSOR TASK", "Handle creation failed");
     } else {
-      // Handle assignment has failed
-    	ESP_LOGI("SENSOR TASK", "Task creation failed");
+    	ESP_LOGI("SENSOR TASK", "Handle creation OK");
     }
 
-    if(xReturned == pdPASS) {
-      // Task creation succesful
+    if(xReturned != pdPASS) {
+    	// xReturned false (something went wrong!)
+    	ESP_LOGI("SENSOR TASK", "Task creation failed");
+    } else {
+    	ESP_LOGI("SENSOR TASK", "Task creation OK");
     }
-    else  {
-      // xReturned false (something went wrong!)
-    	ESP_LOGI("SENSOR TASK", "Task handle creation failed");
-    }
+
+    ESP_LOGI("SENSOR TASK", "Task is running");
 }

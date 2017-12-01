@@ -17,6 +17,7 @@ void BinaryBuffer::clear(){
 }
 
 bool BinaryBuffer::add( data in ){
+	ESP_LOGI("DB", "size: %d", buffer.size());
 	if(state){
 		buffer.push_back(in);
 		return true;
@@ -24,12 +25,12 @@ bool BinaryBuffer::add( data in ){
 		return false;
 	}
 }
-const std::vector<data>& BinaryBuffer::get()	{
+const std::vector<data>& BinaryBuffer::get(){
 	return buffer;
 }
 
 bool BinaryBuffer::isFull(){
-	return buffer.size()>=100;
+	return buffer.size() >= BufferSize;
 }
 
 BinaryBuffer::~BinaryBuffer(){

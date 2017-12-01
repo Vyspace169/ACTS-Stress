@@ -4,6 +4,8 @@ DoubleBuffer::DoubleBuffer(SDWriter& wr) : writer{wr}{
 	//this->writer = wr;
 	this->firstBuffer = new BinaryBuffer();
 	this->secondBuffer = new BinaryBuffer();
+	this->current = this->firstBuffer;
+	this->next = this->secondBuffer;
 }
 
 void DoubleBuffer::storeData(data in){
@@ -24,7 +26,6 @@ void DoubleBuffer::swap(){
 }
 
 void DoubleBuffer::writeToSd(){
-
 	// standard default name for now
 	writer.SetFileName(0);
 	// write all elements to the file using the SdWriter
