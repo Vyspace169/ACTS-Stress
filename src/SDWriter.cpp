@@ -50,7 +50,7 @@ SDWriterErrorCodes SDWriter::InitSDMMC() {
 }
 
 void SDWriter::SetFileName(time_t TimeReceivedFromWifi) {
-	strcpy(FileNameCharArray,"/sdcard/testfile.bin");
+	strcpy(FileNameCharArray,"/sdcard/mother.bin");
 	FileNameIsSet = true;
 	//strcpy(FileNameCharArray,"/sdcard/");
 	//strcat(FileNameCharArray, itoa(TimeReceivedFromWifi));
@@ -73,7 +73,7 @@ SDWriterErrorCodes SDWriter::Open() {
 	ESP_LOGI("SD WRITER", "Opening file");
 
 	// Write data
-	FileForData = fopen(FileNameCharArray, "a");
+	FileForData = fopen(FileNameCharArray, "w");
 
 	// check if file open succeeded
 	if (FileForData == NULL) {
@@ -99,6 +99,7 @@ SDWriterErrorCodes SDWriter::Write(data in) {
 
 	// write the data to the file
 	int BytesWritten = fwrite(&in, sizeof(data), 1, FileForData);
+	fseek(FileForData, BytesWritten, SEEK_CUR);
 
 	CardIsWriting = false;
 

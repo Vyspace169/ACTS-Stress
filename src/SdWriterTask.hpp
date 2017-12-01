@@ -15,6 +15,7 @@ class SdWriterTask : BaseTask  {
 public:
   SdWriterTask(unsigned int task_priority, DoubleBuffer &db);
   ~SdWriterTask() = delete; //Should be deleted?
+  friend void run_sd_task(void *args);
   //std::array<int, 10000> simple_test_buffer;
 private:
   DoubleBuffer &DBHandle;

@@ -56,7 +56,6 @@ void wifi_task(void *pvParameter) {
 	wificonnection.ClientConfig(ssid, pass);
 	wificonnection.ClientConnect(10000);
 
-
 	while(1){
 		vTaskDelay(100 / portTICK_PERIOD_MS);
 	}
@@ -89,10 +88,14 @@ extern "C" void app_main(void)
     GlobalEventGroupHandle = xEventGroupCreate();
 
     SDWriter *GlobalSDWriter = new SDWriter;
+    GlobalSDWriter->InitSDMMC();
+    GlobalSDWriter->SetFileName(0);
+    GlobalSDWriter->Open();
+    GlobalSDWriter->Close();
+    while(1){}
+    //GlobalSDWriter->Open();
     DoubleBuffer *GlobalDoubleBuffer = new DoubleBuffer(*GlobalSDWriter);
     SensorTask *st = new SensorTask(1, *GlobalDoubleBuffer);
-
-
 
     // Start blink task
     xTaskCreate(&blink_task, "blink_task", configMINIMAL_STACK_SIZE, NULL, 5, NULL);
@@ -105,9 +108,6 @@ extern "C" void app_main(void)
 
 
     //xTaskCreatePinnedToCore(&wifi_task, "wifi_task", 10000, NULL, 0, NULL, 0);
-
-
-
 
     ESP_LOGI("MAIN", "Init done");
 }
