@@ -29,10 +29,13 @@ void DoubleBuffer::swap(){
 void DoubleBuffer::writeToSd(){
 	// standard default name for now
 	writer.SetFileName(0);
+	writer.Open();
 	// write all elements to the file using the SdWriter
 	for(auto it = this->next->get().begin(); it != this->next->get().end(); ++it) {
 		writer.Write(*it);
+		ESP_LOGI("writer", "writing elements...");
 	}
+	writer.Close();
 	// Clear the buffer for the next swap
 	this->next->clear();
 	
