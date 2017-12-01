@@ -85,13 +85,17 @@ public:
 	unsigned short* SensorRead() override;
 	~Mpu9250Implementation() {}
 private:
-	unsigned short MPUData[9];
-	unsigned short BackupMPUData[9];
+	unsigned short MPUData[9] = {0};
+	unsigned short BackupMPUData[9] = {0};
 	unsigned char AK8936SenseX;
 	unsigned char AK8936SenseY;
 	unsigned char AK8936SenseZ;
 	bool SensIsInitialized;
 	bool MPUIsInitialized;
 	bool AKIsInitialized;
+
+   void mpu_init();
+   void ak_init();
+   void init();
 protected:
 };
