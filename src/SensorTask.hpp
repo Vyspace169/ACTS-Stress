@@ -41,6 +41,9 @@ private:
     const int DATA_SIZE_BMP = 2;
     const int DATA_OFFSET_TEMPERATURE = 0;
     const int DATA_OFFSET_PRESSURE = 1;
+
+   Sensor *Sensor_MPU;
+   Sensor *Sensor_BMP;
 protected:
     void main_task();
 };

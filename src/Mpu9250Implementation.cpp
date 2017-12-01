@@ -1,5 +1,5 @@
 #include "Mpu9250Implementation.hpp"
-
+#include "Systemerrors.hpp"
 esp_err_t i2c_sensor_read_array(unsigned char dev_address, unsigned char address, unsigned char count, unsigned char* read_data) {
 	int ret;
 	i2c_cmd_handle_t cmd = i2c_cmd_link_create();
@@ -94,6 +94,7 @@ Mpu9250Implementation::Mpu9250Implementation(){
 	esp_err_t error = i2c_sensor_write_byte(MPU9250_I2C_ADDRESS, MPU9250_REG_PWR_MGMNT_1, MPU9250_SET_PWR_RESET);
 	if(error != ESP_OK) {
 		ESP_LOGI("I2C TASK", "MPU9250 address gave an error: %d", error);
+      SystemErrorState |= MPU_ERROR;
 	}
 	else {
 		vTaskDelay(10);
@@ -108,6 +109,7 @@ Mpu9250Implementation::Mpu9250Implementation(){
 	error = i2c_sensor_write_byte(AK8936_ADDRESS, AK8963_REG_CNTL2, AK8963_SET_RESET);
 	if(error != ESP_OK) {
 		ESP_LOGI("I2C TASK", "AK8963 address gave an error: %d", error);
+      SystemErrorState |= AK_ERROR;
 	}
 	else {
 		vTaskDelay(10);

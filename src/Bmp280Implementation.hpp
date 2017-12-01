@@ -1,4 +1,3 @@
-
 #pragma once
 #include "driver/gpio.h"
 #include "driver/i2c.h"
@@ -7,6 +6,7 @@
 #include "freertos/task.h"
 #include "bmp280.h"
 #include "Sensor.hpp"
+#include "Systemerrors.hpp"
 #define TAG_BMP280 "BMP280"
 
 #define SCL_PIN GPIO_NUM_26

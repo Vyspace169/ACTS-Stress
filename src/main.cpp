@@ -25,25 +25,7 @@
 
 #include "BaseTask.hpp"
 #include "SensorTask.hpp"
-
-// Define led pin
-#define BLINK_GPIO  GPIO_NUM_13
-
-void blink_task(void *pvParameter)
-{
-    gpio_pad_select_gpio(BLINK_GPIO);
-    // Set the GPIO as a push/pull output
-    gpio_set_direction(BLINK_GPIO, (gpio_mode_t)GPIO_MODE_OUTPUT);
-    while(1) {
-        // Blink off (output low)
-        gpio_set_level(BLINK_GPIO, 0);
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
-        // Blink on (output high)
-        gpio_set_level(BLINK_GPIO, 1);
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
-    }
-}
-
+#include "Systemerrors.hpp"
 void wifi_task(void *pvParameter) {
 
 	char* ip = "192.168.43.140";
@@ -60,9 +42,11 @@ void wifi_task(void *pvParameter) {
 		vTaskDelay(100 / portTICK_PERIOD_MS);
 	}
 }
+/*static void error_msg(char* err_type, char* c, err_code ec)  {
+   ESP_LOGE("INIT_ERROR", "Error code:%i , msg_detail: nvs_flash_init failed!")
+}*/
 
-
-static void i2c_example_master_init()
+static void i2c_master_init()
 {
     i2c_config_t conf;
     conf.mode = I2C_MODE_MASTER;
@@ -71,8 +55,24 @@ static void i2c_example_master_init()
     conf.scl_io_num = GPIO_NUM_26;
     conf.scl_pullup_en = GPIO_PULLUP_ENABLE;
     conf.master.clk_speed = 100000;
-    i2c_param_config(I2C_NUM_0, &conf);
-    i2c_driver_install(I2C_NUM_0, conf.mode, 0, 0, 0);
+   if(i2c_param_config(I2C_NUM_0, &conf) != ESP_OK)  {
+      ESP_LOGE("INIT_ERROR", "Error code:%i , message: i2c param config failed!", ERROR_I2C_PARAM_CONFIG);
+   }
+   if(i2c_driver_install(I2C_NUM_0, conf.mode, 0, 0, 0) != ESP_OK) {
+      ESP_LOGE("INIT_ERROR", "Error code:%i , message: i2c driver install failed!", ERROR_I2C_DRIVER_INSTALL);
+   }
+}
+
+void app_init()  {
+
+   if(nvs_flash_init() != ESP_OK)   {
+      ESP_LOGE("INIT_ERROR", "Error code:%i , message: nvs_flash_init failed!", ERROR_NVS_FLASH_INIT);
+   }
+   i2c_master_init();
+   /*if(i2c_master_init() != ESP_OK)  {
+      //ESP_LOGE(err_type, "Error code:%i , message: nvs_flash_init failed!", I2C_MASTER_INIT);
+   }*/
+
 }
 
 EventGroupHandle_t GlobalEventGroupHandle;
@@ -81,33 +81,13 @@ extern "C" void app_main(void)
 {
     ESP_LOGI("MAIN", "Booting completed\n");
 
-    nvs_flash_init();
-
-    i2c_example_master_init();
+    app_init();
 
     GlobalEventGroupHandle = xEventGroupCreate();
 
     SDWriter *GlobalSDWriter = new SDWriter;
-    GlobalSDWriter->InitSDMMC();
-    GlobalSDWriter->SetFileName(0);
-    GlobalSDWriter->Open();
-    GlobalSDWriter->Close();
-    while(1){}
-    //GlobalSDWriter->Open();
-    DoubleBuffer *GlobalDoubleBuffer = new DoubleBuffer(*GlobalSDWriter);
-    SensorTask *st = new SensorTask(1, *GlobalDoubleBuffer);
-
-    // Start blink task
-    xTaskCreate(&blink_task, "blink_task", configMINIMAL_STACK_SIZE, NULL, 5, NULL);
-
-    // start sample task
-    //xTaskCreatePinnedToCore(&sample_task, "sample_task", 8192, NULL, 5, NULL, 0);
-
-    // start writer task
-    //xTaskCreatePinnedToCore(&writer_task, "writer_task", 4092, NULL, 5, NULL, 0);
-
-
-    //xTaskCreatePinnedToCore(&wifi_task, "wifi_task", 10000, NULL, 0, NULL, 0);
-
+    auto *GlobalDoubleBuffer = new DoubleBuffer(*GlobalSDWriter);
+    auto *st = new SensorTask(1, *GlobalDoubleBuffer);
+    
     ESP_LOGI("MAIN", "Init done");
 }

@@ -6,6 +6,7 @@
 #include "freertos/event_groups.h"
 
 #include "SystemVariables.hpp"
+#include "Systemerrors.hpp"
 
 #define BIT_0	( 1 << 0 )
 #define BIT_4	( 1 << 4 )
@@ -26,6 +27,9 @@ const EventBits_t WifiReadyFlag         = (1 << 2);
 #define SD_PRIO 0
 #define SENSOR_PRIO // sensor task is prio 0
 
+/*bool remove_all_tasks() {
+
+}*/
 /// @brief The base class that contains the requirements that all tasks require to operate
 class BaseTask{
 public:
@@ -35,5 +39,7 @@ protected:
   ~BaseTask();
   unsigned int task_priority;
   virtual void main_task() = 0;
+  //virtual void remove_task() = 0;
+  //friend bool remove_all_tasks();
 };
 #endif //BASE_TASK_HPP

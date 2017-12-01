@@ -83,36 +83,42 @@ Bmp280Implementation::Bmp280Implementation() {
 	if(bmp280_init(&bmp280_com_functions) != SUCCESS) {
 		IsInitialized = false;
 		ESP_LOGI(TAG_BMP280, "BMP not discovered, error 1");
+      SystemErrorState |= BMP_ERROR;
 		return;
 	}
 
 	if(bmp280_set_oversamp_pressure(BMP280_OVERSAMP_16X) != SUCCESS) {
 		IsInitialized = false;
 		ESP_LOGI(TAG_BMP280, "BMP not discovered, error 2");
+      SystemErrorState |= BMP_ERROR;
 		return;
 	}
 
 	if(bmp280_set_oversamp_temperature(BMP280_OVERSAMP_2X) != SUCCESS) {
 		IsInitialized = false;
 		ESP_LOGI(TAG_BMP280, "BMP not discovered, error 3");
+      SystemErrorState |= BMP_ERROR;
 		return;
 	}
 
 	if(bmp280_set_standby_durn(BMP280_STANDBY_TIME_1_MS) != SUCCESS) {
 		IsInitialized = false;
 		ESP_LOGI(TAG_BMP280, "BMP not discovered, error 4");
+      SystemErrorState |= BMP_ERROR;
 		return;
 	}
 
 	if(bmp280_set_filter(BMP280_FILTER_COEFF_16) != SUCCESS) {
 		IsInitialized = false;
 		ESP_LOGI(TAG_BMP280, "BMP not discovered, error 5");
+      SystemErrorState |= BMP_ERROR;
 		return;
 	}
 
 	if(bmp280_set_power_mode(BMP280_NORMAL_MODE) != SUCCESS) {
 		IsInitialized = false;
 		ESP_LOGI(TAG_BMP280, "BMP not discovered, error 6");
+      SystemErrorState |= BMP_ERROR;
 		return;
 	}
 

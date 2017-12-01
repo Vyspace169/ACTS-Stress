@@ -1,15 +1,27 @@
 #include "SensorTask.hpp"
 
-SensorTask::SensorTask(unsigned int task_priority, DoubleBuffer &db) : BaseTask(task_priority), DBHandle{db}  {main_task();}
+SensorTask::SensorTask(unsigned int task_priority, DoubleBuffer &db) : 
+    BaseTask(task_priority), 
+    DBHandle{db}, 
+    Sensor_MPU{new Mpu9250Implementation()},
+    Sensor_BMP{new Bmp280Implementation()}  {
+        
+    main_task();
+}
 
 void sensor_handle_task(void *args)  {
 	SensorTask *sTask = static_cast<SensorTask*>(args);
-	Sensor *TestMPU = new Mpu9250Implementation();
-	Sensor *TestBMP = new Bmp280Implementation();
+
 	data SensorData;
 	EventBits_t uxBits;
 	short MPUData[sTask->DATA_SIZE_MPU];
 	int BMPData[sTask->DATA_SIZE_BMP];
+
+    // Should be changed?
+    Sensor *TestMPU = sTask->Sensor_MPU;
+    //Sensor *TestMPU = new Mpu9250Implementation();
+    //Sensor *TestBMP = new Mpu9250Implementation();
+    Sensor *TestBMP = sTask->Sensor_BMP;
 
     while(1) {
 
