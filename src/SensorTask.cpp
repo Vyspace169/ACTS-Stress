@@ -1,6 +1,6 @@
 #include "SensorTask.hpp"
 
-SensorTask::SensorTask(unsigned int task_priority, DoubleBuffer &db) : BaseTask(task_priority), DBHandle{db}  {main_task();}
+SensorTask::SensorTask(unsigned int task_priority, DoubleBuffer &db, DataProcessor &dp) : BaseTask(task_priority), DBHandle{db}, DataHandler{dp} { main_task(); }
 
 void sensor_handle_task(void *args)  {
 	SensorTask *sTask = static_cast<SensorTask*>(args);
@@ -33,6 +33,7 @@ void sensor_handle_task(void *args)  {
         	SensorData.temp = 		(float)BMPData[sTask->DATA_OFFSET_TEMPERATURE];
         	SensorData.pressure = 	(float)BMPData[sTask->DATA_OFFSET_PRESSURE];
 
+        	sTask->DataHandler.HandleData(SensorData);
         	sTask->DBHandle.storeData(SensorData);
 
         	/*ESP_LOGI("I2C TASK", "Value: \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f \t",

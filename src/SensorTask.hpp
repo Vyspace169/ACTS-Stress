@@ -13,15 +13,17 @@
 
 #include "BaseTask.hpp"
 #include "DoubleBuffer.hpp"
+#include "DataProcessor.hpp"
 #include "Mpu9250Implementation.hpp"
 #include "Bmp280Implementation.hpp"
 
 class SensorTask : BaseTask {
 public:
-    SensorTask(unsigned int task_priority, DoubleBuffer &db);
+    SensorTask(unsigned int task_priority, DoubleBuffer &db, DataProcessor &dp);
     friend void sensor_handle_task(void *args);
 private:
     DoubleBuffer &DBHandle;
+    DataProcessor &DataHandler;
     const int SENSORTASK_CORE_NUM = 1;
     const int SENSORTASK_PRIORITY = 2;
     const int SENSORTASK_STACK_SIZE = 2048;

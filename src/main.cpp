@@ -86,11 +86,15 @@ extern "C" void app_main(void)
 
     i2c_example_master_init();
 
+    SDWriter writer;
+    writer.InitSDMMC();
+
     GlobalEventGroupHandle = xEventGroupCreate();
 
     SDWriter *GlobalSDWriter = new SDWriter;
+    DataProcessor *GlobalDataHandler = new DataProcessor;
     DoubleBuffer *GlobalDoubleBuffer = new DoubleBuffer(*GlobalSDWriter);
-    SensorTask *st = new SensorTask(1, *GlobalDoubleBuffer);
+    SensorTask *st = new SensorTask(1, *GlobalDoubleBuffer, *GlobalDataHandler);
 
 
 
