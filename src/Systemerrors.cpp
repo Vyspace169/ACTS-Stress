@@ -15,8 +15,9 @@ unsigned short PeripheralErrors = 0x0000;  // Contains the errors the system per
 
 unsigned short SystemErrors = 0x0000; // Errors the software has produced
 
-const unsigned short SYSTEM_PERIPHERAL_ERROR_RANGE = (0x01) << 1
-const unsigned short CRITICAL_ERROR_RANGE = (0x01) << 2;
+const unsigned short ERROR_INIT_TYPE = 0x1000;
+const unsigned short ERROR_GENERAL_TYPE = 0x2000;
+const unsigned short ERROR_CRITICAL_TYPE = 0x4000;
 unsigned short SystemErrorState = 0x0000; // Contains the error states the system has such as critical level
 
 const unsigned short SYS_OK      = 0x0000;
