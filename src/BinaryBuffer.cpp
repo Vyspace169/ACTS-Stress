@@ -17,7 +17,6 @@ void BinaryBuffer::clear(){
 }
 
 bool BinaryBuffer::add( data in ){
-	ESP_LOGI("DB", "size: %d", buffer.size());
 	if(state){
 		buffer.push_back(in);
 		return true;

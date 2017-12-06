@@ -83,11 +83,31 @@ extern "C" void app_main(void)
 
     app_init();
 
+    SDWriter writer;
+    writer.InitSDMMC();
+
     GlobalEventGroupHandle = xEventGroupCreate();
 
     SDWriter *GlobalSDWriter = new SDWriter;
+
     auto *GlobalDoubleBuffer = new DoubleBuffer(*GlobalSDWriter);
     auto *st = new SensorTask(1, *GlobalDoubleBuffer);
     
+    //DataProcessor *GlobalDataHandler = new DataProcessor;
+    //DoubleBuffer *GlobalDoubleBuffer = new DoubleBuffer(*GlobalSDWriter);
+    SensorTask *st = new SensorTask(1, *GlobalDoubleBuffer, *GlobalDataHandler);
+
+    // Start blink task
+    xTaskCreate(&blink_task, "blink_task", configMINIMAL_STACK_SIZE, NULL, 5, NULL);
+
+    // start sample task
+    //xTaskCreatePinnedToCore(&sample_task, "sample_task", 8192, NULL, 5, NULL, 0);
+
+    // start writer task
+    //xTaskCreatePinnedToCore(&writer_task, "writer_task", 4092, NULL, 5, NULL, 0);
+
+
+    //xTaskCreatePinnedToCore(&wifi_task, "wifi_task", 10000, NULL, 0, NULL, 0);
+
     ESP_LOGI("MAIN", "Init done");
 }
