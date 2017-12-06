@@ -69,6 +69,9 @@ void BMP280_delay_msek(u32 msek)
    vTaskDelay(msek/portTICK_PERIOD_MS);
 }
 
+Bmp280Implementation::Bmp280Implementation(){
+	super();
+}
 bmp280_data Bmp280Implementation::GetBmp280Data()   {
 /*   struct bmp280_t bmp280 = {
       .bus_write = BMP280_I2C_bus_write,

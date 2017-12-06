@@ -7,6 +7,7 @@
 #include "freertos/task.h"
 #include "bmp280.h"
 #include "Sensor.hpp"
+#include <array>
 #define TAG_BMP280 "BMP280"
 
 #define SCL_PIN GPIO_NUM_26
@@ -27,9 +28,9 @@ public:
 
 class Bmp280Implementation: public Sensor{
 public:
-   Bmp280Implementation() {}
-   ~Bmp280Implementation() {}
-   unsigned short[OUTPUT_SIZE] read() override;
+   Bmp280Implementation();
+   ~Bmp280Implementation();
+   unsigned short * read() override;
 private:
 protected:
 };
