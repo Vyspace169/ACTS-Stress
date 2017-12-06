@@ -5,16 +5,15 @@ Errorhandler& Errorhandler::getInstance() {
    return errorhandler;
 }
 // Errors that occur during initialization of the system.
-void InitError(Base_Error& error)   {
+void ErrorInit(Base_Error& error)   {
    add_error(error);
-
 }
 // Errors that occur during runtime and are non critical.
 void Error(Base_Error& error)   {
    add_error(error);
 }
 // Errors that are of critical nature and cause system malfunction.
-void CriticalError(Base_Error& error)  {
+void ErrorCritical(Base_Error& error)  {
    add_error(error);
 }
 
@@ -25,7 +24,6 @@ void add_error(Base_Error& error)   {
    else  {
       errors[index++] = error;
    }
-   
 }
 
 void log(Base_Error& error)   {

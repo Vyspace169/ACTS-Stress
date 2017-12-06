@@ -24,15 +24,15 @@ class Errorhandler   {
 public:
    &Errorhandler getInstance();
    // Errors that occur during initialization of the system.
-   void InitError(Base_Error& error);
+   void ErrorInit(Base_Error& error);
    // Errors that occur during runtime and are non critical.
    void Error(Base_Error& error);
    // Errors that are of critical nature and cause system malfunction.
-   void CriticalError(Base_Error& error);
+   void ErrorCritical(Base_Error& error);
 protected:
 private:
    Errorhandler();
-   bool attempt_fix_mpu();
+   //bool attempt_fix_mpu();
    ~Errorhandler();
 
    std::array<Base_Error, 10> errors;
