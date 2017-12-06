@@ -25,22 +25,30 @@
 
 #include "BaseTask.hpp"
 #include "SensorTask.hpp"
+#include "SdWriterTask.hpp"
+#include "StandbyController.hpp"
 
 // Define led pin
-#define BLINK_GPIO  GPIO_NUM_13
+#define GPIO_LED_BLUE	GPIO_NUM_13
+#define GPIO_LED_GREEN	GPIO_NUM_14
+#define GPIO_LED_RED	GPIO_NUM_12
 
 void blink_task(void *pvParameter)
 {
-    gpio_pad_select_gpio(BLINK_GPIO);
-    // Set the GPIO as a push/pull output
-    gpio_set_direction(BLINK_GPIO, (gpio_mode_t)GPIO_MODE_OUTPUT);
     while(1) {
-        // Blink off (output low)
-        gpio_set_level(BLINK_GPIO, 0);
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
-        // Blink on (output high)
-        gpio_set_level(BLINK_GPIO, 1);
-        vTaskDelay(1000 / portTICK_PERIOD_MS);
+    	/*gpio_set_level(GPIO_LED_RED, 0);
+    	gpio_set_level(GPIO_LED_BLUE, 1);
+        vTaskDelay(800 / portTICK_PERIOD_MS);
+        gpio_set_level(GPIO_LED_GREEN, 0);
+        gpio_set_level(GPIO_LED_RED, 1);
+        vTaskDelay(800 / portTICK_PERIOD_MS);
+        gpio_set_level(GPIO_LED_BLUE, 0);
+        gpio_set_level(GPIO_LED_GREEN, 1);
+        vTaskDelay(800 / portTICK_PERIOD_MS);*/
+    	gpio_set_level(GPIO_LED_GREEN, 1);
+    	vTaskDelay(1000 / portTICK_PERIOD_MS);
+    	gpio_set_level(GPIO_LED_GREEN, 0);
+    	vTaskDelay(50 / portTICK_PERIOD_MS);
     }
 }
 
@@ -75,37 +83,59 @@ static void i2c_example_master_init()
     i2c_driver_install(I2C_NUM_0, conf.mode, 0, 0, 0);
 }
 
+static void gpio_init_leds() {
+	// Select gipo
+	gpio_pad_select_gpio(GPIO_LED_RED);
+	gpio_pad_select_gpio(GPIO_LED_GREEN);
+	gpio_pad_select_gpio(GPIO_LED_BLUE);
+	// Set the GPIO as a push/pull output
+	gpio_set_direction(GPIO_LED_RED, (gpio_mode_t)GPIO_MODE_OUTPUT);
+	gpio_set_direction(GPIO_LED_GREEN, (gpio_mode_t)GPIO_MODE_OUTPUT);
+	gpio_set_direction(GPIO_LED_BLUE, (gpio_mode_t)GPIO_MODE_OUTPUT);
+	// Set initial state
+	gpio_set_level(GPIO_LED_RED, 1);
+	gpio_set_level(GPIO_LED_GREEN, 1);
+	gpio_set_level(GPIO_LED_BLUE, 1);
+}
+
 EventGroupHandle_t GlobalEventGroupHandle;
 
 extern "C" void app_main(void)
 {
-    ESP_LOGI("MAIN", "Booting completed\n");
+    ESP_LOGI("MAIN", "Booting completed");
+
+    int WakeUpCause = esp_sleep_get_wakeup_cause();
+    if(WakeUpCause == ESP_SLEEP_WAKEUP_TIMER) {
+    	ESP_LOGI("MAIN", "Woke up from a timer reset");
+    }
+    else {
+    	ESP_LOGI("MAIN", "Woke up from reset");
+    }
 
     nvs_flash_init();
 
-    i2c_example_master_init();
+    gpio_init_leds();
 
-    SDWriter writer;
-    writer.InitSDMMC();
+    i2c_example_master_init();
 
     GlobalEventGroupHandle = xEventGroupCreate();
 
     SDWriter *GlobalSDWriter = new SDWriter;
+
     DataProcessor *GlobalDataHandler = new DataProcessor;
+    GlobalDataHandler->SetTimeoutValue(60000);
+
     DoubleBuffer *GlobalDoubleBuffer = new DoubleBuffer(*GlobalSDWriter);
+
     SensorTask *st = new SensorTask(1, *GlobalDoubleBuffer, *GlobalDataHandler);
 
+    SdWriterTask *sdw = new SdWriterTask(2, *GlobalDoubleBuffer, *GlobalSDWriter);
+
+    StandbyController *sbc = new StandbyController(3);
+
     // Start blink task
-    xTaskCreate(&blink_task, "blink_task", configMINIMAL_STACK_SIZE, NULL, 5, NULL);
+    //xTaskCreate(&blink_task, "blink_task", configMINIMAL_STACK_SIZE, NULL, 5, NULL);
 
-    // start sample task
-    //xTaskCreatePinnedToCore(&sample_task, "sample_task", 8192, NULL, 5, NULL, 0);
-
-    // start writer task
-    //xTaskCreatePinnedToCore(&writer_task, "writer_task", 4092, NULL, 5, NULL, 0);
-
-
-    //xTaskCreatePinnedToCore(&wifi_task, "wifi_task", 10000, NULL, 0, NULL, 0);
 
     ESP_LOGI("MAIN", "Init done");
 }

@@ -1,44 +1,50 @@
 #include "SdWriterTask.hpp"
 //typedef  void (SdWriterTask::*run_sd_task)(void *args);
 
-SdWriterTask::SdWriterTask(unsigned int task_priority, DoubleBuffer &db) : BaseTask(task_priority), DBHandle(db)  {main_task();}
+SdWriterTask::SdWriterTask(unsigned int task_priority, DoubleBuffer &db, SDWriter &sdw) : BaseTask(task_priority), DBHandle(db), SDWHandle(sdw)  {main_task();}
 
 void run_sd_task(void *args) {
-    //SdWriterTask& sdt = (SdWriterTask& )args;
-    SdWriterTask *sTask = static_cast<SdWriterTask*>(args);
+	SdWriterTask *sTask = static_cast<SdWriterTask*>(args);
+	sTask->SDWHandle.InitSDMMC();
+	sTask->SDWHandle.SetFileName("Test.bin");
+
     while(1)  {
         EventBits_t uxBits;
-        uxBits = xEventGroupWaitBits(GlobalEventGroupHandle, SensorBufferSdReady, pdTRUE, pdFALSE, portMAX_DELAY);
+        uxBits = xEventGroupWaitBits(GlobalEventGroupHandle, (SensorBufferSdReady | StandbyWriterTaskUnhandled), pdTRUE, pdFALSE, portMAX_DELAY);
 
         if(uxBits & SensorBufferSdReady){
-            // Todo handle writing of buffer to sd card...
-        	//DBHandle.writeToSd();
-          sTask->DBHandle.writeToSd();
-
+        	sTask->SDWHandle.Open();
+        	sTask->DBHandle.writeToSd();
+        	sTask->SDWHandle.Close();
         }
-        else {
-            // Should not occur (only SensorBufferSdReady bit has been set)
+
+        if(uxBits & StandbyWriterTaskUnhandled) {
+			xEventGroupClearBits(GlobalEventGroupHandle, StandbyWriterTaskUnhandled);
+			while(1) {
+				vTaskDelay(1000 / portTICK_PERIOD_MS);
+			}
         }
     }
 }
 
 void SdWriterTask::main_task() {
   TaskHandle_t xHandle = NULL;
-  //void* args[1];
-  //args[0] = (void *)&this;
   void* thisTask = static_cast<void*>(this);
-  BaseType_t xReturned = xTaskCreatePinnedToCore(run_sd_task, "run_sd_task", 2048, NULL, 1, &xHandle, 0);
+  BaseType_t xReturned = xTaskCreatePinnedToCore(run_sd_task, "run_sd_task", 4096, thisTask, 1, &xHandle, 0);
 
-  if(xHandle != NULL) {
-    // xHandle works
+  if(xHandle == NULL) {
+   	// Handle assignment has failed
+   	ESP_LOGI("WRITER TASK", "Handle creation failed");
   } else {
-    // Handle assignment has failed
+   	ESP_LOGI("WRITER TASK", "Handle creation OK");
   }
 
-  if(xReturned == pdPASS) {
-    // Task creation succesful
+  if(xReturned != pdPASS) {
+  	// xReturned false (something went wrong!)
+   	ESP_LOGI("WRITER TASK", "Task creation failed");
+  } else {
+   	ESP_LOGI("WRITER TASK", "Task creation OK");
   }
-  else  {
-    // xReturned false (something went wrong!)
-  }
+
+  ESP_LOGI("WRITER TASK", "Task is running");
 }

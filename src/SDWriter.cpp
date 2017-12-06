@@ -49,8 +49,20 @@ SDWriterErrorCodes SDWriter::InitSDMMC() {
 	return SD_WRITER_OK;
 }
 
-void SDWriter::SetFileName(time_t TimeReceivedFromWifi) {
-	strcpy(FileNameCharArray,"/sdcard/mother.bin");
+void SDWriter::SetFileName(char* name) {
+	if(name == NULL) {
+		return;
+	}
+
+	if(*name == '/') {
+		strcpy(FileNameCharArray, "/sdcard");
+		strcpy(&FileNameCharArray[7], name);
+	}
+	else {
+		strcpy(FileNameCharArray, "/sdcard/");
+		strcpy(&FileNameCharArray[8], name);
+	}
+
 	FileNameIsSet = true;
 }
 
@@ -71,7 +83,7 @@ SDWriterErrorCodes SDWriter::Open() {
 	ESP_LOGI("SD WRITER", "Opening file");
 
 	// Write data
-	FileForData = fopen(FileNameCharArray, "w");
+	FileForData = fopen(FileNameCharArray, "a");
 
 	// check if file open succeeded
 	if (FileForData == NULL) {
@@ -84,7 +96,7 @@ SDWriterErrorCodes SDWriter::Open() {
 	return SD_WRITER_OK;
 }
 
-SDWriterErrorCodes SDWriter::Write(data in) {
+SDWriterErrorCodes SDWriter::Write(SampleData in) {
 	if(CardIsInitialized == false) {
 		return CARD_NOT_INITIALIZED;
 	}
@@ -96,19 +108,60 @@ SDWriterErrorCodes SDWriter::Write(data in) {
 	CardIsWriting = true;
 
 	// write the data to the file
-	int BytesWritten = fwrite(&in, sizeof(data), 1, FileForData);
-	fseek(FileForData, BytesWritten, SEEK_CUR);
+	unsigned char *array = new unsigned char[32];
+	int ArrayPointer = 0;
+	memcpy(&array[ArrayPointer], &in.microTime, sizeof(long long));
+	ArrayPointer += sizeof(long long);
+	memcpy(&array[ArrayPointer], &in.accelX, sizeof(short));
+	ArrayPointer += sizeof(short);
+	memcpy(&array[ArrayPointer], &in.accelY, sizeof(short));
+	ArrayPointer += sizeof(short);
+	memcpy(&array[ArrayPointer], &in.accelZ, sizeof(short));
+	ArrayPointer += sizeof(short);
+	memcpy(&array[ArrayPointer], &in.gyroX, sizeof(short));
+	ArrayPointer += sizeof(short);
+	memcpy(&array[ArrayPointer], &in.gyroY, sizeof(short));
+	ArrayPointer += sizeof(short);
+	memcpy(&array[ArrayPointer], &in.gyroZ, sizeof(short));
+	ArrayPointer += sizeof(short);
+	memcpy(&array[ArrayPointer], &in.magnetoX, sizeof(short));
+	ArrayPointer += sizeof(short);
+	memcpy(&array[ArrayPointer], &in.magnetoY, sizeof(short));
+	ArrayPointer += sizeof(short);
+	memcpy(&array[ArrayPointer], &in.magnetoZ, sizeof(short));
+	ArrayPointer += sizeof(short);
+	memcpy(&array[ArrayPointer], &in.temp, sizeof(short));
+	ArrayPointer += sizeof(int);
+	memcpy(&array[ArrayPointer], &in.pressure, sizeof(short));
+
+	int BytesWritten = fwrite(array, 32, 1, FileForData);
+
+	//int BytesWritten = fprintf(FileForData, "%llu,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,\r\n",in.microTime,in.accelX,in.accelY,in.accelZ,in.gyroX,in.gyroY,in.gyroZ,in.magnetoX,in.magnetoY,in.magnetoZ,in.temp,in.pressure);
+
+	/*int BytesWritten = 0;
+	BytesWritten += fwrite(&in.microTime, sizeof(long long), 1, FileForData);
+	BytesWritten += fwrite(&in.accelX, sizeof(short), 1, FileForData);
+	BytesWritten += fwrite(&in.accelY, sizeof(short), 1, FileForData);
+	BytesWritten += fwrite(&in.accelZ, sizeof(short), 1, FileForData);
+	BytesWritten += fwrite(&in.gyroX, sizeof(short), 1, FileForData);
+	BytesWritten += fwrite(&in.gyroY, sizeof(short), 1, FileForData);
+	BytesWritten += fwrite(&in.gyroZ, sizeof(short), 1, FileForData);
+	BytesWritten += fwrite(&in.magnetoX, sizeof(short), 1, FileForData);
+	BytesWritten += fwrite(&in.magnetoY, sizeof(short), 1, FileForData);
+	BytesWritten += fwrite(&in.magnetoZ, sizeof(short), 1, FileForData);
+	BytesWritten += fwrite(&in.temp, sizeof(int), 1, FileForData);
+	BytesWritten += fwrite(&in.pressure, sizeof(int), 1, FileForData);*/
 
 	CardIsWriting = false;
 
-	if(BytesWritten != sizeof(data)) {
+	if(BytesWritten != 32) {
 		return WRITE_ERROR;
 	}
 
 	return SD_WRITER_OK;
 }
 
-SDWriterErrorCodes SDWriter::Write(void *data, int length) {
+SDWriterErrorCodes SDWriter::Write(char *data) {
 	if(CardIsInitialized == false) {
 		return CARD_NOT_INITIALIZED;
 	}
@@ -119,8 +172,10 @@ SDWriterErrorCodes SDWriter::Write(void *data, int length) {
 
 	CardIsWriting = true;
 
+	ESP_LOGI("SD WRITER", "Writing data");
+
 	// write the data to the file
-	int BytesWritten = fwrite(data, length, 1, FileForData);
+	int BytesWritten = fprintf(FileForData, data);
 
 	CardIsWriting = false;
 

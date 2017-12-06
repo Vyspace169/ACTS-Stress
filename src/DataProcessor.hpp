@@ -17,15 +17,23 @@
 class  DataProcessor{
 public:
     DataProcessor();
+    void SetTimeoutValue(int NewTriggerms);
     void SetTrigger(float triggerx, float triggery, float triggerz);
     void ResetActivityData();
-    void HandleData(data NewData);
+    void HandleData(SampleData NewData);
     double GetActivityData();
     ~DataProcessor();
 private:
-    data OldData;
+    SampleData OldData;
     double ActivityData;
     float TriggerValueX;
     float TriggerValueY;
     float TriggerValueZ;
+    int TimeoutCounter;
+    int TimeoutTrigger;
+    const int SampleTimems = 10;
+    const int TimeoutInitValue = 60000;
+    const int TriggerValueXInit = 500;
+    const int TriggerValueYInit = 500;
+    const int TriggerValueZInit = 15000;
 };

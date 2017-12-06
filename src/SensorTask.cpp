@@ -6,32 +6,32 @@ void sensor_handle_task(void *args)  {
 	SensorTask *sTask = static_cast<SensorTask*>(args);
 	Sensor *TestMPU = new Mpu9250Implementation();
 	Sensor *TestBMP = new Bmp280Implementation();
-	data SensorData;
+	SampleData SensorData;
 	EventBits_t uxBits;
-	short MPUData[sTask->DATA_SIZE_MPU];
-	int BMPData[sTask->DATA_SIZE_BMP];
+	short MPUData[TestMPU->DataSize() / sizeof(short)];
+	int BMPData[TestBMP->DataSize() / sizeof(int)];
 
     while(1) {
-
     	// wait for flag to be set
-        uxBits = xEventGroupWaitBits(GlobalEventGroupHandle, SensorMeasurementFlag, pdTRUE, pdFALSE, portMAX_DELAY);
+        uxBits = xEventGroupWaitBits(GlobalEventGroupHandle, (SensorMeasurementFlag | StandbySensorTaskUnhandled), pdTRUE, pdFALSE, portMAX_DELAY);
 
         if(uxBits & SensorMeasurementFlag)  {
             //SensorMeasurementFlag has been set
         	memcpy(MPUData, TestMPU->SensorRead(), TestMPU->DataSize());
         	memcpy(BMPData, TestBMP->SensorRead(), TestBMP->DataSize());
 
-        	SensorData.accelX = 	(float)MPUData[sTask->DATA_OFFSET_ACCELERO_X];
-        	SensorData.accelY = 	(float)MPUData[sTask->DATA_OFFSET_ACCELERO_Y];
-        	SensorData.accelZ = 	(float)MPUData[sTask->DATA_OFFSET_ACCELERO_Z];
-        	SensorData.gyroX = 		(float)MPUData[sTask->DATA_OFFSET_GYRO_X];
-        	SensorData.gyroY = 		(float)MPUData[sTask->DATA_OFFSET_GYRO_Y];
-        	SensorData.gyroZ = 		(float)MPUData[sTask->DATA_OFFSET_GYRO_Z];
-        	SensorData.magnetoX = 	(float)MPUData[sTask->DATA_OFFSET_MAGNETO_X];
-        	SensorData.magnetoY = 	(float)MPUData[sTask->DATA_OFFSET_MAGNETO_Y];
-        	SensorData.magnetoZ = 	(float)MPUData[sTask->DATA_OFFSET_MAGNETO_Z];
-        	SensorData.temp = 		(float)BMPData[sTask->DATA_OFFSET_TEMPERATURE];
-        	SensorData.pressure = 	(float)BMPData[sTask->DATA_OFFSET_PRESSURE];
+        	SensorData.accelX = 	MPUData[sTask->DATA_OFFSET_ACCELERO_X];
+        	SensorData.accelY = 	MPUData[sTask->DATA_OFFSET_ACCELERO_Y];
+        	SensorData.accelZ = 	MPUData[sTask->DATA_OFFSET_ACCELERO_Z];
+        	SensorData.gyroX = 		MPUData[sTask->DATA_OFFSET_GYRO_X];
+        	SensorData.gyroY = 		MPUData[sTask->DATA_OFFSET_GYRO_Y];
+        	SensorData.gyroZ = 		MPUData[sTask->DATA_OFFSET_GYRO_Z];
+        	SensorData.magnetoX = 	MPUData[sTask->DATA_OFFSET_MAGNETO_X];
+        	SensorData.magnetoY = 	MPUData[sTask->DATA_OFFSET_MAGNETO_Y];
+        	SensorData.magnetoZ = 	MPUData[sTask->DATA_OFFSET_MAGNETO_Z];
+        	SensorData.temp = 		BMPData[sTask->DATA_OFFSET_TEMPERATURE];
+        	SensorData.pressure = 	BMPData[sTask->DATA_OFFSET_PRESSURE];
+        	SensorData.microTime =  xTaskGetTickCount();
 
         	sTask->DataHandler.HandleData(SensorData);
         	sTask->DBHandle.storeData(SensorData);
@@ -48,6 +48,13 @@ void sensor_handle_task(void *args)  {
         			SensorData.magnetoZ/100,
         			SensorData.temp,
         			SensorData.pressure);*/
+        }
+
+        if(uxBits & StandbySensorTaskUnhandled) {
+        	xEventGroupClearBits(GlobalEventGroupHandle, StandbySensorTaskUnhandled);
+        	while(1) {
+        		vTaskDelay(1000 / portTICK_PERIOD_MS);
+        	}
         }
     }
 }

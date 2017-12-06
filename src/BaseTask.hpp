@@ -7,19 +7,25 @@
 
 #include "SystemVariables.hpp"
 
-#define BIT_0	( 1 << 0 )
-#define BIT_4	( 1 << 4 )
-
 // -------Flags for Tasks----------------------------
 // Flag for SensorTask to act upon
-const EventBits_t SensorMeasurementFlag = ( 1 << 0 );
-
-// Flag for SdWriterTask to act upon
-const EventBits_t SensorBufferSdReady   = ( 1 << 4 );
+const EventBits_t SensorMeasurementFlag  = ( 1 << 0 );
 
 // Flags for WifiTask to act upon
-const EventBits_t WifiActivateFlag      = (1 << 1);
-const EventBits_t WifiReadyFlag         = (1 << 2);
+const EventBits_t WifiActivateFlag       = ( 1 << 1 );
+const EventBits_t WifiReadyFlag          = ( 1 << 2 );
+
+// Flag for SdWriterTask to act upon
+const EventBits_t SensorBufferSdReady    = ( 1 << 4 );
+
+// Flag to signal movement timeout count has been reached
+const EventBits_t MovementTimeoutReached = ( 1 << 5 );
+
+// Flags from tasks stating they are ready to sleep
+const EventBits_t StandbySensorTaskUnhandled = ( 1 << 6 );
+const EventBits_t StandbyWifiTaskUnhandled   = ( 1 << 7 );
+const EventBits_t StandbyWriterTaskUnhandled = ( 1 << 8 );
+
 //-------------------------------------------------
 
 #define WIFI_PRIO 1 // priority is lower than sd writer because sd writer could possibly otherwise not write correctly

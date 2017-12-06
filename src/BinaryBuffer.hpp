@@ -11,18 +11,18 @@
 
 typedef struct {
 	long long microTime;
-	float accelX;
-	float accelY;
-	float accelZ;
-	float gyroX;
-	float gyroY;
-	float gyroZ;
-	float magnetoX;
-	float magnetoY;
-	float magnetoZ;
-	float temp;
-	float pressure;
-} data;
+	short accelX;
+	short accelY;
+	short accelZ;
+	short gyroX;
+	short gyroY;
+	short gyroZ;
+	short magnetoX;
+	short magnetoY;
+	short magnetoZ;
+	int temp;
+	int pressure;
+} SampleData;
 
 class BinaryBuffer{
 public:
@@ -30,13 +30,13 @@ public:
 	void readOnly();
 	void writeOnly();
 	void clear();
-	bool add( data in );
-	const std::vector<data>& get(); // should perhaps be a pointer, copy could be too slow on large scale operations?
+	bool add( SampleData in );
+	const std::vector<SampleData>& get(); // should perhaps be a pointer, copy could be too slow on large scale operations?
 	bool isFull();
 	~BinaryBuffer();
 private:
 	bool readState();
 	bool state;
-	std::vector<data> buffer;
+	std::vector<SampleData> buffer;
 	const int BufferSize = 1000;
 };

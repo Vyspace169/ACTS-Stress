@@ -13,7 +13,7 @@
 class DoubleBuffer{
 public:
 	DoubleBuffer(SDWriter&);
-	void storeData( data in );
+	void storeData(SampleData in );
 	void swap();
 	void emptyBuffer();
 	void writeToSd();

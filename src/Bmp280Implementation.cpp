@@ -71,7 +71,6 @@ void BMP280_delay_msek(u32 msek)
 }
 
 Bmp280Implementation::Bmp280Implementation() {
-	int com_result;
 	memset(BMPData, 0, sizeof(int) * 2);
 	memset(BackupBMPData, 0, sizeof(int) * 2);
 

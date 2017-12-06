@@ -8,6 +8,8 @@
 #pragma once
 
 #include <string.h>
+#include <stdio.h>
+
 #include "esp_vfs_fat.h"
 #include "driver/sdmmc_host.h"
 #include "driver/sdspi_host.h"
@@ -46,10 +48,10 @@ public:
 	SDWriterErrorCodes InitSDMMC();
 
 
-	void SetFileName(time_t TimeReceivedFromWifi);
+	void SetFileName(char* name);
 	SDWriterErrorCodes Open();
-	SDWriterErrorCodes Write(data in);
-	SDWriterErrorCodes Write(void *data, int length);
+	SDWriterErrorCodes Write(SampleData in);
+	SDWriterErrorCodes Write(char *data);
 	SDWriterErrorCodes Close();
 	bool WriteStatus();
 	~SDWriter();
