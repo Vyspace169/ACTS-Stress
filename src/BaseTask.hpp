@@ -18,9 +18,13 @@ const EventBits_t SensorMeasurementFlag = ( 1 << 0 );
 // Flag for SdWriterTask to act upon
 const EventBits_t SensorBufferSdReady   = ( 1 << 4 );
 
+
 // Flags for WifiTask to act upon
 const EventBits_t WifiActivateFlag      = (1 << 1);
 const EventBits_t WifiReadyFlag         = (1 << 2);
+
+// System error flag
+const EventBits_t SystemErrorFlag      = (1 << 6);
 //-------------------------------------------------
 
 #define WIFI_PRIO 1 // priority is lower than sd writer because sd writer could possibly otherwise not write correctly

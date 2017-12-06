@@ -11,10 +11,9 @@ void run_sd_task(void *args) {
         uxBits = xEventGroupWaitBits(GlobalEventGroupHandle, SensorBufferSdReady, pdTRUE, pdFALSE, portMAX_DELAY);
 
         if(uxBits & SensorBufferSdReady){
-            // Todo handle writing of buffer to sd card...
+          // Todo handle writing of buffer to sd card...
         	//DBHandle.writeToSd();
           sTask->DBHandle.writeToSd();
-
         }
         else {
             // Should not occur (only SensorBufferSdReady bit has been set)
@@ -27,7 +26,7 @@ void SdWriterTask::main_task() {
   //void* args[1];
   //args[0] = (void *)&this;
   void* thisTask = static_cast<void*>(this);
-  BaseType_t xReturned = xTaskCreatePinnedToCore(run_sd_task, "run_sd_task", 2048, NULL, 1, &xHandle, 0);
+  BaseType_t xReturned = xTaskCreatePinnedToCore(run_sd_task, "run_sd_task", 2048, thisTask, 1, &xHandle, 0);
 
   if(xHandle != NULL) {
     // xHandle works

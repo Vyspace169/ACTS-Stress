@@ -7,6 +7,7 @@
 #include "bmp280.h"
 #include "Sensor.hpp"
 #include "Systemerrors.hpp"
+#include "Errorhandler.hpp"
 #define TAG_BMP280 "BMP280"
 
 #define SCL_PIN GPIO_NUM_26
@@ -14,18 +15,29 @@
 
 #define I2C_MASTER_ACK 0
 #define I2C_MASTER_NACK 1
-
-class Bmp280Implementation: public Sensor{
+enum class BMP280ErrTypes{
+   NO_ERROR,
+   INIT_ERROR_1,
+   INIT_ERROR_2,
+   INIT_ERROR_3,
+   INIT_ERROR_4,
+   INIT_ERROR_5,
+   INIT_ERROR_6,
+};
+class Bmp280Implementation: public Sensor, public BaseError{
 public:
-   Bmp280Implementation();
+   Bmp280Implementation(unsigned int errorCode);
    int DataSize() override;
    unsigned short* SensorRead() override;
+   void HandleError() override;
+   std::string Msg() override;
    ~Bmp280Implementation() {}
 private:
    struct bmp280_t bmp280_com_functions;
    unsigned short BMPData[4];
    unsigned short BackupBMPData[4];
    bool IsInitialized;
+   BMP280ErrTypes error_type = BMP280ErrTypes::NO_ERROR;
 protected:
 };
 

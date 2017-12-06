@@ -102,7 +102,6 @@ void SensorTask::main_task() {
 													&xHandle,
 													SENSORTASK_CORE_NUM);
 
-
     if(xHandle == NULL) {
     	// Handle assignment has failed
     	ESP_LOGI("SENSOR TASK", "Handle creation failed");
