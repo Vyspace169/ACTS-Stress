@@ -24,7 +24,9 @@ const EventBits_t WifiActivateFlag      = (1 << 1);
 const EventBits_t WifiReadyFlag         = (1 << 2);
 
 // System error flag
-const EventBits_t SystemErrorFlag      = (1 << 6);
+const EventBits_t SystemErrorFlag      = (1 << 9);
+const EventBits_t SystemErrorBit       = (1 << 10);
+
 //-------------------------------------------------
 
 #define WIFI_PRIO 1 // priority is lower than sd writer because sd writer could possibly otherwise not write correctly

@@ -7,8 +7,6 @@ const unsigned short ERROR_NVS_FLASH_INIT = 0x0001;  // Error codes 0x01 (nvs_fl
 
 const unsigned short ERROR_NVS_FLASH_INIT = 0x0001;  // Error codes 0x01 (nvs_flash_init failed)
 
-
-
 const unsigned short MPU_ERROR   =  (0x0001) << 1; // 0x0001 MPU9250 ERROR
 const unsigned short AK_ERROR    =  (0x0001) << 2; // 0x0002 AK_ERROR
 

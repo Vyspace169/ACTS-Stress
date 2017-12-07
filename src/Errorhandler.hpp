@@ -11,10 +11,22 @@
 #include "esp_err.h"
 #include "esp_log.h"
 #include "BaseTask.hpp"
+#include "esp_spi_flash.h"
+
+#define ERROR_REPORT_LVL 0
+#define ERROR_LVL 4
 enum class ERROR_TYPE{
    ERROR_INIT,
    ERROR_GENERIC,
    ERROR_CRITICAL,
+};
+class GenError{
+public:
+
+protected:
+
+private:
+
 };
 class BaseError{
 public:
@@ -35,9 +47,32 @@ protected:
 private:
    
 };
+enum class ErrorLevel{
+   Warning        = 0,
+   Generic        = 1,
+   Init           = 2,
+   Non_Continues  = 3,
+   Critical       = 4,
+};
+
+enum class ErrorCode{
+
+};
+class Error{
+public:
+   Error(ErrorCode errCode, ErrorLevel errLvl, std::string errMsg) : errCode{errCode}, errLvl{errLvl}, errMsg{errMsg}  {}
+   ~Error() {}
+   ErrorCode errCode;
+   ErrorLevel errLvl;
+   std::string errMsg;
+protected:
+private:
+
+};
 class Errorhandler : public BaseTask  {
 public:
    static Errorhandler& getInstance();
+   void ReportError(Error err);
    // Errors that occur during initialization of the system.
    void ErrorInit(BaseError* error);
    // Errors that occur during runtime and are non critical.
@@ -49,9 +84,11 @@ public:
 
    Errorhandler(Errorhandler const&)    = delete;
    void operator=(Errorhandler const&)  = delete;
+   //void AddTaskHandle(TaskHandle_t* th);
 protected:
    void main_task() override;
 private:
+   void push_error(BaseError* error);
    Errorhandler(unsigned int task_priority = 0) : BaseTask{task_priority} {}
    //bool attempt_fix_mpu();
    ~Errorhandler() {}
@@ -59,7 +96,9 @@ private:
    std::vector<BaseError*> InitErrors;
    std::vector<BaseError*> GenericErrors;
    std::vector<BaseError*> CriticalErrors;
-   std::vector<BaseError*> errors;
+   //std::vector<BaseError*> errors;
+
+   //std::vector<TaskHandle_t*> taskHandles; 
 
    int index = 0;
    //void add_error(Base_Error& error);

@@ -8,34 +8,45 @@ Errorhandler& Errorhandler::getInstance() {
    static Errorhandler eh(0);
    return eh;
 }
-
+void Errorhandler::push_error(BaseError* error)   {
+   errors.push_back(error);
+   xEventGroupSetBits(GlobalEventGroupHandle, SystemErrorFlag);
+}
+void Errorhandler::ReportError(Error err)   {
+   //Todo determine error lvl and compare with report lvl and Error_lvl to stop system
+   //Todo if Error_lvl to stop system, stop task management system, write to flash or sd, show status lights?
+   if(err.errLvl == ErrorLevel)  {
+      
+   }
+}
 void Errorhandler::AddError(BaseError* error)   {
    ERROR_TYPE err_type = error->err_type;
    switch(err_type)   {
       case ERROR_TYPE::ERROR_INIT:
       #ifdef ERROR_INIT_REPORT_ONLY 
-         //ESP_LOGD(DEV_TAG, error->Msg());
+         ESP_LOGD(DEV_TAG, error->Msg());
          return;
          #else
-         
          ESP_LOGE(ERROR, error->Msg().c_str());
-
+         push_error(error);
          #endif
       break;
       case ERROR_TYPE::ERROR_GENERIC:
       #ifdef ERROR_GENERIC_REPORT_ONLY 
-         //ESP_LOGD(DEV_TAG, error->Msg());
+         ESP_LOGD(DEV_TAG, error->Msg());
          return;
          #else
-         //ESP_LOGE(ERROR, error->Msg());
+         ESP_LOGE(ERROR, error->Msg());
+         push_error(error);
          #endif
       break;
       case ERROR_TYPE::ERROR_CRITICAL:
          #ifdef ERROR_CRITICAL_REPORT_ONLY 
-         //ESP_LOGE(DEV_TAG, error->Msg());
+         ESP_LOGE(DEV_TAG, error->Msg());
          return;
          #else
-         //ESP_LOGE(ERROR, error->Msg());
+         ESP_LOGE(ERROR, error->Msg());
+         push_error(error);
          #endif
       break;
    }
@@ -80,20 +91,39 @@ void ErrorhandlerTask(void *args)  {
    Errorhandler *eTask = static_cast<Errorhandler*>(args);
    eTask->main_task();
 }
-void Errorhandler::main_task()   {
-      EventBits_t uxBits;
-      while(1) {
-         // wait for flag to be set
-         uxBits = xEventGroupWaitBits(GlobalEventGroupHandle, SystemErrorFlag, pdTRUE, pdFALSE, portMAX_DELAY);
-         for(auto& err : errors) {
-            err->HandleError();
-            if(err->err_type == ERROR_TYPE::ERROR_CRITICAL) {
-               // Shutdown system
-            }
-            
-         }
+/*void Errorhandler::AddTaskHandle(TaskHandle_t* th)   {
+   for(auto& handle : taskHandles)  {
+      if(handle == th)  {
+         ESP_LOGV(ERROR, "Errorhandler already contains the taskhandle");
+         return; // Task already added
       }
+   }
+   taskHandles.push_back(th);
+}*/
 
+void Errorhandler::main_task()   {
+   EventBits_t uxBits;
+   const TickType_t xDelay = 1000 / portTICK_PERIOD_MS;
+   while(1) {
+      // wait for flag to be set
+      uxBits = xEventGroupWaitBits(GlobalEventGroupHandle, SystemErrorFlag, pdTRUE, pdFALSE, portMAX_DELAY);
+      for(auto& err : errors) {
+         err->HandleError();
+         if(err->err_type == ERROR_TYPE::ERROR_CRITICAL) {
+            // Shutdown system
+            // Remove all tasks (set shutdown bits first)
+            // Set shutdown bit?
+            xEventGroupSetBits(GlobalEventGroupHandle, SystemErrorBit);
+            // Get bits back
+            // Write to flash
+            vTaskDelay(xDelay);
+            // Shutdown tasks if still running
+            ESP_LOGE(ERROR, "Error handling complete!");
+            // Remove this task
+            vTaskDelete( xHandle );
+         }     
+      }
+   }
 }
 /*void Errorhandler::AddError(BaseError* error)   {
 
