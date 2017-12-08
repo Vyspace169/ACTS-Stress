@@ -24,13 +24,13 @@ enum class BMP280ErrTypes{
    INIT_ERROR_5,
    INIT_ERROR_6,
 };
-class Bmp280Implementation: public Sensor, public BaseError{
+class Bmp280Implementation: public Sensor{
 public:
-   Bmp280Implementation(unsigned int errorCode);
+   Bmp280Implementation();
    int DataSize() override;
    unsigned short* SensorRead() override;
-   void HandleError() override;
-   std::string Msg() override;
+   //void HandleError() override;
+   //std::string Msg() override;
    ~Bmp280Implementation() {}
 private:
    struct bmp280_t bmp280_com_functions;

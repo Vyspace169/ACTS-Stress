@@ -11,68 +11,54 @@
 #include "esp_err.h"
 #include "esp_log.h"
 #include "BaseTask.hpp"
+
+#include "nvs_flash.h"
 #include "esp_spi_flash.h"
+#include "nvs.h"
 
 #define ERROR_REPORT_LVL 0
 #define ERROR_LVL 4
-enum class ERROR_TYPE{
+enum class ERROR_TYPE : unsigned int {
    ERROR_INIT,
    ERROR_GENERIC,
    ERROR_CRITICAL,
 };
-class GenError{
-public:
-
-protected:
-
-private:
-
-};
-class BaseError{
-public:
-   BaseError(unsigned int errorCode) : errorCode{errorCode}{};
-   ~BaseError(){};
-   //friend class Errorhandler;
-   virtual void HandleError() = 0;
-   virtual std::string Msg() = 0;
-   //std::string log();
-   //void log();
-   
-   unsigned int GetError()   {
-      return errorCode;
-   }
-   ERROR_TYPE err_type = ERROR_TYPE::ERROR_GENERIC;
-protected:
-   unsigned int errorCode = 0;
-private:
-   
-};
-enum class ErrorLevel{
+enum class ErrorLevel : unsigned int {
    Warning        = 0,
    Generic        = 1,
    Init           = 2,
    Non_Continues  = 3,
    Critical       = 4,
 };
-
-enum class ErrorCode{
-
+enum class ErrorCode : unsigned int {
+   NO_ERROR = 0x00,
 };
-class Error{
+/*class GenError{
 public:
-   Error(ErrorCode errCode, ErrorLevel errLvl, std::string errMsg) : errCode{errCode}, errLvl{errLvl}, errMsg{errMsg}  {}
-   ~Error() {}
+
+protected:
+
+private:
+
+};*/
+class BaseError{
+public:
+   BaseError() {}
+   BaseError(ErrorCode errCode, ErrorLevel errLvl, std::string errMsg) : errCode{errCode}, errLvl{errLvl}, errMsg{errMsg}  {}
+   ~BaseError() {}
    ErrorCode errCode;
    ErrorLevel errLvl;
    std::string errMsg;
+   void LogMsg(const char* tag) {}
 protected:
 private:
-
+   
 };
+
 class Errorhandler : public BaseTask  {
 public:
    static Errorhandler& getInstance();
-   void ReportError(Error err);
+   void ReportError(BaseError err);
    // Errors that occur during initialization of the system.
    void ErrorInit(BaseError* error);
    // Errors that occur during runtime and are non critical.
@@ -84,25 +70,28 @@ public:
 
    Errorhandler(Errorhandler const&)    = delete;
    void operator=(Errorhandler const&)  = delete;
+   bool SystemFailed = false;
    //void AddTaskHandle(TaskHandle_t* th);
 protected:
    void main_task() override;
 private:
-   void push_error(BaseError* error);
+   void push_error(BaseError err);
    Errorhandler(unsigned int task_priority = 0) : BaseTask{task_priority} {}
    //bool attempt_fix_mpu();
    ~Errorhandler() {}
    //std::array<BaseError*, 10> InitErrors;
-   std::vector<BaseError*> InitErrors;
+/*   std::vector<BaseError*> InitErrors;
    std::vector<BaseError*> GenericErrors;
-   std::vector<BaseError*> CriticalErrors;
-   //std::vector<BaseError*> errors;
-
+   std::vector<BaseError*> CriticalErrors;*/
+   //std::vector<BaseError> errors;
+   BaseError error;
+   ErrorLevel sysErrReportLvl;
+   ErrorLevel sysErrLvl;
    //std::vector<TaskHandle_t*> taskHandles; 
 
    int index = 0;
    //void add_error(Base_Error& error);
-   void log(BaseError& error);
+   //void log(BaseError& error);
 
    //Errorhandler(Errorhandler const&);   // Don't Implement
    //void operator=(Errorhandler const&); // Don't implement

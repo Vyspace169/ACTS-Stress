@@ -70,7 +70,7 @@ void BMP280_delay_msek(u32 msek)
    vTaskDelay(msek/portTICK_PERIOD_MS);
 }
 
-void Bmp280Implementation::HandleError()  {
+/*void Bmp280Implementation::HandleError()  {
    switch(error_type)   {
       case BMP280ErrTypes::INIT_ERROR_1:
          //error_type
@@ -78,8 +78,8 @@ void Bmp280Implementation::HandleError()  {
       default:
          break;
    }
-}
-std::string Bmp280Implementation::Msg() {
+}*/
+/*std::string Bmp280Implementation::Msg() {
    std::string str;
 
    switch(error_type)   {
@@ -106,9 +106,9 @@ std::string Bmp280Implementation::Msg() {
          break;
    }
    return str;
-}
+}*/
 
-Bmp280Implementation::Bmp280Implementation(unsigned int errorCode) : BaseError{errorCode} {
+Bmp280Implementation::Bmp280Implementation() {
 	int com_result;
 	memset(BMPData, 0, sizeof(int) * 2);
 	memset(BackupBMPData, 0, sizeof(int) * 2);
@@ -173,7 +173,7 @@ Bmp280Implementation::Bmp280Implementation(unsigned int errorCode) : BaseError{e
 		//return;
 	}
    if(!IsInitialized)   {
-      Errorhandler::getInstance().ErrorInit(this);
+      //Errorhandler::getInstance().ErrorInit(this);
       //Errorhandler::getInstance();
    }
    else  {
