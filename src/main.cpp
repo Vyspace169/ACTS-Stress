@@ -141,12 +141,60 @@ void test_nvs_flash() {
     fflush(stdout);
     esp_restart();
 }
+void error_flash_init() {
+    esp_err_t err = nvs_flash_init();
+    if (err == ESP_ERR_NVS_NO_FREE_PAGES) {
+        // NVS partition was truncated and needs to be erased
+        // Retry nvs_flash_init
+        ESP_ERROR_CHECK(nvs_flash_erase());
+        err = nvs_flash_init();
+    }
+    nvs_handle my_handle;
+    err = nvs_open("storage", NVS_READWRITE, &my_handle);
+    int32_t error_value = (int32_t) ErrorCode::NO_ERROR; // value will default to 0, if not set yet in NVS
+    err = nvs_get_i32(my_handle, "error_value", &error_value);
+    bool failed = false;
+    switch (err) {
+        case ESP_OK:
+            printf("Done\n");
+            printf("Restart counter = %d\n", error_value);
+            break;
+        case ESP_ERR_NVS_NOT_FOUND:
+/*        nvs_close(my_handle);
+            printf("The value is not initialized yet!\n");
+            err = nvs_open("storage", NVS_READWRITE, &my_handle);
+            if (err != ESP_OK) {
+                printf("Error (%d) opening NVS handle!\n", err);
+            } else {*/
+                failed = true;
 
+            break;
+        default :
+            printf("Error (%d) reading!\n", err);
+    }
+    if(failed)  {
+        //int32_t error_code = (int32_t) error::errCode; // value will default to 0, if not set yet in NVS
+        err = nvs_set_i32(my_handle, "error_value", (int32_t) ErrorCode::NO_ERROR);
+        err = nvs_commit(my_handle);
+        nvs_close(my_handle);
+    }
+    else    {
+        nvs_close(my_handle);
+    }
+    if(error_value != (int32_t) ErrorCode::NO_ERROR) {
+        ESP_LOGI("INIT", "Last ran ended with error code: %i\n", error_value);
+    }
+    else    {
+        ESP_LOGI("INIT", "NO EXCEPTION FOUND IN LAST RUN");
+    }
+    
+}
 extern "C" void app_main(void)
 {
     ESP_LOGI("MAIN", "Booting completed\n");
 
     app_init();
+    error_flash_init();
     test_nvs_flash();
     SDWriter writer;
     writer.InitSDMMC();
