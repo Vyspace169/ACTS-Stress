@@ -35,6 +35,8 @@ WifiModule::WifiModule() {
 	IPAddress = 0;
 	Gateway = 0;
 	Netmask = 0;
+	SocketHandle = -1;
+	memset(&tcpServerAddr, 0, sizeof(sockaddr_in));
 }
 
 bool WifiModule::ClientSetStaticIP(char *ip, char *gateway, char *netmask) {
@@ -149,6 +151,105 @@ void WifiModule::ClientDeinit() {
 	vEventGroupDelete(wifi_event_group);
 }
 
+bool WifiModule::TCPConnectToServer(char *IPAddress, int port) {
+	// Connection?
+	if(ClientGetConnectionState() == false) {
+		return false;
+	}
+
+    tcpServerAddr.sin_addr.s_addr = inet_addr(IPAddress);
+    tcpServerAddr.sin_family = AF_INET;
+    tcpServerAddr.sin_port = htons(port);
+    SocketHandle = socket(AF_INET, SOCK_STREAM, 0);
+
+    if(SocketHandle < 0) {
+       	ESP_LOGI("TCP CLIENT", "... Failed to allocate socket");
+       	return false;
+    }
+
+    if(connect(SocketHandle, (struct sockaddr *)&tcpServerAddr, sizeof(tcpServerAddr)) != 0) {
+    	ESP_LOGI("TCP CLIENT", "... socket connect failed errno = %d", errno);
+    	close(SocketHandle);
+    	return false;
+    }
+
+    return true;
+}
+
+bool WifiModule::TCPSend(char *Data, int size) {
+	if(ClientGetConnectionState() == false) {
+		return false;
+	}
+
+	if(SocketHandle < 0) {
+		return false;
+	}
+
+	if( write(SocketHandle , Data , size) < 0)
+	{
+		ESP_LOGI("TCP CLIENT", "... Send failed \n");
+		close(SocketHandle);
+		return false;
+    }
+
+	return true;
+}
+
+void WifiModule::TCPDisconnect() {
+	close(SocketHandle);
+	SocketHandle = -1;
+	memset(&tcpServerAddr, 0, sizeof(sockaddr_in));
+}
+
 WifiModule::~WifiModule(){
 
 }
+
+/*
+void tcp_client(void *pvParam){
+    ESP_LOGI("TCP CLIENT","tcp_client task started \n");
+    struct sockaddr_in tcpServerAddr;
+    tcpServerAddr.sin_addr.s_addr = inet_addr("192.168.43.28");
+    tcpServerAddr.sin_family = AF_INET;
+    tcpServerAddr.sin_port = htons(3010);
+    int s, r;
+    char recv_buf[64];
+
+    while(1) {
+        s = socket(AF_INET, SOCK_STREAM, 0);
+        if(s < 0) {
+        	ESP_LOGI("TCP CLIENT", "... Failed to allocate socket.\n");
+            vTaskDelay(1000 / portTICK_PERIOD_MS);
+            continue;
+        }
+        ESP_LOGI("TCP CLIENT", "... allocated socket\n");
+         if(connect(s, (struct sockaddr *)&tcpServerAddr, sizeof(tcpServerAddr)) != 0) {
+        	 ESP_LOGI("TCP CLIENT", "... socket connect failed errno=%d \n", errno);
+            close(s);
+            vTaskDelay(4000 / portTICK_PERIOD_MS);
+            continue;
+        }
+        ESP_LOGI("TCP CLIENT", "... connected \n");
+        if( write(s , "TESTING" , 7) < 0)
+        {
+        	ESP_LOGI("TCP CLIENT", "... Send failed \n");
+            close(s);
+            vTaskDelay(4000 / portTICK_PERIOD_MS);
+            continue;
+        }
+        ESP_LOGI("TCP CLIENT", "... socket send success");
+        do {
+            bzero(recv_buf, sizeof(recv_buf));
+            r = read(s, recv_buf, sizeof(recv_buf)-1);
+            for(int i = 0; i < r; i++) {
+                putchar(recv_buf[i]);
+            }
+        } while(r > 0);
+        ESP_LOGI("TCP CLIENT", "... done reading from socket. Last read return=%d errno=%d\r\n", r, errno);
+        close(s);
+        ESP_LOGI("TCP CLIENT", "... new request in 5 seconds");
+        vTaskDelay(5000 / portTICK_PERIOD_MS);
+    }
+    ESP_LOGI("TCP CLIENT", "...tcp_client task closed\n");
+}
+ */

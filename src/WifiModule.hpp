@@ -33,6 +33,9 @@ public:
     bool ClientDisconnect();
     bool ClientGetConnectionState();
     void ClientDeinit();
+    bool TCPConnectToServer(char *IPAddress, int port);
+    bool TCPSend(char *Data, int size);
+    void TCPDisconnect();
     ~WifiModule();
 private:
     bool WifiIPSet;
@@ -40,4 +43,6 @@ private:
     unsigned int IPAddress;
     unsigned int Gateway;
     unsigned int Netmask;
+    int SocketHandle;
+    struct sockaddr_in tcpServerAddr;
 };

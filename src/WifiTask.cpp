@@ -2,11 +2,10 @@
 
 WifiTask::WifiTask(unsigned int task_priority, DataProcessor &dp) : BaseTask(task_priority), DPHandle{dp}  { main_task(); }
 
-void run_wifi_task(void *args)  {
-	//TODO: sleepbit implementation
-	//TODO: TCP communication via wifimodule object
-	//TODO: MQTT frame builder class
+//TODO: sleepbit implementation
+//TODO: MQTT frame builder class
 
+void run_wifi_task(void *args)  {
 	WifiTask *sTask = static_cast<WifiTask*>(args);
 
 	char* ssid = "Allyouare";
@@ -27,6 +26,9 @@ void run_wifi_task(void *args)  {
 				ESP_LOGI("WIFI TASK", "Wifi not connected");
 			} else {
 				ESP_LOGI("WIFI TASK", "Wifi connected");
+				testmodule->TCPConnectToServer("192.168.43.28", 3010);
+				testmodule->TCPSend("testdata", 8);
+				testmodule->TCPDisconnect();
 			}
         }
 
