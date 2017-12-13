@@ -3,7 +3,7 @@
 // hanteert het schrijven en lezen van data, onderhoudt ook de connectie tussen esp32 en pc
 static EventGroupHandle_t wifi_event_group;
 const static unsigned int WIFI_EVENT_BIT = BIT0;
-const char *WIFI_CLASS_TAG = "WIFI_Class";
+const char *WIFI_CLASS_TAG = "WIFI MODULE";
 
 esp_err_t local_wifi_Event_handler(void *ctx, system_event_t *event)
 {
@@ -84,7 +84,6 @@ bool WifiModule::ClientConfig(char* SSID, char* PASS) {
 	wifi_config_t wifi_config;
 	strcpy((char*)wifi_config.sta.ssid, SSID);
 	strcpy((char*)wifi_config.sta.password, PASS);
-	ESP_LOGI("MAIN", "Setting WiFi configuration SSID %s...", wifi_config.sta.ssid);
 
 	if(esp_wifi_set_mode(WIFI_MODE_STA) != ESP_OK) {
 		return false;

@@ -6,17 +6,16 @@ void sensor_handle_task(void *args)  {
 	SensorTask *sTask = static_cast<SensorTask*>(args);
 	Sensor *TestMPU = new Mpu9250Implementation();
 	Sensor *TestBMP = new Bmp280Implementation();
+
 	SampleData SensorData;
 	EventBits_t uxBits;
 	short MPUData[TestMPU->DataSize() / sizeof(short)];
 	int BMPData[TestBMP->DataSize() / sizeof(int)];
 
     while(1) {
-    	// wait for flag to be set
         uxBits = xEventGroupWaitBits(GlobalEventGroupHandle, (SensorMeasurementFlag | StandbySensorTaskUnhandled), pdTRUE, pdFALSE, portMAX_DELAY);
 
         if(uxBits & SensorMeasurementFlag)  {
-            //SensorMeasurementFlag has been set
         	memcpy(MPUData, TestMPU->SensorRead(), TestMPU->DataSize());
         	memcpy(BMPData, TestBMP->SensorRead(), TestBMP->DataSize());
 
@@ -35,22 +34,11 @@ void sensor_handle_task(void *args)  {
 
         	sTask->DataHandler.HandleData(SensorData);
         	sTask->DBHandle.storeData(SensorData);
-
-        	/*ESP_LOGI("I2C TASK", "Value: \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f, \t %.0f \t",
-        			SensorData.accelX/100,
-        			SensorData.accelY/100,
-        			SensorData.accelZ/100,
-        			SensorData.gyroX/100,
-        			SensorData.gyroY/100,
-        			SensorData.gyroZ/100,
-        			SensorData.magnetoX/100,
-        			SensorData.magnetoY/100,
-        			SensorData.magnetoZ/100,
-        			SensorData.temp,
-        			SensorData.pressure);*/
         }
 
         if(uxBits & StandbySensorTaskUnhandled) {
+        	TestBMP->Sleep();
+        	TestMPU->Sleep();
         	xEventGroupClearBits(GlobalEventGroupHandle, StandbySensorTaskUnhandled);
         	while(1) {
         		vTaskDelay(1000 / portTICK_PERIOD_MS);
@@ -59,24 +47,39 @@ void sensor_handle_task(void *args)  {
     }
 }
 
+void print_struct(SampleData SensorData) {
+	ESP_LOGI("I2C TASK", "Value: \t %llu, \t %d, \t %d, \t %d, \t %d, \t %d, \t %d, \t %d, \t %d, \t %d, \t %d, \t %d \t",
+			SensorData.microTime,
+			SensorData.accelX,
+   			SensorData.accelY,
+   			SensorData.accelZ,
+   			SensorData.gyroX,
+   			SensorData.gyroY,
+   			SensorData.gyroZ,
+   			SensorData.magnetoX,
+   			SensorData.magnetoY,
+   			SensorData.magnetoZ,
+   			SensorData.temp,
+   			SensorData.pressure);
+}
+
 
 void set_sensor_measurement_bit( TimerHandle_t xTimer )  {
-    //Todo set bit 4
     xEventGroupSetBits(GlobalEventGroupHandle, SensorMeasurementFlag);
 }
 
 void SensorTask::main_task() {
 	ESP_LOGI("SENSOR TASK", "Task starting...");
 
-	TimerHandle_t wifi_poll_timer = NULL;
-    wifi_poll_timer = xTimerCreate("sensor_poll_clock",
-    								SENSORTASK_FREQ_100HZ,
-									pdTRUE,
-									SENSORTASK_TIMER_ID,
-									set_sensor_measurement_bit);
-    xTimerStart( wifi_poll_timer, 0 );
+	TimerHandle_t sample_poll_timer = NULL;
+	sample_poll_timer = xTimerCreate("sensor_poll_clock",
+			SAMPE_TIME_MS,
+			pdTRUE,
+			SENSORTASK_TIMER_ID,
+			set_sensor_measurement_bit);
+    xTimerStart(sample_poll_timer, 0 );
 
-    if(wifi_poll_timer == NULL) {
+    if(sample_poll_timer == NULL) {
     	// Something has failed creating the timer
     	ESP_LOGI("SENSOR TASK", "Timer creation failed");
     } else {
@@ -89,7 +92,7 @@ void SensorTask::main_task() {
     												"sensor_task",
 													SENSORTASK_STACK_SIZE,
 													thisTask,
-													SENSORTASK_PRIORITY,
+													task_priority,
 													&xHandle,
 													SENSORTASK_CORE_NUM);
 

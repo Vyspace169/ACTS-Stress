@@ -1,20 +1,23 @@
 #include "DataProcessor.hpp"
 
 DataProcessor::DataProcessor() {
-	memset(&OldData, 0, sizeof(SampleData));
+	OldAcceleroXValue = 0;
+	OldAcceleroYValue = 0;
+	OldAcceleroZValue = 0;
 	TimeoutCounter = 0;
-	TimeoutTrigger = TimeoutInitValue;
+	TimeoutTrigger = TIMEOUT_TIME_MS;
+	LastTriggerOn = false;
 	ActivityData = 0;
-	TriggerValueX = TriggerValueXInit;
-	TriggerValueY = TriggerValueYInit;
-	TriggerValueZ = TriggerValueZInit;
+	TriggerValueX = TRIGGER_VALUE_X;
+	TriggerValueY = TRIGGER_VALUE_Y;
+	TriggerValueZ = TRIGGER_VALUE_Z;
 }
 
 void DataProcessor::SetTimeoutValue(int NewTriggerms) {
 	TimeoutTrigger = NewTriggerms;
 }
 
-void DataProcessor::SetTrigger(float triggerx, float triggery, float triggerz) {
+void DataProcessor::SetTrigger(int triggerx, int triggery, int triggerz) {
 	TriggerValueX = triggerx;
 	TriggerValueY = triggery;
 	TriggerValueZ = triggerz;
@@ -25,32 +28,41 @@ void DataProcessor::ResetActivityData() {
 }
 
 void DataProcessor::HandleData(SampleData NewData) {
-	float DifferentialValue = 0;
+	int DifferentialValue = 0;
+	bool TriggerOn = false;
 
-	DifferentialValue = NewData.accelX - OldData.accelX;
+	DifferentialValue = abs(NewData.accelX - OldAcceleroXValue);
 	if(DifferentialValue > TriggerValueX) {
-		ActivityData += (DifferentialValue / TriggerValueX);
-		TimeoutCounter = 0;
+		ActivityData += DifferentialValue / TriggerValueX;
+		TriggerOn = true;
 	}
 
-	DifferentialValue = NewData.accelY - OldData.accelY;
+	DifferentialValue = abs(NewData.accelY - OldAcceleroYValue);
 	if(DifferentialValue > TriggerValueY) {
-		ActivityData += (DifferentialValue / TriggerValueY);
-		TimeoutCounter = 0;
+		ActivityData += DifferentialValue / TriggerValueY;
+		TriggerOn = true;
 	}
 
-	DifferentialValue = NewData.accelZ - OldData.accelZ;
+	DifferentialValue = abs(NewData.accelZ - OldAcceleroZValue);
 	if(DifferentialValue > TriggerValueZ) {
-		ActivityData += (DifferentialValue / TriggerValueZ);
+		ActivityData += DifferentialValue / TriggerValueZ;
+		TriggerOn = true;
+	}
+
+	if(TriggerOn == true && LastTriggerOn == true) {
 		TimeoutCounter = 0;
 	}
-
-	TimeoutCounter += SampleTimems;
-	if(TimeoutCounter >= TimeoutTrigger) {
-		xEventGroupSetBits(GlobalEventGroupHandle, MovementTimeoutReached);
+	else {
+		TimeoutCounter += SAMPE_TIME_MS;
+		if(TimeoutCounter >= TimeoutTrigger) {
+			xEventGroupSetBits(GlobalEventGroupHandle, MovementTimeoutReached);
+		}
 	}
 
-	memcpy((void*)&OldData, (void*)&NewData, sizeof(SampleData));
+	LastTriggerOn = TriggerOn;
+	OldAcceleroXValue = NewData.accelX;
+	OldAcceleroYValue = NewData.accelY;
+	OldAcceleroZValue = NewData.accelZ;
 }
 
 double DataProcessor::GetActivityData() {

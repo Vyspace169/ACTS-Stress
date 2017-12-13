@@ -12,6 +12,7 @@ public:
      Sensor() {}
      virtual int DataSize();
      virtual unsigned short* SensorRead();
+     virtual void Sleep();
      ~Sensor() {}
 
      /*

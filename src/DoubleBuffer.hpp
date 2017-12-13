@@ -10,7 +10,7 @@
 #include "BinaryBuffer.hpp"
 #include "SDWriter.hpp"
 
-class DoubleBuffer{
+class DoubleBuffer {
 public:
 	DoubleBuffer(SDWriter&);
 	void storeData(SampleData in );

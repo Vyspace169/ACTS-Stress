@@ -1,20 +1,22 @@
 #include "SdWriterTask.hpp"
-//typedef  void (SdWriterTask::*run_sd_task)(void *args);
 
 SdWriterTask::SdWriterTask(unsigned int task_priority, DoubleBuffer &db, SDWriter &sdw) : BaseTask(task_priority), DBHandle(db), SDWHandle(sdw)  {main_task();}
 
 void run_sd_task(void *args) {
 	SdWriterTask *sTask = static_cast<SdWriterTask*>(args);
-	sTask->SDWHandle.InitSDMMC();
-	sTask->SDWHandle.SetFileName("Test.bin");
 
     while(1)  {
         EventBits_t uxBits;
         uxBits = xEventGroupWaitBits(GlobalEventGroupHandle, (SensorBufferSdReady | StandbyWriterTaskUnhandled), pdTRUE, pdFALSE, portMAX_DELAY);
 
         if(uxBits & SensorBufferSdReady){
-        	sTask->SDWHandle.Open();
+        	ESP_LOGI("WRITER TASK", "Writing data");
+        	if(sTask->SDWHandle.Open() != SD_WRITER_OK) {
+        		ESP_LOGI("WRITER TASK", "Opening file gave an error");
+        	}
+
         	sTask->DBHandle.writeToSd();
+
         	sTask->SDWHandle.Close();
         }
 
@@ -30,7 +32,13 @@ void run_sd_task(void *args) {
 void SdWriterTask::main_task() {
   TaskHandle_t xHandle = NULL;
   void* thisTask = static_cast<void*>(this);
-  BaseType_t xReturned = xTaskCreatePinnedToCore(run_sd_task, "run_sd_task", 4096, thisTask, 1, &xHandle, 0);
+  BaseType_t xReturned = xTaskCreatePinnedToCore(run_sd_task,
+		  "run_sd_task",
+		  WRITERTASK_STACK_SIZE,
+		  thisTask,
+		  task_priority,
+		  &xHandle,
+		  WRITERTASK_CORE_NUM);
 
   if(xHandle == NULL) {
    	// Handle assignment has failed

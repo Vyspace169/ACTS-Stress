@@ -13,15 +13,10 @@
 #include "esp_vfs_fat.h"
 #include "driver/sdmmc_host.h"
 #include "driver/sdspi_host.h"
+#include "driver/gpio.h"
 #include "sdmmc_cmd.h"
 #include "BinaryBuffer.hpp"
-
-const gpio_num_t PIN_NUM_MISO = GPIO_NUM_23;
-const gpio_num_t PIN_NUM_MOSI = GPIO_NUM_19;
-const gpio_num_t PIN_NUM_CLK = GPIO_NUM_18;
-const gpio_num_t PIN_NUM_CS = GPIO_NUM_5;
-const int SDCardSPISpeedkHz = 1000;
-const int SDCardCMDTimeoutms = 0;
+#include "SystemVariables.hpp"
 
 /**
  * Enum return type for the SDWriter class
@@ -40,17 +35,20 @@ public:
 	/// Constructer for the SDWriter class.
 	SDWriter();
 
+	bool WaitForCard(int timeout);
+
 	/**
 	 * Initialization for the SDMMC peripheral on the ESP32.
 	 * This function will call all underlying functions in the ESP-IDF to initialize the SDMMC peripheral in SPI mode.
 	 * \return a SDWriterErrorCodes enum
 	 */
-	SDWriterErrorCodes InitSDMMC();
+	SDWriterErrorCodes InitSDMMC(int retries);
 
 
 	void SetFileName(char* name);
 	SDWriterErrorCodes Open();
 	SDWriterErrorCodes Write(SampleData in);
+	SDWriterErrorCodes Write(const SampleData *in, int size);
 	SDWriterErrorCodes Write(char *data);
 	SDWriterErrorCodes Close();
 	bool WriteStatus();

@@ -1,7 +1,6 @@
 #include "DoubleBuffer.hpp"
 
-DoubleBuffer::DoubleBuffer(SDWriter& wr) : writer{wr}{
-	//this->writer = wr;
+DoubleBuffer::DoubleBuffer(SDWriter& wr) : writer{wr} {
 	this->firstBuffer = new BinaryBuffer();
 	this->secondBuffer = new BinaryBuffer();
 	this->current = this->firstBuffer;
@@ -29,9 +28,11 @@ void DoubleBuffer::swap(){
 
 void DoubleBuffer::writeToSd(){
 	// write all elements to the file using the SdWriter
-	for(auto it = this->next->get().begin(); it != this->next->get().end(); ++it) {
+	writer.Write(this->next->get().data(), this->next->get().size() * sizeof(SampleData));
+
+	/*for(auto it = this->next->get().begin(); it != this->next->get().end(); ++it) {
 		writer.Write(*it);
-	}
+	}*/
 	// Clear the buffer for the next swap
 	this->next->clear();
 	

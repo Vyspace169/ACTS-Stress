@@ -24,11 +24,7 @@ public:
 private:
     DoubleBuffer &DBHandle;
     DataProcessor &DataHandler;
-    const int SENSORTASK_CORE_NUM = 1;
-    const int SENSORTASK_PRIORITY = 2;
-    const int SENSORTASK_STACK_SIZE = 2048;
     void *SENSORTASK_TIMER_ID = 0;
-    const int SENSORTASK_FREQ_100HZ = pdMS_TO_TICKS( 10 );
 
     const int DATA_SIZE_MPU = 9;
     const int DATA_OFFSET_ACCELERO_X = 0;

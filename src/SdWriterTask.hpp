@@ -11,6 +11,8 @@
 #include "BaseTask.hpp"
 #include "DoubleBuffer.hpp"
 
+#include "SystemVariables.hpp"
+
 #include <array>
 
 /// @brief SdWriterTask that handles the writing to the sd.

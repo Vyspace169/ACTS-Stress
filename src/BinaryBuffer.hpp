@@ -7,22 +7,8 @@
 #pragma once
 #include <vector>
 
+#include "SystemVariables.hpp"
 #include "esp_log.h"
-
-typedef struct {
-	long long microTime;
-	short accelX;
-	short accelY;
-	short accelZ;
-	short gyroX;
-	short gyroY;
-	short gyroZ;
-	short magnetoX;
-	short magnetoY;
-	short magnetoZ;
-	int temp;
-	int pressure;
-} SampleData;
 
 class BinaryBuffer{
 public:
@@ -38,5 +24,5 @@ private:
 	bool readState();
 	bool state;
 	std::vector<SampleData> buffer;
-	const int BufferSize = 1000;
+	const int BufferSize = BINARY_BUFFER_SIZE;
 };

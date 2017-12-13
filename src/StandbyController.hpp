@@ -8,10 +8,9 @@
 #pragma once
 
 #include "esp_sleep.h"
-#include "BaseTask.hpp"
+#include "esp_log.h"
 
-#define TIMEOUT_TIME_SEC 	60
-#define SC_LOOP_DELAY		250
+#include "BaseTask.hpp"
 
 class  StandbyController : BaseTask {
 public:

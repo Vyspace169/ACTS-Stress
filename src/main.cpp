@@ -13,6 +13,7 @@
 #include "esp_event_loop.h"
 
 #include "driver/gpio.h"
+#include "driver/adc.h"
 
 #include "SystemVariables.hpp"
 
@@ -27,30 +28,7 @@
 #include "SensorTask.hpp"
 #include "SdWriterTask.hpp"
 #include "StandbyController.hpp"
-
-// Define led pin
-#define GPIO_LED_BLUE	GPIO_NUM_13
-#define GPIO_LED_GREEN	GPIO_NUM_14
-#define GPIO_LED_RED	GPIO_NUM_12
-
-void blink_task(void *pvParameter)
-{
-    while(1) {
-    	/*gpio_set_level(GPIO_LED_RED, 0);
-    	gpio_set_level(GPIO_LED_BLUE, 1);
-        vTaskDelay(800 / portTICK_PERIOD_MS);
-        gpio_set_level(GPIO_LED_GREEN, 0);
-        gpio_set_level(GPIO_LED_RED, 1);
-        vTaskDelay(800 / portTICK_PERIOD_MS);
-        gpio_set_level(GPIO_LED_BLUE, 0);
-        gpio_set_level(GPIO_LED_GREEN, 1);
-        vTaskDelay(800 / portTICK_PERIOD_MS);*/
-    	gpio_set_level(GPIO_LED_GREEN, 1);
-    	vTaskDelay(1000 / portTICK_PERIOD_MS);
-    	gpio_set_level(GPIO_LED_GREEN, 0);
-    	vTaskDelay(50 / portTICK_PERIOD_MS);
-    }
-}
+#include "WifiTask.hpp"
 
 void wifi_task(void *pvParameter) {
 
@@ -83,19 +61,46 @@ static void i2c_example_master_init()
     i2c_driver_install(I2C_NUM_0, conf.mode, 0, 0, 0);
 }
 
+void blink_task(void *pvParameter)
+{
+    while(1) {
+    	/*gpio_set_level(GPIO_LED_RED, 0);
+    	gpio_set_level(GPIO_LED_BLUE, 1);
+        vTaskDelay(800 / portTICK_PERIOD_MS);
+        gpio_set_level(GPIO_LED_GREEN, 0);
+        gpio_set_level(GPIO_LED_RED, 1);
+        vTaskDelay(800 / portTICK_PERIOD_MS);
+        gpio_set_level(GPIO_LED_BLUE, 0);
+        gpio_set_level(GPIO_LED_GREEN, 1);
+        vTaskDelay(800 / portTICK_PERIOD_MS);*/
+
+    	gpio_set_level(GPIO_LED_GREEN, 1);
+    	vTaskDelay(5000 / portTICK_PERIOD_MS);
+    	gpio_set_level(GPIO_LED_GREEN, 0);
+    	vTaskDelay(10 / portTICK_PERIOD_MS);
+    }
+}
+
 static void gpio_init_leds() {
 	// Select gipo
 	gpio_pad_select_gpio(GPIO_LED_RED);
 	gpio_pad_select_gpio(GPIO_LED_GREEN);
 	gpio_pad_select_gpio(GPIO_LED_BLUE);
 	// Set the GPIO as a push/pull output
-	gpio_set_direction(GPIO_LED_RED, (gpio_mode_t)GPIO_MODE_OUTPUT);
-	gpio_set_direction(GPIO_LED_GREEN, (gpio_mode_t)GPIO_MODE_OUTPUT);
-	gpio_set_direction(GPIO_LED_BLUE, (gpio_mode_t)GPIO_MODE_OUTPUT);
+	gpio_set_direction(GPIO_LED_RED, GPIO_MODE_OUTPUT);
+	gpio_set_direction(GPIO_LED_GREEN, GPIO_MODE_OUTPUT);
+	gpio_set_direction(GPIO_LED_BLUE, GPIO_MODE_OUTPUT);
 	// Set initial state
 	gpio_set_level(GPIO_LED_RED, 1);
 	gpio_set_level(GPIO_LED_GREEN, 1);
 	gpio_set_level(GPIO_LED_BLUE, 1);
+}
+
+void to_test() {
+	//adc2_config_width(ADC_WIDTH_12Bit);
+	//adc2_config_channel_atten(ADC2_CHANNEL_3, ADC_ATTEN_11db);
+	//int val = adc2_get_raw(ADC2_CHANNEL_3);
+	//ESP_LOGI("MAIN", "%d ", val);
 }
 
 EventGroupHandle_t GlobalEventGroupHandle;
@@ -121,21 +126,27 @@ extern "C" void app_main(void)
     GlobalEventGroupHandle = xEventGroupCreate();
 
     SDWriter *GlobalSDWriter = new SDWriter;
+    GlobalSDWriter->InitSDMMC(4);
+    GlobalSDWriter->SetFileName("filename.bin");
 
     DataProcessor *GlobalDataHandler = new DataProcessor;
-    GlobalDataHandler->SetTimeoutValue(60000);
+    GlobalDataHandler->SetTimeoutValue(TIMEOUT_TIME_MS);
+    GlobalDataHandler->SetTrigger(TRIGGER_VALUE_X, TRIGGER_VALUE_Y, TRIGGER_VALUE_Z);
 
     DoubleBuffer *GlobalDoubleBuffer = new DoubleBuffer(*GlobalSDWriter);
 
-    SensorTask *st = new SensorTask(1, *GlobalDoubleBuffer, *GlobalDataHandler);
+    //WifiModule *testmodule = new WifiModule;
 
-    SdWriterTask *sdw = new SdWriterTask(2, *GlobalDoubleBuffer, *GlobalSDWriter);
+    SensorTask *st = new SensorTask(SENSORTASK_PRIORITY, *GlobalDoubleBuffer, *GlobalDataHandler);
 
-    StandbyController *sbc = new StandbyController(3);
+    SdWriterTask *sdw = new SdWriterTask(WRITERTASK_PRIORITY, *GlobalDoubleBuffer, *GlobalSDWriter);
+
+    StandbyController *sbc = new StandbyController(STANDBYCONT_PRIORITY);
+
+    //WifiTask *wt = new WifiTask(WIFITASK_PRIORITY);
 
     // Start blink task
-    //xTaskCreate(&blink_task, "blink_task", configMINIMAL_STACK_SIZE, NULL, 5, NULL);
-
+    xTaskCreate(&blink_task, "blink_task", configMINIMAL_STACK_SIZE, NULL, 5, NULL);
 
     ESP_LOGI("MAIN", "Init done");
 }

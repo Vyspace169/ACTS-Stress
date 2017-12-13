@@ -20,6 +20,7 @@ public:
    Bmp280Implementation();
    int DataSize() override;
    unsigned short* SensorRead() override;
+   void Sleep() override {}
    ~Bmp280Implementation() {}
 private:
    struct bmp280_t bmp280_com_functions;

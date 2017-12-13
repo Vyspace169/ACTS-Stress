@@ -13,27 +13,26 @@
 #include "esp_log.h"
 
 #include "DoubleBuffer.hpp"
+#include "SystemVariables.hpp"
 
 class  DataProcessor{
 public:
     DataProcessor();
     void SetTimeoutValue(int NewTriggerms);
-    void SetTrigger(float triggerx, float triggery, float triggerz);
+    void SetTrigger(int triggerx, int triggery, int triggerz);
     void ResetActivityData();
     void HandleData(SampleData NewData);
     double GetActivityData();
     ~DataProcessor();
 private:
-    SampleData OldData;
-    double ActivityData;
-    float TriggerValueX;
-    float TriggerValueY;
-    float TriggerValueZ;
     int TimeoutCounter;
     int TimeoutTrigger;
-    const int SampleTimems = 10;
-    const int TimeoutInitValue = 60000;
-    const int TriggerValueXInit = 500;
-    const int TriggerValueYInit = 500;
-    const int TriggerValueZInit = 15000;
+    bool LastTriggerOn;
+    int OldAcceleroXValue;
+    int OldAcceleroYValue;
+    int OldAcceleroZValue;
+    double ActivityData;
+    int TriggerValueX;
+    int TriggerValueY;
+    int TriggerValueZ;
 };

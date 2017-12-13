@@ -45,6 +45,7 @@
 #define MPU9250_REG_ACCEL_ZL    	0x3F
 #define MPU9250_REG_BYPASS			0x37
 #define MPU9250_REG_PWR_MGMNT_1		0x6B
+#define MPU9250_REG_LPF				0x1D
 
 // MPU9250 settings
 #define GYROSCALE_250_DPS       	0x00
@@ -57,6 +58,8 @@
 #define ACCELSCALE_16G          	0x18
 #define MPU9250_SET_PWR_RESET		0x80
 #define MPU9250_SET_BYPASS			0x02
+#define MPU9250_SET_LPF_10HZ		0x05
+#define MPU9250_SET_SLEEP			0x50
 
 // AK8936 registers
 #define AK8936_REG_WHOAMI			0x00
@@ -83,6 +86,7 @@ public:
 	Mpu9250Implementation();
 	int DataSize() override;
 	unsigned short* SensorRead() override;
+	void Sleep() override;
 	~Mpu9250Implementation() {}
 private:
 	unsigned short MPUData[9];

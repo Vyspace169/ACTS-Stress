@@ -101,9 +101,13 @@ Mpu9250Implementation::Mpu9250Implementation(){
 		if(MPU9250ID == 113) {
 			MPUIsInitialized = true;
 		}
+
+		i2c_sensor_write_byte(MPU9250_I2C_ADDRESS, MPU9250_REG_LPF, MPU9250_SET_LPF_10HZ);
+
 		// enable bypass mode
 		i2c_sensor_write_byte(MPU9250_I2C_ADDRESS, MPU9250_REG_BYPASS, MPU9250_SET_BYPASS);
 	}
+
 	// reset the ak8936
 	error = i2c_sensor_write_byte(AK8936_ADDRESS, AK8963_REG_CNTL2, AK8963_SET_RESET);
 	if(error != ESP_OK) {
@@ -196,16 +200,13 @@ unsigned short* Mpu9250Implementation::SensorRead() {
 		i2c_sensor_write_byte(AK8936_ADDRESS, AK8936_REG_CNTL1, AK8936_SET_16BIT | AK8936_SET_SING_SAMP);
 	}
 
-	/*ESP_LOGI("I2C TASK", "Value: \t %i, \t %i, \t %i, \t %i, \t %i, \t %i, \t %d, \t %d, \t %d \t",
-			MPUData[0]/100,
-			MPUData[1]/100,
-			MPUData[2]/100,
-			MPUData[3]/100,
-			MPUData[4]/100,
-			MPUData[5]/100,
-			MPUData[6]/100,
-			MPUData[7]/100,
-			MPUData[8]/100);*/
+	return MPUData;
+}
 
-	return &MPUData[0];
+void Mpu9250Implementation::Sleep() {
+	if(MPUIsInitialized) {
+		if(i2c_sensor_write_byte(MPU9250_I2C_ADDRESS, MPU9250_REG_PWR_MGMNT_1, MPU9250_SET_SLEEP) != ESP_OK) {
+			ESP_LOGI("MPU9250", "Failed to enable sleep mode");
+		}
+	}
 }
