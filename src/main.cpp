@@ -68,10 +68,6 @@ void app_init()  {
       ESP_LOGE("INIT_ERROR", "Error code:%i , message: nvs_flash_init failed!", ERROR_NVS_FLASH_INIT);
    }
    i2c_master_init();
-   /*if(i2c_master_init() != ESP_OK)  {
-      //ESP_LOGE(err_type, "Error code:%i , message: nvs_flash_init failed!", I2C_MASTER_INIT);
-   }*/
-
 }
 
 EventGroupHandle_t GlobalEventGroupHandle;
@@ -160,13 +156,7 @@ void error_flash_init() {
             printf("Restart counter = %d\n", error_value);
             break;
         case ESP_ERR_NVS_NOT_FOUND:
-/*        nvs_close(my_handle);
-            printf("The value is not initialized yet!\n");
-            err = nvs_open("storage", NVS_READWRITE, &my_handle);
-            if (err != ESP_OK) {
-                printf("Error (%d) opening NVS handle!\n", err);
-            } else {*/
-                failed = true;
+            failed = true;
 
             break;
         default :

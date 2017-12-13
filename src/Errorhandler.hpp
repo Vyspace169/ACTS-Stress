@@ -33,22 +33,14 @@ enum class ErrorLevel : unsigned int {
 enum class ErrorCode : unsigned int {
    NO_ERROR = 0x00,
 };
-/*class GenError{
-public:
-
-protected:
-
-private:
-
-};*/
 class BaseError{
 public:
    BaseError() {}
    BaseError(ErrorCode errCode, ErrorLevel errLvl, std::string errMsg) : errCode{errCode}, errLvl{errLvl}, errMsg{errMsg}  {}
    ~BaseError() {}
-   ErrorCode errCode;
-   ErrorLevel errLvl;
-   std::string errMsg;
+   ErrorCode errCode;   
+   ErrorLevel errLvl;   
+   std::string errMsg;  
    void LogMsg(const char* tag) {}
 protected:
 private:
@@ -65,35 +57,20 @@ public:
    void Error(BaseError* error);
    // Errors that are of critical nature and cause system malfunction.
    void ErrorCritical(BaseError* error);
-   void AddError(BaseError* error);
    friend void ErrorhandlerTask(void* args);
 
    Errorhandler(Errorhandler const&)    = delete;
    void operator=(Errorhandler const&)  = delete;
    bool SystemFailed = false;
-   //void AddTaskHandle(TaskHandle_t* th);
 protected:
    void main_task() override;
 private:
    void push_error(BaseError err);
    Errorhandler(unsigned int task_priority = 0) : BaseTask{task_priority} {}
-   //bool attempt_fix_mpu();
    ~Errorhandler() {}
-   //std::array<BaseError*, 10> InitErrors;
-/*   std::vector<BaseError*> InitErrors;
-   std::vector<BaseError*> GenericErrors;
-   std::vector<BaseError*> CriticalErrors;*/
-   //std::vector<BaseError> errors;
    BaseError error;
    ErrorLevel sysErrReportLvl;
-   ErrorLevel sysErrLvl;
-   //std::vector<TaskHandle_t*> taskHandles; 
+   ErrorLevel sysErrLvl; 
 
    int index = 0;
-   //void add_error(Base_Error& error);
-   //void log(BaseError& error);
-
-   //Errorhandler(Errorhandler const&);   // Don't Implement
-   //void operator=(Errorhandler const&); // Don't implement
-
 };
