@@ -24,7 +24,7 @@ bool BinaryBuffer::add( SampleData in ){
 		return false;
 	}
 }
-const std::vector<SampleData>& BinaryBuffer::get(){
+const std::vector<SampleData>& BinaryBuffer::get() {
 	return buffer;
 }
 

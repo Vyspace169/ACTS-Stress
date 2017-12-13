@@ -57,8 +57,7 @@ SDWriterErrorCodes SDWriter::InitSDMMC(int retries) {
 		// Use settings defined above to initialize SD card and mount FAT filesystem
 		esp_err_t ret = esp_vfs_fat_sdmmc_mount("/sdcard", &host, &slot_config, &mount_config, &SDCardWriter);
 
-		if (ret == ESP_ERR_INVALID_STATE || ret == ESP_OK) {
-			ESP_LOGI("SD WRITER", "Card already initialized");
+		if (ret == ESP_OK) {
 			CardIsInitialized = true;
 			break;
 		}
@@ -99,7 +98,7 @@ void SDWriter::SetFileName(char* name) {
 		strcpy(&FileNameCharArray[8], name);
 	}
 
-	ESP_LOGI("SDWRITER", "File name set: %s", FileNameCharArray);
+	ESP_LOGI("SD WRITER", "File name set: %s", FileNameCharArray);
 
 	FileNameIsSet = true;
 }

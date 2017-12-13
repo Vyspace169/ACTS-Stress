@@ -11,12 +11,8 @@ void run_sd_task(void *args) {
 
         if(uxBits & SensorBufferSdReady){
         	ESP_LOGI("WRITER TASK", "Writing data");
-        	if(sTask->SDWHandle.Open() != SD_WRITER_OK) {
-        		ESP_LOGI("WRITER TASK", "Opening file gave an error");
-        	}
-
+        	sTask->SDWHandle.Open();
         	sTask->DBHandle.writeToSd();
-
         	sTask->SDWHandle.Close();
         }
 
@@ -30,33 +26,31 @@ void run_sd_task(void *args) {
 }
 
 void SdWriterTask::main_task() {
-  TaskHandle_t xHandle = NULL;
-  void* thisTask = static_cast<void*>(this);
-//<<<<<<< HEAD
-  BaseType_t xReturned = xTaskCreatePinnedToCore(run_sd_task,
-		  "run_sd_task",
-		  WRITERTASK_STACK_SIZE,
-		  thisTask,
-		  task_priority,
-		  &xHandle,
-		  WRITERTASK_CORE_NUM);
-/*=======
-  BaseType_t xReturned = xTaskCreatePinnedToCore(run_sd_task, "run_sd_task", 2048, thisTask, 1, &xHandle, 0);
->>>>>>> combining_sensors_card_refactor*/
+	  TaskHandle_t xHandle = NULL;
+	  void* thisTask = static_cast<void*>(this);
 
-  if(xHandle == NULL) {
-   	// Handle assignment has failed
-   	ESP_LOGI("WRITER TASK", "Handle creation failed");
-  } else {
-   	ESP_LOGI("WRITER TASK", "Handle creation OK");
-  }
+	  BaseType_t xReturned = xTaskCreatePinnedToCore(run_sd_task,
+			  "run_sd_task",
+			  WRITERTASK_STACK_SIZE,
+			  thisTask,
+			  task_priority,
+			  &xHandle,
+			  WRITERTASK_CORE_NUM);
 
-  if(xReturned != pdPASS) {
-  	// xReturned false (something went wrong!)
-   	ESP_LOGI("WRITER TASK", "Task creation failed");
-  } else {
-   	ESP_LOGI("WRITER TASK", "Task creation OK");
-  }
 
-  ESP_LOGI("WRITER TASK", "Task is running");
+	  if(xHandle == NULL) {
+		  // Handle assignment has failed
+		  ESP_LOGI("WRITER TASK", "Handle creation failed");
+	  } else {
+		  ESP_LOGI("WRITER TASK", "Handle creation OK");
+	  }
+
+	  if(xReturned != pdPASS) {
+		  // xReturned false (something went wrong!)
+		  ESP_LOGI("WRITER TASK", "Task creation failed");
+	  } else {
+		  ESP_LOGI("WRITER TASK", "Task creation OK");
+	  }
+
+	  ESP_LOGI("WRITER TASK", "Task is running");
 }

@@ -30,7 +30,6 @@ esp_err_t local_wifi_Event_handler(void *ctx, system_event_t *event)
 }
 
 WifiModule::WifiModule() {
-	state = false;
 	WifiIPSet = false;
 	WifiIsInitialized = false;
 	IPAddress = 0;
@@ -111,7 +110,6 @@ bool WifiModule::ClientConnect(int timeout) {
     }
 
     xEventGroupWaitBits(wifi_event_group, WIFI_EVENT_BIT, false, true, timeout / portTICK_PERIOD_MS);
-    //xEventGroupWaitBits(wifi_event_group, WIFI_EVENT_BIT, false, true, portMAX_DELAY);
 
     bool WifiIsConnected = (bool)xEventGroupGetBits(wifi_event_group) & WIFI_EVENT_BIT;
 

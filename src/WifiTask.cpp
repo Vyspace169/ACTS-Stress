@@ -1,26 +1,33 @@
 #include "WifiTask.hpp"
 
-WifiTask::WifiTask(unsigned int task_priority) : BaseTask(task_priority)  { main_task(); }
+WifiTask::WifiTask(unsigned int task_priority, DataProcessor &dp) : BaseTask(task_priority), DPHandle{dp}  { main_task(); }
 
 void run_wifi_task(void *args)  {
+	//TODO: sleepbit implementation
+	//TODO: TCP communication via wifimodule object
+	//TODO: MQTT frame builder class
+
+	WifiTask *sTask = static_cast<WifiTask*>(args);
 
 	char* ssid = "Allyouare";
 	char* pass = "Meulen-2017";
+	WifiModule *testmodule = new WifiModule;
+	testmodule->ClientConfig(ssid, pass);
 
     while(1)  {
         EventBits_t uxBits;
-        uxBits = xEventGroupWaitBits(GlobalEventGroupHandle, (WifiActivateFlag | WifiReadyFlag), pdTRUE, pdFALSE, 0);
+        uxBits = xEventGroupWaitBits(GlobalEventGroupHandle, (WifiActivateFlag | WifiReadyFlag), pdTRUE, pdFALSE, portMAX_DELAY);
 
-        if(uxBits & WifiActivateFlag) {
-        	ESP_LOGI("WIFI TASK", "Connecting to wifi");
-        	/*testmodule.ClientConfig(ssid, pass);
-        	bool enabled = testmodule.ClientConnect(WIFI_CONNECT_TIMEOUT);
-        	if(enabled == false){
-        		ESP_LOGI("WIFI TASK", "Wifi not connected");
-        	} else {
-        		ESP_LOGI("WIFI TASK", "Wifi connected");
-        	}
-        	testmodule.ClientDeinit();*/
+        ESP_LOGI("WIFI TASK", "Activety: %f", sTask->DPHandle.GetActivityData());
+
+        if((uxBits & WifiActivateFlag) && testmodule->ClientGetConnectionState() == false) {
+			ESP_LOGI("WIFI TASK", "Connecting to wifi");
+			bool enabled = testmodule->ClientConnect(WIFI_CONNECT_TIMEOUT);
+			if(enabled == false){
+				ESP_LOGI("WIFI TASK", "Wifi not connected");
+			} else {
+				ESP_LOGI("WIFI TASK", "Wifi connected");
+			}
         }
 
         if(uxBits & WifiReadyFlag) {
@@ -30,7 +37,6 @@ void run_wifi_task(void *args)  {
 }
 
 void wifi_timers_callback( TimerHandle_t xTimer )  {
-	ESP_LOGI("WIFI TASK", "tick");
 	xEventGroupSetBits(GlobalEventGroupHandle, WifiActivateFlag);
 }
 
@@ -51,10 +57,11 @@ void WifiTask::main_task() {
 	}
 
 	TaskHandle_t xHandle = NULL;
+	void* thisTask = static_cast<void*>(this);
 	BaseType_t xReturned = xTaskCreatePinnedToCore(run_wifi_task,
 			"wifi_task",
 			WIFITASK_STACK_SIZE,
-			NULL,
+			thisTask,
 			task_priority,
 			&xHandle,
 			WIFITASK_CORE_NUM);

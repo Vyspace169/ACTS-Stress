@@ -5,7 +5,7 @@ DataProcessor::DataProcessor() {
 	OldAcceleroYValue = 0;
 	OldAcceleroZValue = 0;
 	TimeoutCounter = 0;
-	TimeoutTrigger = TIMEOUT_TIME_MS;
+	TimeoutTrigger = TIMEOUT_TIME_SEC * 1000;
 	LastTriggerOn = false;
 	ActivityData = 0;
 	TriggerValueX = TRIGGER_VALUE_X;

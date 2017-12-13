@@ -1,15 +1,5 @@
 #include "SensorTask.hpp"
 
-//<<<<<<< HEAD
-/*SensorTask::SensorTask(unsigned int task_priority, DoubleBuffer &db) : 
-    BaseTask(task_priority), 
-    DBHandle{db}, 
-    Sensor_MPU{new Mpu9250Implementation()},
-    Sensor_BMP{new Bmp280Implementation()}  {
-        
-    main_task();
-}*/
-//=======
 SensorTask::SensorTask(unsigned int task_priority, DoubleBuffer &db, DataProcessor &dp) : 
     BaseTask(task_priority), 
     DBHandle{db}, 
@@ -19,33 +9,20 @@ SensorTask::SensorTask(unsigned int task_priority, DoubleBuffer &db, DataProcess
     { 
         main_task(); 
     }
-//>>>>>>> 206602684acdfac9c52ab87ab4b993e28466331d
 
 void sensor_handle_task(void *args)  {
 	SensorTask *sTask = static_cast<SensorTask*>(args);
-
-	//Sensor *TestMPU = new Mpu9250Implementation();
-	//Sensor *TestBMP = new Bmp280Implementation();
-
-    // Should be changed?
-    Sensor *TestMPU = sTask->Sensor_MPU;
-    //Sensor *TestMPU = new Mpu9250Implementation();
-    //Sensor *TestBMP = new Mpu9250Implementation();
-    Sensor *TestBMP = sTask->Sensor_BMP;
-    
 	SampleData SensorData;
 	EventBits_t uxBits;
-	short MPUData[TestMPU->DataSize() / sizeof(short)];
-	int BMPData[TestBMP->DataSize() / sizeof(int)];
-
-
+	short MPUData[sTask->Sensor_MPU->DataSize() / sizeof(short)];
+	int BMPData[sTask->Sensor_BMP->DataSize() / sizeof(int)];
 
     while(1) {
         uxBits = xEventGroupWaitBits(GlobalEventGroupHandle, (SensorMeasurementFlag | StandbySensorTaskUnhandled), pdTRUE, pdFALSE, portMAX_DELAY);
 
         if(uxBits & SensorMeasurementFlag)  {
-        	memcpy(MPUData, TestMPU->SensorRead(), TestMPU->DataSize());
-        	memcpy(BMPData, TestBMP->SensorRead(), TestBMP->DataSize());
+        	memcpy(MPUData, sTask->Sensor_MPU->SensorRead(), sTask->Sensor_MPU->DataSize());
+        	memcpy(BMPData, sTask->Sensor_BMP->SensorRead(), sTask->Sensor_BMP->DataSize());
 
         	SensorData.accelX = 	MPUData[sTask->DATA_OFFSET_ACCELERO_X];
         	SensorData.accelY = 	MPUData[sTask->DATA_OFFSET_ACCELERO_Y];
@@ -65,8 +42,8 @@ void sensor_handle_task(void *args)  {
         }
 
         if(uxBits & StandbySensorTaskUnhandled) {
-        	TestBMP->Sleep();
-        	TestMPU->Sleep();
+        	sTask->Sensor_BMP->Sleep();
+        	sTask->Sensor_MPU->Sleep();
         	xEventGroupClearBits(GlobalEventGroupHandle, StandbySensorTaskUnhandled);
         	while(1) {
         		vTaskDelay(1000 / portTICK_PERIOD_MS);

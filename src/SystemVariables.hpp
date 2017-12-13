@@ -64,11 +64,11 @@ typedef struct {
 
 // Sleep settings
 #define SLEEP_TIME_SEC 			60
-#define TIMEOUT_TIME_MS			30000
+#define TIMEOUT_TIME_SEC		60
 
 // Wifi settings
 #define WIFI_POLL_FREQUENCY_SEC	25
-#define WIFI_CONNECT_TIMEOUT	2000
+#define WIFI_CONNECT_TIMEOUT	4000
 
 // Dataprocessor defines
 #define TRIGGER_VALUE_X			1000
@@ -87,8 +87,8 @@ typedef struct {
 
 // Wifitask defines
 #define WIFITASK_CORE_NUM 		0
-#define WIFITASK_PRIORITY 		3
-#define WIFITASK_STACK_SIZE 	2048
+#define WIFITASK_PRIORITY 		0
+#define WIFITASK_STACK_SIZE 	4096
 
 // StandbyController defines
 #define STANDBYCONT_CORE_NUM 	1

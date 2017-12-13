@@ -35,7 +35,6 @@ public:
     void ClientDeinit();
     ~WifiModule();
 private:
-    bool state;
     bool WifiIPSet;
     bool WifiIsInitialized;
     unsigned int IPAddress;
