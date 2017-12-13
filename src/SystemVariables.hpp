@@ -36,6 +36,9 @@ typedef struct {
 #define StandbyWifiTaskUnhandled   	( 1 << 7 )
 #define StandbyWriterTaskUnhandled 	( 1 << 8 )
 
+#define SystemErrorFlag      (1 << 9)
+#define SystemErrorBit       (1 << 10)
+
 // GPIO defines
 #define GPIO_LED_BLUE			GPIO_NUM_13
 #define GPIO_LED_GREEN			GPIO_NUM_14

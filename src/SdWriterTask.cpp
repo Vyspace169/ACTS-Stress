@@ -32,6 +32,7 @@ void run_sd_task(void *args) {
 void SdWriterTask::main_task() {
   TaskHandle_t xHandle = NULL;
   void* thisTask = static_cast<void*>(this);
+//<<<<<<< HEAD
   BaseType_t xReturned = xTaskCreatePinnedToCore(run_sd_task,
 		  "run_sd_task",
 		  WRITERTASK_STACK_SIZE,
@@ -39,6 +40,9 @@ void SdWriterTask::main_task() {
 		  task_priority,
 		  &xHandle,
 		  WRITERTASK_CORE_NUM);
+/*=======
+  BaseType_t xReturned = xTaskCreatePinnedToCore(run_sd_task, "run_sd_task", 2048, thisTask, 1, &xHandle, 0);
+>>>>>>> combining_sensors_card_refactor*/
 
   if(xHandle == NULL) {
    	// Handle assignment has failed

@@ -1,16 +1,44 @@
 #include "SensorTask.hpp"
 
-SensorTask::SensorTask(unsigned int task_priority, DoubleBuffer &db, DataProcessor &dp) : BaseTask(task_priority), DBHandle{db}, DataHandler{dp} { main_task(); }
+//<<<<<<< HEAD
+/*SensorTask::SensorTask(unsigned int task_priority, DoubleBuffer &db) : 
+    BaseTask(task_priority), 
+    DBHandle{db}, 
+    Sensor_MPU{new Mpu9250Implementation()},
+    Sensor_BMP{new Bmp280Implementation()}  {
+        
+    main_task();
+}*/
+//=======
+SensorTask::SensorTask(unsigned int task_priority, DoubleBuffer &db, DataProcessor &dp) : 
+    BaseTask(task_priority), 
+    DBHandle{db}, 
+    DataHandler{dp},     
+    Sensor_MPU{new Mpu9250Implementation()},
+    Sensor_BMP{new Bmp280Implementation()}
+    { 
+        main_task(); 
+    }
+//>>>>>>> 206602684acdfac9c52ab87ab4b993e28466331d
 
 void sensor_handle_task(void *args)  {
 	SensorTask *sTask = static_cast<SensorTask*>(args);
-	Sensor *TestMPU = new Mpu9250Implementation();
-	Sensor *TestBMP = new Bmp280Implementation();
 
+	//Sensor *TestMPU = new Mpu9250Implementation();
+	//Sensor *TestBMP = new Bmp280Implementation();
+
+    // Should be changed?
+    Sensor *TestMPU = sTask->Sensor_MPU;
+    //Sensor *TestMPU = new Mpu9250Implementation();
+    //Sensor *TestBMP = new Mpu9250Implementation();
+    Sensor *TestBMP = sTask->Sensor_BMP;
+    
 	SampleData SensorData;
 	EventBits_t uxBits;
 	short MPUData[TestMPU->DataSize() / sizeof(short)];
 	int BMPData[TestBMP->DataSize() / sizeof(int)];
+
+
 
     while(1) {
         uxBits = xEventGroupWaitBits(GlobalEventGroupHandle, (SensorMeasurementFlag | StandbySensorTaskUnhandled), pdTRUE, pdFALSE, portMAX_DELAY);
@@ -95,7 +123,6 @@ void SensorTask::main_task() {
 													task_priority,
 													&xHandle,
 													SENSORTASK_CORE_NUM);
-
 
     if(xHandle == NULL) {
     	// Handle assignment has failed
