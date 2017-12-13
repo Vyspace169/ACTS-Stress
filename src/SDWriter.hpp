@@ -14,13 +14,11 @@
 #include "sdmmc_cmd.h"
 #include "BinaryBuffer.hpp"
 
-const char *SD_READER_TAG = "SD Reader";
-const gpio_num_t BLINK_GPIO = GPIO_NUM_13;
 const gpio_num_t PIN_NUM_MISO = GPIO_NUM_23;
 const gpio_num_t PIN_NUM_MOSI = GPIO_NUM_19;
 const gpio_num_t PIN_NUM_CLK = GPIO_NUM_18;
 const gpio_num_t PIN_NUM_CS = GPIO_NUM_5;
-const int SDCardSPISpeedkHz = 3000;
+const int SDCardSPISpeedkHz = 1000;
 const int SDCardCMDTimeoutms = 0;
 
 /**
@@ -46,9 +44,12 @@ public:
 	 * \return a SDWriterErrorCodes enum
 	 */
 	SDWriterErrorCodes InitSDMMC();
+
+
 	void SetFileName(time_t TimeReceivedFromWifi);
-	SDWriterErrorCodes Open(char *filename);
+	SDWriterErrorCodes Open();
 	SDWriterErrorCodes Write(data in);
+	SDWriterErrorCodes Write(void *data, int length);
 	SDWriterErrorCodes Close();
 	bool WriteStatus();
 	~SDWriter();
@@ -58,7 +59,7 @@ private:
 	bool CardIsWriting;
     bool CardIsInitialized;
     bool FileNameIsSet;
-    char FileCharArray[256];
+    char FileNameCharArray[256];
     sdmmc_card_t* SDCardWriter;
     FILE* FileForData;
 };

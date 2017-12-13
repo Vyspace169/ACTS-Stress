@@ -28,10 +28,10 @@ public:
 
 class Bmp280Implementation: public Sensor{
 public:
-   Bmp280Implementation();
-   ~Bmp280Implementation();
-   unsigned short * read() override;
-private:
+   Bmp280Implementation()  {}
+   unsigned short* SensorRead() override;
+   ~Bmp280Implementation() {}
+   private:
 protected:
 };
 
