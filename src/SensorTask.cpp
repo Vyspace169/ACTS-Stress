@@ -44,6 +44,7 @@ void sensor_handle_task(void *args)  {
         if(uxBits & StandbySensorTaskUnhandled) {
         	sTask->Sensor_BMP->Sleep();
         	sTask->Sensor_MPU->Sleep();
+        	ESP_LOGI("SENSOR TASK", "Ready to sleep");
         	xEventGroupClearBits(GlobalEventGroupHandle, StandbySensorTaskUnhandled);
         	while(1) {
         		vTaskDelay(1000 / portTICK_PERIOD_MS);
@@ -53,7 +54,7 @@ void sensor_handle_task(void *args)  {
 }
 
 void print_struct(SampleData SensorData) {
-	ESP_LOGI("I2C TASK", "Value: \t %llu, \t %d, \t %d, \t %d, \t %d, \t %d, \t %d, \t %d, \t %d, \t %d, \t %d, \t %d \t",
+	ESP_LOGI("SENSOR TASK", "Value: \t %llu, \t %d, \t %d, \t %d, \t %d, \t %d, \t %d, \t %d, \t %d, \t %d, \t %d, \t %d \t",
 			SensorData.microTime,
 			SensorData.accelX,
    			SensorData.accelY,
@@ -104,15 +105,11 @@ void SensorTask::main_task() {
     if(xHandle == NULL) {
     	// Handle assignment has failed
     	ESP_LOGI("SENSOR TASK", "Handle creation failed");
-    } else {
-    	ESP_LOGI("SENSOR TASK", "Handle creation OK");
     }
 
     if(xReturned != pdPASS) {
     	// xReturned false (something went wrong!)
     	ESP_LOGI("SENSOR TASK", "Task creation failed");
-    } else {
-    	ESP_LOGI("SENSOR TASK", "Task creation OK");
     }
 
     ESP_LOGI("SENSOR TASK", "Task is running");

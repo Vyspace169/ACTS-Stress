@@ -17,6 +17,7 @@ void run_sd_task(void *args) {
         }
 
         if(uxBits & StandbyWriterTaskUnhandled) {
+        	ESP_LOGI("WRITER TASK", "Ready to sleep");
 			xEventGroupClearBits(GlobalEventGroupHandle, StandbyWriterTaskUnhandled);
 			while(1) {
 				vTaskDelay(1000 / portTICK_PERIOD_MS);
@@ -41,15 +42,11 @@ void SdWriterTask::main_task() {
 	  if(xHandle == NULL) {
 		  // Handle assignment has failed
 		  ESP_LOGI("WRITER TASK", "Handle creation failed");
-	  } else {
-		  ESP_LOGI("WRITER TASK", "Handle creation OK");
 	  }
 
 	  if(xReturned != pdPASS) {
 		  // xReturned false (something went wrong!)
 		  ESP_LOGI("WRITER TASK", "Task creation failed");
-	  } else {
-		  ESP_LOGI("WRITER TASK", "Task creation OK");
 	  }
 
 	  ESP_LOGI("WRITER TASK", "Task is running");

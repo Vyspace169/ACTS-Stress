@@ -164,7 +164,7 @@ extern "C" void app_main(void)
     }
 
     if(nvs_flash_init() != ESP_OK)   {
-    	ESP_LOGE("INIT_ERROR", "Error code:%i , message: nvs_flash_init failed!", ERROR_NVS_FLASH_INIT);
+    	ESP_LOGE("INIT_ERROR", "Error code: %i , message: nvs_flash_init failed!", ERROR_NVS_FLASH_INIT);
     }
 
     error_flash_init();

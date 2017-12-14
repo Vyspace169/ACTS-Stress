@@ -128,6 +128,18 @@ bool WifiModule::ClientConnect(int timeout) {
     return WifiIsConnected;
 }
 
+bool WifiModule::ClientSetPowerSave() {
+	if(ClientGetConnectionState() == false) {
+		return false;
+	}
+
+	if(esp_wifi_set_ps(WIFI_PS_MODEM) != ESP_OK) {
+		return false;
+	}
+
+	return true;
+}
+
 bool WifiModule::ClientDisconnect() {
     if( esp_wifi_stop() != ESP_OK) {
         return false;
@@ -152,7 +164,6 @@ void WifiModule::ClientDeinit() {
 }
 
 bool WifiModule::TCPConnectToServer(char *IPAddress, int port) {
-	// Connection?
 	if(ClientGetConnectionState() == false) {
 		return false;
 	}
@@ -163,13 +174,14 @@ bool WifiModule::TCPConnectToServer(char *IPAddress, int port) {
     SocketHandle = socket(AF_INET, SOCK_STREAM, 0);
 
     if(SocketHandle < 0) {
-       	ESP_LOGI("TCP CLIENT", "... Failed to allocate socket");
+       	ESP_LOGI("TCP CLIENT", "Failed to allocate socket");
        	return false;
     }
 
     if(connect(SocketHandle, (struct sockaddr *)&tcpServerAddr, sizeof(tcpServerAddr)) != 0) {
-    	ESP_LOGI("TCP CLIENT", "... socket connect failed errno = %d", errno);
+    	ESP_LOGI("TCP CLIENT", "Socket connect failed errno = %d", errno);
     	close(SocketHandle);
+    	SocketHandle = -1;
     	return false;
     }
 
@@ -187,7 +199,7 @@ bool WifiModule::TCPSend(char *Data, int size) {
 
 	if( write(SocketHandle , Data , size) < 0)
 	{
-		ESP_LOGI("TCP CLIENT", "... Send failed \n");
+		ESP_LOGI("TCP CLIENT", "Send failed");
 		close(SocketHandle);
 		return false;
     }

@@ -30,6 +30,7 @@ public:
     bool ClientSetStaticIP(char *ip, char *gateway, char *netmask);
     bool ClientConfig(char* SSID, char* PASS);
     bool ClientConnect(int timeout);
+    bool ClientSetPowerSave();
     bool ClientDisconnect();
     bool ClientGetConnectionState();
     void ClientDeinit();

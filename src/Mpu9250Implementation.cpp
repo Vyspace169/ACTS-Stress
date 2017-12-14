@@ -102,7 +102,6 @@ void Mpu9250Implementation::ak_init()  {
    AK8936SenseX = 0;
    AK8936SenseY = 0;
    AK8936SenseZ = 0;
-   uint8_t AK8936ID = 0;
 }
 void Mpu9250Implementation::init()  {
    //memset(&BackupMPUData, 0, sizeof(unsigned short) * 9);
@@ -120,7 +119,7 @@ void Mpu9250Implementation::init()  {
    // reset the MPU9250
    esp_err_t error = i2c_sensor_write_byte(MPU9250_I2C_ADDRESS, MPU9250_REG_PWR_MGMNT_1, MPU9250_SET_PWR_RESET);
    if(error != ESP_OK) {
-      ESP_LOGI("I2C TASK", "MPU9250 address gave an error: %d", error);
+      ESP_LOGI("I2C", "MPU9250 address gave an error: %d", error);
       //SystemErrorState |= MPU_ERROR;
    }
    else {
@@ -135,7 +134,7 @@ void Mpu9250Implementation::init()  {
    // reset the ak8936
    error = i2c_sensor_write_byte(AK8936_ADDRESS, AK8963_REG_CNTL2, AK8963_SET_RESET);
    if(error != ESP_OK) {
-      ESP_LOGI("I2C TASK", "AK8963 address gave an error: %d", error);
+      ESP_LOGI("I2C", "AK8963 address gave an error: %d", error);
       //SystemErrorState |= AK_ERROR;
    }
    else {
@@ -162,7 +161,7 @@ Mpu9250Implementation::Mpu9250Implementation(){
 	// reset the MPU9250
 	esp_err_t error = i2c_sensor_write_byte(MPU9250_I2C_ADDRESS, MPU9250_REG_PWR_MGMNT_1, MPU9250_SET_PWR_RESET);
 	if(error != ESP_OK) {
-		ESP_LOGI("I2C TASK", "MPU9250 address gave an error: %d", error);
+		ESP_LOGI("I2C", "MPU9250 address gave an error: %d", error);
       //SystemErrorState |= MPU_ERROR;
 	}
 	else {
@@ -181,7 +180,7 @@ Mpu9250Implementation::Mpu9250Implementation(){
 	// reset the ak8936
 	error = i2c_sensor_write_byte(AK8936_ADDRESS, AK8963_REG_CNTL2, AK8963_SET_RESET);
 	if(error != ESP_OK) {
-		ESP_LOGI("I2C TASK", "AK8963 address gave an error: %d", error);
+		ESP_LOGI("I2C", "AK8963 address gave an error: %d", error);
       //SystemErrorState |= AK_ERROR;
 	}
 	else {
@@ -205,7 +204,7 @@ Mpu9250Implementation::Mpu9250Implementation(){
 		i2c_sensor_write_byte(AK8936_ADDRESS, AK8936_REG_CNTL1, AK8936_SET_16BIT | AK8936_SET_SING_SAMP);
 	}
 
-	ESP_LOGI("I2C TASK", "MPU9250 ID: %i    AK8936 ID: %i", MPU9250ID, AK8936ID);
+	ESP_LOGI("I2C", "MPU9250 ID: %i    AK8936 ID: %i", MPU9250ID, AK8936ID);
 }
 
 int Mpu9250Implementation::DataSize() {
@@ -277,7 +276,7 @@ unsigned short* Mpu9250Implementation::SensorRead() {
 void Mpu9250Implementation::Sleep() {
 	if(MPUIsInitialized) {
 		if(i2c_sensor_write_byte(MPU9250_I2C_ADDRESS, MPU9250_REG_PWR_MGMNT_1, MPU9250_SET_SLEEP) != ESP_OK) {
-			ESP_LOGI("MPU9250", "Failed to enable sleep mode");
+			ESP_LOGI("I2C", "Failed to enable sleep mode on MPU9250");
 		}
 	}
 }
