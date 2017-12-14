@@ -38,6 +38,6 @@
 
 # Extra
 build/*
-sdconfig
-sdconfig.old
+sdkconfig
+sdkconfig.old
 Makefile
