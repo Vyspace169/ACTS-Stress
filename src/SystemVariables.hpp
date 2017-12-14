@@ -52,7 +52,7 @@ typedef struct {
 
 // Frequency defines
 #define SAMPLE_RATE_H			100
-#define SAMPE_TIME_MS			10
+#define SAMPLE_TIME_MS			10
 #define BINARY_BUFFER_SIZE		1000
 
 // SDWriter defines

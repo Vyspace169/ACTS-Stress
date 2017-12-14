@@ -79,7 +79,7 @@ void SensorTask::main_task() {
 
 	TimerHandle_t sample_poll_timer = NULL;
 	sample_poll_timer = xTimerCreate("sensor_poll_clock",
-			SAMPE_TIME_MS,
+			SAMPLE_TIME_MS,
 			pdTRUE,
 			SENSORTASK_TIMER_ID,
 			set_sensor_measurement_bit);
