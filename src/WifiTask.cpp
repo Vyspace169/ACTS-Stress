@@ -29,8 +29,8 @@ void run_wifi_task(void *args)  {
 
 				// Sending data example
 				ESP_LOGI("WIFI TASK", "Activety: %f", sTask->DPHandle.GetActivityData());
-				char ActivityDataString[10];
-				itoa(sTask->DPHandle.GetActivityData(), ActivityDataString, 10);
+				char ActivityDataString[25];
+				sprintf(ActivityDataString, "%.2f\n" ,sTask->DPHandle.GetActivityData());
 				testmodule->TCPConnectToServer("192.168.178.38", 3010);
 				testmodule->TCPSend(ActivityDataString, strlen(ActivityDataString));
 				testmodule->TCPDisconnect();
