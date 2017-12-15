@@ -114,7 +114,7 @@ Bmp280Implementation::Bmp280Implementation() {
 
 	bmp280_com_functions.bus_write = BMP280_I2C_bus_write;
 	bmp280_com_functions.bus_read = BMP280_I2C_bus_read;
-	bmp280_com_functions.dev_addr = BMP280_I2C_ADDRESS2;
+	bmp280_com_functions.dev_addr = BMP280_I2C_ADDRESS1;
 	bmp280_com_functions.delay_msec = BMP280_delay_msek;
 
 	if(bmp280_init(&bmp280_com_functions) != SUCCESS) {

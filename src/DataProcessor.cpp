@@ -55,7 +55,7 @@ void DataProcessor::HandleData(SampleData NewData) {
 	else {
 		TimeoutCounter += SAMPLE_TIME_MS;
 		if(TimeoutCounter >= TimeoutTrigger) {
-			xEventGroupSetBits(GlobalEventGroupHandle, MovementTimeoutReached);
+			//xEventGroupSetBits(GlobalEventGroupHandle, MovementTimeoutReached);
 		}
 	}
 

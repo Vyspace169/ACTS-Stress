@@ -42,8 +42,8 @@ void SensorHandleTask(void *args)  {
         }
 
         if(uxBits & StandbySensorTaskUnhandled) {
-        	sTask->Sensor_BMP->Sleep();
-        	sTask->Sensor_MPU->Sleep();
+        	//sTask->Sensor_BMP->Sleep();
+        	//sTask->Sensor_MPU->Sleep();
         	ESP_LOGI("SENSOR TASK", "Ready to sleep");
         	xEventGroupClearBits(GlobalEventGroupHandle, StandbySensorTaskUnhandled);
         	while(1) {
