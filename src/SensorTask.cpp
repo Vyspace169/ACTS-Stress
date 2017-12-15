@@ -10,7 +10,7 @@ SensorTask::SensorTask(unsigned int task_priority, DoubleBuffer &db, DataProcess
         main_task(); 
     }
 
-void sensor_handle_task(void *args)  {
+void SensorHandleTask(void *args)  {
 	SensorTask *sTask = static_cast<SensorTask*>(args);
 	SampleData SensorData;
 	EventBits_t uxBits;
@@ -70,7 +70,7 @@ void print_struct(SampleData SensorData) {
 }
 
 
-void set_sensor_measurement_bit( TimerHandle_t xTimer )  {
+void SetSensorMeasurementBit( TimerHandle_t xTimer )  {
     xEventGroupSetBits(GlobalEventGroupHandle, SensorMeasurementFlag);
 }
 
@@ -82,7 +82,7 @@ void SensorTask::main_task() {
 			SAMPLE_TIME_MS,
 			pdTRUE,
 			SENSORTASK_TIMER_ID,
-			set_sensor_measurement_bit);
+			SetSensorMeasurementBit);
     xTimerStart(sample_poll_timer, 0 );
 
     if(sample_poll_timer == NULL) {
@@ -94,7 +94,7 @@ void SensorTask::main_task() {
 
     TaskHandle_t xHandle = NULL;
     void* thisTask = static_cast<void*>(this);
-    BaseType_t xReturned = xTaskCreatePinnedToCore(sensor_handle_task,
+    BaseType_t xReturned = xTaskCreatePinnedToCore(SensorHandleTask,
     												"sensor_task",
 													SENSORTASK_STACK_SIZE,
 													thisTask,
