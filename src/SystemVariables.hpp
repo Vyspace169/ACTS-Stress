@@ -47,8 +47,13 @@ typedef struct {
 #define GPIO_CHARGE_DETECT		GPIO_NUM_21
 #define GPIO_CHG_CNTRL			GPIO_NUM_27
 #define GPIO_PW_GOOD			GPIO_NUM_16
-#define GPIO_PW_ADC				GPIO_NUM_15
+#define GPIO_PW_ADC				GPI_NUM_34
 #define GPIO_MPU_INT			GPI_NUM_35
+
+// I2C pin defines
+#define PIN_NUM_SDA				GPIO_NUM_25
+#define PIN_NUM_SCL				GPIO_NUM_26
+#define I2C_SPEED				400000
 
 // Frequency defines
 #define SAMPLE_RATE_H			100
@@ -61,6 +66,7 @@ typedef struct {
 #define PIN_NUM_CLK 			GPIO_NUM_18
 #define PIN_NUM_CS 				GPIO_NUM_5
 #define SD_CARD_SPI_SPEED_KHZ	1000
+#define SDMMC_INIT_RETRIES		4
 
 // Sleep settings
 #define SLEEP_TIME_SEC 			60

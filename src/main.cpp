@@ -55,49 +55,42 @@ static void gpio_init_leds() {
 void blink_task(void *pvParameter)
 {
     while(1) {
-    	/*gpio_set_level(GPIO_LED_RED, 0);
-    	gpio_set_level(GPIO_LED_BLUE, 1);
-        vTaskDelay(800 / portTICK_PERIOD_MS);
-        gpio_set_level(GPIO_LED_GREEN, 0);
-        gpio_set_level(GPIO_LED_RED, 1);
-        vTaskDelay(800 / portTICK_PERIOD_MS);
-        gpio_set_level(GPIO_LED_BLUE, 0);
-        gpio_set_level(GPIO_LED_GREEN, 1);
-        vTaskDelay(800 / portTICK_PERIOD_MS);*/
-
     	gpio_set_level(GPIO_LED_GREEN, 1);
     	vTaskDelay(5000 / portTICK_PERIOD_MS);
     	gpio_set_level(GPIO_LED_GREEN, 0);
     	vTaskDelay(10 / portTICK_PERIOD_MS);
     }
-}
 
-void wifi_task(void *pvParameter) {
-
-	char* ip = "192.168.43.140";
-	char* subnet = "192.168.43.1";
-	char* mask = "255.255.255.0";
-	char* ssid = "Allyouare";
-	char* pass = "Meulen-2017";
-	WifiModule wificonnection;
-	wificonnection.ClientSetStaticIP(ip, subnet, mask);
-	wificonnection.ClientConfig(ssid, pass);
-	wificonnection.ClientConnect(10000);
+	/*gpio_config_t io_conf;
+	//disable interrupt
+	io_conf.intr_type = GPIO_INTR_DISABLE;
+	//set as output mode
+	io_conf.mode = GPIO_MODE_INPUT;
+	//bit mask of the pins that you want to set,e.g.GPIO18/19
+	io_conf.pin_bit_mask = GPIO_PW_GOOD;
+	//disable pull-down mode
+	io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
+	//disable pull-up mode
+	io_conf.pull_up_en = GPIO_PULLUP_DISABLE;
+	//configure GPIO with the given settings
+	gpio_config(&io_conf);
 
 	while(1){
-		vTaskDelay(100 / portTICK_PERIOD_MS);
-	}
+		int test = gpio_get_level(GPIO_PW_GOOD);
+		ESP_LOGI("MAIN", "level: %d", test);
+		vTaskDelay(500 / portTICK_PERIOD_MS);
+	}*/
 }
 
 static void i2c_master_init()
 {
     i2c_config_t conf;
     conf.mode = I2C_MODE_MASTER;
-    conf.sda_io_num = GPIO_NUM_25;
+    conf.sda_io_num = PIN_NUM_SDA;
     conf.sda_pullup_en = GPIO_PULLUP_ENABLE;
-    conf.scl_io_num = GPIO_NUM_26;
+    conf.scl_io_num = PIN_NUM_SCL;
     conf.scl_pullup_en = GPIO_PULLUP_ENABLE;
-    conf.master.clk_speed = 400000;
+    conf.master.clk_speed = I2C_SPEED;
 
 	if(i2c_param_config(I2C_NUM_0, &conf) != ESP_OK)  {
 		ESP_LOGE("INIT_ERROR", "Error code:%i , message: i2c param config failed!", ERROR_I2C_PARAM_CONFIG);
@@ -176,7 +169,7 @@ extern "C" void app_main(void)
     GlobalEventGroupHandle = xEventGroupCreate();
 
     SDWriter *GlobalSDWriter = new SDWriter;
-    GlobalSDWriter->InitSDMMC(4);
+    GlobalSDWriter->InitSDMMC(SDMMC_INIT_RETRIES);
     GlobalSDWriter->SetFileName("filename.bin");
 
     DataProcessor *GlobalDataHandler = new DataProcessor;
@@ -194,7 +187,7 @@ extern "C" void app_main(void)
     WifiTask *wt = new WifiTask(WIFITASK_PRIORITY, *GlobalDataHandler);
 
     // Start blink task
-    xTaskCreate(&blink_task, "blink_task", configMINIMAL_STACK_SIZE, NULL, 5, NULL);
+    xTaskCreate(&blink_task, "blink_task", 2048, NULL, 5, NULL);
 
     ESP_LOGI("MAIN", "Init done");
 }

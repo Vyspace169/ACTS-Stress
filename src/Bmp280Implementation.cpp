@@ -177,7 +177,7 @@ Bmp280Implementation::Bmp280Implementation() {
    }
    else  {
       IsInitialized = true;
-      //ESP_LOGI(TAG_BMP280, "BMP init ok");   
+      ESP_LOGI(TAG_BMP280, "BMP init ok");
    }
 
 }
