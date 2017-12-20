@@ -5,11 +5,8 @@ WifiTask::WifiTask(unsigned int task_priority, DataProcessor &dp) : BaseTask(tas
 
 void run_wifi_task(void *args)  {
 	WifiTask *sTask = static_cast<WifiTask*>(args);
-
-	char* ssid = "Allyouare";
-	char* pass = "Meulen-2017";
 	WifiModule *testmodule = new WifiModule;
-	testmodule->ClientConfig(ssid, pass);
+	testmodule->ClientConfig(WIFI_SSID, WIFI_PASSWORD);
 
     while(1)  {
         EventBits_t uxBits;
@@ -25,15 +22,31 @@ void run_wifi_task(void *args)  {
 				ESP_LOGI("WIFI TASK", "Wifi connected");
 
 				// enable power save mode
-				testmodule->ClientSetPowerSave();
+				//testmodule->ClientSetPowerSave();
 
-				// Sending data example
-				ESP_LOGI("WIFI TASK", "Activety: %f", sTask->DPHandle.GetActivityData());
-				char ActivityDataString[25];
-				sprintf(ActivityDataString, "%.2f\n" ,sTask->DPHandle.GetActivityData());
-				testmodule->TCPConnectToServer("192.168.178.38", 3010);
-				testmodule->TCPSend(ActivityDataString, strlen(ActivityDataString));
-				testmodule->TCPDisconnect();
+				//testmodule->TCPConnectToServer("192.168.178.38", 3010);
+				//testmodule->TCPSend(ActivityDataString, strlen(ActivityDataString));
+				//testmodule->TCPDisconnect();
+
+				sntp_setoperatingmode(SNTP_OPMODE_POLL);
+				sntp_setservername(0, "pool.ntp.org");
+				sntp_init();
+
+				// wait for time to be set
+				time_t now = 0;
+				struct tm timeinfo;
+				int retry = 0;
+				const int retry_count = 10;
+				while(timeinfo.tm_year < (2016 - 1900) && ++retry < retry_count) {
+				    ESP_LOGI("WIFI TASK", "Waiting for system time to be set... (%d/%d)", retry, retry_count);
+				    vTaskDelay(1000 / portTICK_PERIOD_MS);
+				    time(&now);
+				    localtime_r(&now, &timeinfo);
+				}
+
+				char strftime_buf[64];
+				strftime(strftime_buf, sizeof(strftime_buf), "%c", &timeinfo);
+				ESP_LOGI("WIFI TASK", "Central time: %s", strftime_buf);
 			}
         }
 
@@ -42,6 +55,15 @@ void run_wifi_task(void *args)  {
             // TODO: Send data over wifi to the server
         	// TODO: MQTT frame builder class
         }
+
+#ifdef DATA_THROUGH_TCP
+        if(uxBits & WifiReadyFlag) {
+        	if(testmodule->ClientGetConnectionState() == true) {
+        		char* sendData = sTask->DPHandle.GetDataString();
+        		testmodule->TCPSend(sendData, strlen(sendData));
+        	}
+        }
+#endif
 
         if(uxBits & StandbyWifiTaskUnhandled) {
         	if(testmodule->ClientGetConnectionState() == true) {

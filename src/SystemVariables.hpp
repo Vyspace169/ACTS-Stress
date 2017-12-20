@@ -36,8 +36,8 @@ typedef struct {
 #define StandbyWifiTaskUnhandled   	( 1 << 7 )
 #define StandbyWriterTaskUnhandled 	( 1 << 8 )
 
-#define SystemErrorFlag      (1 << 9)
-#define SystemErrorBit       (1 << 10)
+#define SystemErrorFlag      		( 1 << 9 )
+#define SystemErrorBit       		( 1 << 10 )
 
 // GPIO defines
 #define GPIO_LED_BLUE			GPIO_NUM_13
@@ -47,17 +47,12 @@ typedef struct {
 #define GPIO_CHARGE_DETECT		GPIO_NUM_21
 #define GPIO_CHG_CNTRL			GPIO_NUM_27
 #define GPIO_PW_GOOD			GPIO_NUM_16
-#define GPIO_PW_ADC				GPI_NUM_34
+#define GPIO_PW_ADC				GPI_NUM_34 //adc 1 channel 6
 #define GPIO_MPU_INT			GPI_NUM_35
-
-// I2C pin defines
-#define PIN_NUM_SDA				GPIO_NUM_25
-#define PIN_NUM_SCL				GPIO_NUM_26
-#define I2C_SPEED				400000
 
 // Frequency defines
 #define SAMPLE_RATE_H			100
-#define SAMPLE_TIME_MS			10
+#define SAMPE_TIME_MS			10
 #define BINARY_BUFFER_SIZE		1000
 
 // SDWriter defines
@@ -73,8 +68,15 @@ typedef struct {
 #define TIMEOUT_TIME_SEC		60
 
 // Wifi settings
-#define WIFI_POLL_FREQUENCY_SEC	25
-#define WIFI_CONNECT_TIMEOUT	4000
+#define WIFI_POLL_FREQUENCY_SEC	5
+#define WIFI_CONNECT_TIMEOUT	10000
+#define WIFI_SSID				"Allyouare"
+#define WIFI_PASSWORD			"Meulen-2017"
+
+// I2C defines
+#define GPIO_SDA				GPIO_NUM_25
+#define GPIO_SCL				GPIO_NUM_26
+#define I2C_SPEED				400000
 
 // Dataprocessor defines
 #define TRIGGER_VALUE_X			1000
@@ -101,5 +103,8 @@ typedef struct {
 #define STANDBYCONT_PRIORITY 	4
 #define STANDBYCONT_STACK_SIZE 	2048
 #define STANDBYCONT_LOOP_DELAY	250
+
+// Test funtions
+//#define DATA_THROUGH_TCP		1
 
 #endif //SYSTEM_VARS_HPP

@@ -23,6 +23,9 @@ public:
     void ResetActivityData();
     void HandleData(SampleData NewData);
     double GetActivityData();
+#ifdef DATA_THROUGH_TCP
+    char* GetDataString();
+#endif
     ~DataProcessor();
 private:
     int TimeoutCounter;
@@ -35,4 +38,7 @@ private:
     int TriggerValueX;
     int TriggerValueY;
     int TriggerValueZ;
+#ifdef DATA_THROUGH_TCP
+    char DataStringBuffer[256];
+#endif
 };

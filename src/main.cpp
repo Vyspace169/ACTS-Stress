@@ -60,35 +60,15 @@ void blink_task(void *pvParameter)
     	gpio_set_level(GPIO_LED_GREEN, 0);
     	vTaskDelay(10 / portTICK_PERIOD_MS);
     }
-
-	/*gpio_config_t io_conf;
-	//disable interrupt
-	io_conf.intr_type = GPIO_INTR_DISABLE;
-	//set as output mode
-	io_conf.mode = GPIO_MODE_INPUT;
-	//bit mask of the pins that you want to set,e.g.GPIO18/19
-	io_conf.pin_bit_mask = GPIO_PW_GOOD;
-	//disable pull-down mode
-	io_conf.pull_down_en = GPIO_PULLDOWN_DISABLE;
-	//disable pull-up mode
-	io_conf.pull_up_en = GPIO_PULLUP_DISABLE;
-	//configure GPIO with the given settings
-	gpio_config(&io_conf);
-
-	while(1){
-		int test = gpio_get_level(GPIO_PW_GOOD);
-		ESP_LOGI("MAIN", "level: %d", test);
-		vTaskDelay(500 / portTICK_PERIOD_MS);
-	}*/
 }
 
 static void i2c_master_init()
 {
     i2c_config_t conf;
     conf.mode = I2C_MODE_MASTER;
-    conf.sda_io_num = PIN_NUM_SDA;
+    conf.sda_io_num = GPIO_SDA;
     conf.sda_pullup_en = GPIO_PULLUP_ENABLE;
-    conf.scl_io_num = PIN_NUM_SCL;
+    conf.scl_io_num = GPIO_SCL;
     conf.scl_pullup_en = GPIO_PULLUP_ENABLE;
     conf.master.clk_speed = I2C_SPEED;
 
@@ -187,7 +167,7 @@ extern "C" void app_main(void)
     WifiTask *wt = new WifiTask(WIFITASK_PRIORITY, *GlobalDataHandler);
 
     // Start blink task
-    xTaskCreate(&blink_task, "blink_task", 2048, NULL, 5, NULL);
+    xTaskCreate(&blink_task, "blink_task", configMINIMAL_STACK_SIZE, NULL, 5, NULL);
 
     ESP_LOGI("MAIN", "Init done");
 }

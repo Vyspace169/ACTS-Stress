@@ -8,13 +8,12 @@
 #include "Sensor.hpp"
 #include "Systemerrors.hpp"
 #include "Errorhandler.hpp"
-#define TAG_BMP280 "BMP280"
 
-#define SCL_PIN GPIO_NUM_26
-#define SDA_PIN GPIO_NUM_25
+#define TAG_BMP280 "BMP280"
 
 #define I2C_MASTER_ACK 0
 #define I2C_MASTER_NACK 1
+
 enum class BMP280ErrTypes{
    NO_ERROR,
    INIT_ERROR_1,

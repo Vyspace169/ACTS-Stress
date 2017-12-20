@@ -53,9 +53,9 @@ void DataProcessor::HandleData(SampleData NewData) {
 		TimeoutCounter = 0;
 	}
 	else {
-		TimeoutCounter += SAMPLE_TIME_MS;
+		TimeoutCounter += SAMPE_TIME_MS;
 		if(TimeoutCounter >= TimeoutTrigger) {
-			//xEventGroupSetBits(GlobalEventGroupHandle, MovementTimeoutReached);
+			xEventGroupSetBits(GlobalEventGroupHandle, MovementTimeoutReached);
 		}
 	}
 
@@ -63,11 +63,34 @@ void DataProcessor::HandleData(SampleData NewData) {
 	OldAcceleroXValue = NewData.accelX;
 	OldAcceleroYValue = NewData.accelY;
 	OldAcceleroZValue = NewData.accelZ;
+
+#ifdef DATA_THROUGH_TCP
+	sprintf(DataStringBuffer, "%llu,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,\r\n",
+			NewData.microTime,
+			NewData.accelX,
+			NewData.accelY,
+			NewData.accelZ,
+			NewData.gyroX,
+			NewData.gyroY,
+			NewData.gyroZ,
+			NewData.magnetoX,
+			NewData.magnetoY,
+			NewData.magnetoZ,
+			NewData.temp,
+			NewData.pressure);
+	xEventGroupSetBits(GlobalEventGroupHandle, WifiReadyFlag);
+#endif
 }
 
 double DataProcessor::GetActivityData() {
 	return ActivityData;
 }
+
+#ifdef DATA_THROUGH_TCP
+char* DataProcessor::GetDataString() {
+	return DataStringBuffer;
+}
+#endif
 
 DataProcessor::~DataProcessor(){
 

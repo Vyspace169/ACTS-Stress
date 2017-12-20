@@ -1,13 +1,5 @@
 #include "Bmp280Implementation.hpp"
 
-//#define TAG_BMP280 "BMP280"
-
-#define SCL_PIN GPIO_NUM_26
-#define SDA_PIN GPIO_NUM_25
-
-#define I2C_MASTER_ACK 0
-#define I2C_MASTER_NACK 1
-
 s8 BMP280_I2C_bus_write(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
 {
    s32 iError = BMP280_INIT_VALUE;
@@ -114,15 +106,15 @@ Bmp280Implementation::Bmp280Implementation() {
 
 	bmp280_com_functions.bus_write = BMP280_I2C_bus_write;
 	bmp280_com_functions.bus_read = BMP280_I2C_bus_read;
-	bmp280_com_functions.dev_addr = BMP280_I2C_ADDRESS1;
+	bmp280_com_functions.dev_addr = BMP280_I2C_ADDRESS2;
 	bmp280_com_functions.delay_msec = BMP280_delay_msek;
 
 	if(bmp280_init(&bmp280_com_functions) != SUCCESS) {
 		IsInitialized = false;
-      error_type = BMP280ErrTypes::INIT_ERROR_1;
-      //this->error_code = 1;
+		error_type = BMP280ErrTypes::INIT_ERROR_1;
+		//this->error_code = 1;
 		//ESP_LOGI(TAG_BMP280, "BMP not discovered, error 1");
-      //SystemErrorState |= BMP_ERROR;
+		//SystemErrorState |= BMP_ERROR;
       
 		//return;
 	}
@@ -168,16 +160,17 @@ Bmp280Implementation::Bmp280Implementation() {
       error_type = BMP280ErrTypes::INIT_ERROR_6;
       //this->error_code = 6;
 		//ESP_LOGI(TAG_BMP280, "BMP not discovered, error 6");
-      //SystemErrorState |= BMP_ERROR;
+      	//SystemErrorState |= BMP_ERROR;
 		//return;
 	}
    if(!IsInitialized)   {
-      //Errorhandler::getInstance().ErrorInit(this);
-      //Errorhandler::getInstance();
+	   //Errorhandler::getInstance().ErrorInit(this);
+	   //Errorhandler::getInstance();
    }
    else  {
-      IsInitialized = true;
-      ESP_LOGI(TAG_BMP280, "BMP init ok");
+	   ESP_LOGI("BMP280", "Init ok");
+	   IsInitialized = true;
+	   //ESP_LOGI(TAG_BMP280, "BMP init ok");
    }
 
 }
