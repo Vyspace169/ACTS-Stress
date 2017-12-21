@@ -64,6 +64,17 @@ void blink_task(void *pvParameter)
 
 static void i2c_master_init()
 {
+	// give scl pin some clocks
+	gpio_pad_select_gpio(GPIO_SCL);
+	gpio_set_direction(GPIO_SCL, GPIO_MODE_OUTPUT);
+	for(int i=0;i<100;i++) {
+		gpio_set_level(GPIO_SCL, 1);
+		vTaskDelay(1);
+		gpio_set_level(GPIO_SCL, 0);
+		vTaskDelay(1);
+	}
+
+	// initialize bus
     i2c_config_t conf;
     conf.mode = I2C_MODE_MASTER;
     conf.sda_io_num = GPIO_SDA;
