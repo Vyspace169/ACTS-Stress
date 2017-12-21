@@ -25,9 +25,13 @@ enum class BMP280ErrTypes{
 };
 class Bmp280Implementation: public Sensor{
 public:
+   /// Initializing the Bmp280 struct
    Bmp280Implementation();
+   /// Datasize of the sample information
    int DataSize() override;
+   /// Reading the sensor
    unsigned short* SensorRead() override;
+   /// Sleeping the sensor ()
    void Sleep() override {}
    ~Bmp280Implementation() {}
 private:
@@ -39,7 +43,7 @@ private:
 protected:
 };
 
-//void i2c_master_init(); // not important for bmp280
+// Functions that are used by the BMP280 driver and implemented for esp32 using espidf
 s8 BMP280_I2C_bus_write(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt);
 s8 BMP280_I2C_bus_read(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt);
 void BMP280_delay_msek(u32 msek);
