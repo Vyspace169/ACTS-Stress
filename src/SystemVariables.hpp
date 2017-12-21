@@ -85,11 +85,7 @@ typedef struct {
 #define WIFI_POLL_FREQUENCY_SEC	10
 #define WIFI_CONNECT_TIMEOUT	10000
 #define WIFI_SSID				"ACTS"
-<<<<<<< HEAD
 #define WIFI_PASSWORD			"12345678"
-=======
-#define WIFI_PASSWORD		"12345678"
->>>>>>> origin/sensors
 
 // I2C defines
 #define GPIO_SDA				GPIO_NUM_25
