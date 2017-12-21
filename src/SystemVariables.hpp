@@ -1,5 +1,3 @@
-/// @file
-
 #ifndef SYSTEM_VARS_HPP
 #define SYSTEM_VARS_HPP
 
@@ -22,41 +20,29 @@ typedef struct {
 	int temp;
 	int pressure;
 } SampleData;
-/// @defgroup FLAG_GROUP Flag Group
-///	{
-// -------Flags for Tasks----------------------------
-/// Flag that is used to make sensortask sample for new data
-#define SensorMeasurementFlag 		( 1 << 0 )
-/// T.B.D.
-#define WifiActivateFlag 			( 1 << 1 )
-/// T.B.D.
-#define WifiReadyFlag 				( 1 << 2 )
-/// Flag that is set when Buffer is ready to be written by SDTask
-#define SensorBufferSdReady 		( 1 << 4 )
-/// T.B.D.
-#define MovementTimeoutReached 		( 1 << 5 )
-/// T.B.D.
-#define StandbySensorTaskUnhandled 	( 1 << 6 )
-/// T.B.D.
-#define StandbyWifiTaskUnhandled   	( 1 << 7 )
-/// T.B.D.
-#define StandbyWriterTaskUnhandled 	( 1 << 8 )
-/// T.B.D.
-#define SystemErrorFlag      		( 1 << 9 )
-/// T.B.D.
-#define SystemErrorBit       		( 1 << 10 )
-/// @}
-// GPIO defines
 
-/// @defgroup LED_GROUP Led Group
-/// @{
-/// GPIO Blue Led
+// -------Flags for Tasks----------------------------
+// Flag for SensorTask to act upon
+#define SensorMeasurementFlag 		( 1 << 0 )
+// Flags for WifiTask to act upon
+#define WifiActivateFlag 			( 1 << 1 )
+#define WifiReadyFlag 				( 1 << 2 )
+// Flag for SdWriterTask to act upon
+#define SensorBufferSdReady 		( 1 << 4 )
+// Flag to signal movement timeout count has been reached
+#define MovementTimeoutReached 		( 1 << 5 )
+// Flags from tasks stating they are ready to sleep
+#define StandbySensorTaskUnhandled 	( 1 << 6 )
+#define StandbyWifiTaskUnhandled   	( 1 << 7 )
+#define StandbyWriterTaskUnhandled 	( 1 << 8 )
+
+#define SystemErrorFlag      		( 1 << 9 )
+#define SystemErrorBit       		( 1 << 10 )
+
+// GPIO defines
 #define GPIO_LED_BLUE			GPIO_NUM_13
-/// GPIO Green Led
 #define GPIO_LED_GREEN			GPIO_NUM_14
-/// GPIO Red Led
 #define GPIO_LED_RED			GPIO_NUM_12
-/// @}
 #define GPIO_SD_DETECT			GPIO_NUM_4
 #define GPIO_CHARGE_DETECT		GPIO_NUM_21
 #define GPIO_CHG_CNTRL			GPIO_NUM_27
@@ -109,8 +95,8 @@ typedef struct {
 
 // Wifitask defines
 #define WIFITASK_CORE_NUM 		0
-#define WIFITASK_PRIORITY 		1
-#define WIFITASK_STACK_SIZE 	32000
+#define WIFITASK_PRIORITY 		0
+#define WIFITASK_STACK_SIZE 	4096
 
 // StandbyController defines
 #define STANDBYCONT_CORE_NUM 	1

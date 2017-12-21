@@ -25,9 +25,9 @@
 extern "C" {
 #endif
 
-extern void WiFiInitialize(void);
+extern void WiFiInitialize(char* SSID, char* PASS);
 
-extern bool WiFiConnect(char* SSID, char* PASS, int timeout);
+extern bool WiFiConnect(int timeout);
 
 extern void WiFiSetPowerSave(void);
 

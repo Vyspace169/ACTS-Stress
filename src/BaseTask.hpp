@@ -37,7 +37,6 @@ const EventBits_t SystemErrorBit       = (1 << 10);*/
 
 }*/
 /// @brief The base class that contains the requirements that all tasks require to operate
-///   When calling the ctor, it should also start the task and the task will internally run the main_task
 class BaseTask{
 public:
   BaseTask(unsigned int task_priority) : task_priority{task_priority} {} ;

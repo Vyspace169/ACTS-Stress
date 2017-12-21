@@ -123,6 +123,23 @@ void error_flash_init() {
     }
 }
 
+void string_task(void* param) {
+	WiFiInitialize(WIFI_SSID, WIFI_PASSWORD);
+	bool enabled = WiFiConnect(WIFI_CONNECT_TIMEOUT);
+	time_t this_moment = WiFiGetTime(20);
+	WiFiDisconnect();
+
+	struct tm timeinfo;
+	localtime_r(&this_moment, &timeinfo);
+	char strftime_buf[64];
+	strftime(strftime_buf, sizeof(strftime_buf), "%c", &timeinfo);
+	ESP_LOGI("WIFI TASK", "Central time:  %s  ", strftime_buf);
+
+	while(1) {
+	   	vTaskDelay(5000 / portTICK_PERIOD_MS);
+	}
+}
+
 extern "C" void app_main(void)
 {
     ESP_LOGI("MAIN", "Booting completed");

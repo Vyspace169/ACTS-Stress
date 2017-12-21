@@ -148,7 +148,8 @@ private:
 void run_wifi_task(void *args)  {
 	WifiTask *sTask = static_cast<WifiTask*>(args);
 
-	WiFiInitialize();
+	ESP_LOGI("WIFI TASK", "Initializing wifi");
+	WiFiInitialize(WIFI_SSID, WIFI_PASSWORD);
 
     while(1)  {
         EventBits_t uxBits;
@@ -156,7 +157,8 @@ void run_wifi_task(void *args)  {
 
         if((uxBits & WifiActivateFlag)) {
 			ESP_LOGI("WIFI TASK", "Connecting to wifi");
-			bool enabled = WiFiConnect(WIFI_SSID, WIFI_PASSWORD, WIFI_CONNECT_TIMEOUT);
+
+			bool enabled = WiFiConnect(WIFI_CONNECT_TIMEOUT);
 
 			if(enabled == false) {
 				ESP_LOGI("WIFI TASK", "Wifi not connected");
@@ -173,13 +175,6 @@ void run_wifi_task(void *args)  {
 					TCPSend(send_string, strlen(send_string));
 					TCPDisconnect();
 				}
-
-				/*struct tm timeinfo;
-				time_t this_moment = wifi.GetTime(20);
-				localtime_r(&this_moment, &timeinfo);
-				char strftime_buf[64];
-				strftime(strftime_buf, sizeof(strftime_buf), "%c", &timeinfo);
-				ESP_LOGI("WIFI TASK", "Central time: %s", strftime_buf);*/
 
 				WiFiDisconnect();
 			}

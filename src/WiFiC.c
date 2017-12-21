@@ -16,7 +16,7 @@ esp_err_t local_wifi_Event_handler(void *ctx, system_event_t *event)
 				break;
 			case SYSTEM_EVENT_STA_GOT_IP:
 				xEventGroupSetBits(wifi_event_group_1, WIFI_EVENT_BIT);
-				ESP_LOGI("WIFI EVENT", "Got IP: %s\n", ip4addr_ntoa(&event->event_info.got_ip.ip_info.ip));
+				ESP_LOGI("WIFI EVENT", "Got IP: %s", ip4addr_ntoa(&event->event_info.got_ip.ip_info.ip));
 				break;
 			case SYSTEM_EVENT_STA_DISCONNECTED:
 				xEventGroupClearBits(wifi_event_group_1, WIFI_EVENT_BIT);
@@ -32,14 +32,10 @@ esp_err_t local_wifi_Event_handler(void *ctx, system_event_t *event)
     return ESP_OK;
 }
 
-void WiFiInitialize(void) {
+void WiFiInitialize(char* SSID, char* PASS) {
+	tcpip_adapter_init();
 	wifi_event_group_1 = xEventGroupCreate();
 	esp_event_loop_init(local_wifi_Event_handler, NULL);
-}
-
-bool WiFiConnect(char* SSID, char* PASS, int timeout) {
-	WifiEnabled = true;
-	tcpip_adapter_init();
 	wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
 	esp_wifi_init(&cfg);
 	esp_wifi_set_storage(WIFI_STORAGE_FLASH);
@@ -48,6 +44,10 @@ bool WiFiConnect(char* SSID, char* PASS, int timeout) {
 	strcpy((char*) wifi_config.sta.password, PASS);
 	esp_wifi_set_mode(WIFI_MODE_STA);
 	esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config);
+}
+
+bool WiFiConnect(int timeout) {
+	WifiEnabled = true;
 	esp_wifi_start();
 	xEventGroupWaitBits(wifi_event_group_1, WIFI_EVENT_BIT, false, true, timeout / portTICK_PERIOD_MS);
 
@@ -57,10 +57,9 @@ bool WiFiConnect(char* SSID, char* PASS, int timeout) {
 	} else {
 		connected = false;
 		WifiEnabled = false;
-		vEventGroupDelete(wifi_event_group_1);
+		xEventGroupClearBits(wifi_event_group_1, WIFI_EVENT_BIT);
+		esp_wifi_disconnect();
 		esp_wifi_stop();
-		esp_wifi_set_mode(WIFI_MODE_NULL);
-		esp_wifi_deinit();
 		return false;
 	}
 }
@@ -75,10 +74,9 @@ void WiFiSetPowerSave(void) {
 void WiFiDisconnect(void) {
 	connected = false;
 	WifiEnabled = false;
-	vEventGroupDelete(wifi_event_group_1);
+	xEventGroupClearBits(wifi_event_group_1, WIFI_EVENT_BIT);
+	esp_wifi_disconnect();
 	esp_wifi_stop();
-	esp_wifi_set_mode(WIFI_MODE_NULL);
-	esp_wifi_deinit();
 }
 
 time_t WiFiGetTime(int retries) {

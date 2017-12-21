@@ -62,6 +62,44 @@ void BMP280_delay_msek(u32 msek)
    vTaskDelay(msek/portTICK_PERIOD_MS);
 }
 
+/*void Bmp280Implementation::HandleError()  {
+   switch(error_type)   {
+      case BMP280ErrTypes::INIT_ERROR_1:
+         //error_type
+         break;
+      default:
+         break;
+   }
+}*/
+/*std::string Bmp280Implementation::Msg() {
+   std::string str;
+
+   switch(error_type)   {
+      case BMP280ErrTypes::INIT_ERROR_1:
+         str = "BMP280 INIT ERROR 1";
+         break;
+      case BMP280ErrTypes::INIT_ERROR_2:
+         str = "INIT ERROR 2";
+      break;
+      case BMP280ErrTypes::INIT_ERROR_3:
+         str = "INIT ERROR 3";
+      break;
+      case BMP280ErrTypes::INIT_ERROR_4:
+         str = "INIT ERROR 4";
+      break;
+      case BMP280ErrTypes::INIT_ERROR_5:
+         str = "INIT ERROR 5";
+      break;
+      case BMP280ErrTypes::INIT_ERROR_6:
+         str = "INIT ERROR 6";
+      break;
+      default:
+      str = "NO ERROR";
+         break;
+   }
+   return str;
+}*/
+
 Bmp280Implementation::Bmp280Implementation() {
 	memset(BMPData, 0, sizeof(int) * 2);
 	memset(BackupBMPData, 0, sizeof(int) * 2);
