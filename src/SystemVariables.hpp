@@ -70,8 +70,8 @@ typedef struct {
 // Wifi settings
 #define WIFI_POLL_FREQUENCY_SEC	5
 #define WIFI_CONNECT_TIMEOUT	10000
-#define WIFI_SSID				"Allyouare"
-#define WIFI_PASSWORD			"Meulen-2017"
+#define WIFI_SSID				"ACTS"
+#define WIFI_PASSWORD		"12345678"
 
 // I2C defines
 #define GPIO_SDA				GPIO_NUM_25
@@ -95,8 +95,8 @@ typedef struct {
 
 // Wifitask defines
 #define WIFITASK_CORE_NUM 		0
-#define WIFITASK_PRIORITY 		0
-#define WIFITASK_STACK_SIZE 	4096
+#define WIFITASK_PRIORITY 		1
+#define WIFITASK_STACK_SIZE 	32000
 
 // StandbyController defines
 #define STANDBYCONT_CORE_NUM 	1

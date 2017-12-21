@@ -25,7 +25,6 @@ esp_err_t local_wifi_Event_handler(void *ctx, system_event_t *event)
         	ESP_LOGI(WIFI_CLASS_TAG, "Different event_id: 0x%08x", event->event_id);
             break;
     }
-
     return ESP_OK;
 }
 
