@@ -2,8 +2,8 @@
 
 // hanteert het schrijven en lezen van data, onderhoudt ook de connectie tussen esp32 en pc
 static EventGroupHandle_t wifi_event_group;
-const static unsigned int WIFI_EVENT_BIT = BIT0;
-const char *WIFI_CLASS_TAG = "WIFI MODULE";
+//static const unsigned int WIFI_EVENT_BIT = BIT0;
+static const char *WIFI_CLASS_TAG = "WIFI MODULE";
 
 esp_err_t local_wifi_Event_handler(void *ctx, system_event_t *event)
 {
@@ -78,13 +78,13 @@ bool WifiModule::ClientConfig(char* SSID, char* PASS) {
 		return false;
 	}
 
-	if(esp_wifi_set_storage(WIFI_STORAGE_RAM) != ESP_OK) {
+	if(esp_wifi_set_storage(WIFI_STORAGE_FLASH) != ESP_OK) {
 		return false;
 	}
 
 	wifi_config_t wifi_config;
-	strcpy((char*)wifi_config.sta.ssid, SSID);
-	strcpy((char*)wifi_config.sta.password, PASS);
+	strcpy((char*)wifi_config.sta.ssid, WIFI_SSID);
+	strcpy((char*)wifi_config.sta.password, WIFI_PASSWORD);
 
 	if(esp_wifi_set_mode(WIFI_MODE_STA) != ESP_OK) {
 		return false;
@@ -94,7 +94,7 @@ bool WifiModule::ClientConfig(char* SSID, char* PASS) {
 		return false;
 	}
 
-	ESP_LOGI(WIFI_CLASS_TAG, "Setting WiFi configuration SSID %s...", wifi_config.sta.ssid);
+	ESP_LOGI(WIFI_CLASS_TAG, "WiFi config: SSID: %s PASS: %s", wifi_config.sta.ssid, wifi_config.sta.password);
 
 	WifiIsInitialized = true;
 	return true;
@@ -115,14 +115,14 @@ bool WifiModule::ClientConnect(int timeout) {
 
     bool WifiIsConnected = (bool)xEventGroupGetBits(wifi_event_group) & WIFI_EVENT_BIT;
 
-    if (!WifiIsConnected) {
-        esp_wifi_stop();
-    }
-    else {
+    if (WifiIsConnected) {
     	ESP_LOGI(WIFI_CLASS_TAG, "Wifi is connected");
     	unsigned int TickCountStop = xTaskGetTickCount();
     	TickCountStop -= TickCountStart;
     	ESP_LOGI(WIFI_CLASS_TAG, "Connection took %d ticks", TickCountStop);
+    }
+    else {
+    	ClientDeinit();
     }
 
     return WifiIsConnected;
@@ -157,8 +157,8 @@ bool WifiModule::ClientGetConnectionState() {
 }
 
 void WifiModule::ClientDeinit() {
-	esp_wifi_set_mode(WIFI_MODE_NULL);
 	esp_wifi_stop();
+	esp_wifi_set_mode(WIFI_MODE_NULL);
 	esp_wifi_deinit();
 	vEventGroupDelete(wifi_event_group);
 }

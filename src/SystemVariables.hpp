@@ -68,10 +68,10 @@ typedef struct {
 #define TIMEOUT_TIME_SEC		60
 
 // Wifi settings
-#define WIFI_POLL_FREQUENCY_SEC	5
+#define WIFI_POLL_FREQUENCY_SEC	10
 #define WIFI_CONNECT_TIMEOUT	10000
-#define WIFI_SSID				"Allyouare"
-#define WIFI_PASSWORD			"Meulen-2017"
+#define WIFI_SSID				"ACTS"
+#define WIFI_PASSWORD			"12345678"
 
 // I2C defines
 #define GPIO_SDA				GPIO_NUM_25
@@ -106,5 +106,7 @@ typedef struct {
 
 // Test funtions
 //#define DATA_THROUGH_TCP		1
+
+#define WIFI_EVENT_BIT			1
 
 #endif //SYSTEM_VARS_HPP

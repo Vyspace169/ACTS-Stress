@@ -123,7 +123,6 @@ void error_flash_init() {
     }
 }
 
-
 extern "C" void app_main(void)
 {
     ESP_LOGI("MAIN", "Booting completed");
@@ -160,7 +159,7 @@ extern "C" void app_main(void)
 
     SensorTask *st = new SensorTask(SENSORTASK_PRIORITY, *GlobalDoubleBuffer, *GlobalDataHandler);
 
-    SdWriterTask *sdw = new SdWriterTask(WRITERTASK_PRIORITY, *GlobalDoubleBuffer, *GlobalSDWriter);
+    //SdWriterTask *sdw = new SdWriterTask(WRITERTASK_PRIORITY, *GlobalDoubleBuffer, *GlobalSDWriter);
 
     StandbyController *sbc = new StandbyController(STANDBYCONT_PRIORITY);
 

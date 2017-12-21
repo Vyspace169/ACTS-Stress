@@ -24,6 +24,8 @@
 #include "esp_log.h"
 #include "esp_wifi.h"
 
+#include "SystemVariables.hpp"
+
 class WifiModule {
 public:
     WifiModule();

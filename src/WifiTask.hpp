@@ -2,10 +2,8 @@
 
 #include "esp_log.h"
 
-#include "apps/sntp/sntp.h"
-
+#include "WiFiC.h"
 #include "BaseTask.hpp"
-#include "WifiModule.hpp"
 #include "DataProcessor.hpp"
 
 class WifiTask : BaseTask {
