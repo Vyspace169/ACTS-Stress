@@ -35,7 +35,6 @@
 
 #include "Systemerrors.hpp"
 
-#define SNTP_BIT   ( 1 << 0 )
 EventGroupHandle_t GlobalEventGroupHandle;
 
 static void gpio_init_leds() {
@@ -134,32 +133,28 @@ void error_flash_init() {
         ESP_LOGI("INIT", "NO EXCEPTION FOUND IN LAST RUN");
     }
 }
-void init_task(void *param) {
 
-}
-EventGroupHandle_t sntp_evt_grp;
+char TimeStringBuffer[64];
+
 void sntp_task(void* param) {
-    ESP_LOGI("SNTP_TASK", "ENTERING SNTP TASK");
-	WiFiInitialize(WIFI_SSID, WIFI_PASSWORD);
+    ESP_LOGI("SNTP TASK", "Initializing wifi");
+    WiFiInitialize(WIFI_SSID, WIFI_PASSWORD);
 	bool enabled = WiFiConnect(WIFI_CONNECT_TIMEOUT);
 	time_t this_moment = WiFiGetTime(20);
 	WiFiDisconnect();
-    
+
 	struct tm timeinfo;
 	localtime_r(&this_moment, &timeinfo);
-	char strftime_buf[64];
-	strftime(strftime_buf, sizeof(strftime_buf), "%c", &timeinfo);
-	ESP_LOGI("SNTP TASK", "Central time:  %s  ", strftime_buf);
+	strftime(TimeStringBuffer, sizeof(TimeStringBuffer), "%c", &timeinfo);
+	ESP_LOGI("SNTP TASK", "Central time:  %s  ", TimeStringBuffer);
+
+	xEventGroupSetBits(GlobalEventGroupHandle, BIT0);
 
 	while(1) {
 	   	vTaskDelay(5000 / portTICK_PERIOD_MS);
-        /* Set bit 0 and bit 4 in xEventGroup. */
-    xEventGroupSetBits(
-                              sntp_evt_grp,    /* The event group being updated. */
-                              SNTP_BIT );/* The bits being set. */
-
 	}
 }
+
 
 extern "C" void app_main(void)
 {
@@ -179,42 +174,25 @@ extern "C" void app_main(void)
 
     error_flash_init();
 
+    GlobalEventGroupHandle = xEventGroupCreate();
+
+    ESP_LOGI("MAIN", "Creating task...");
+	TaskHandle_t sntp_task_handle;
+	BaseType_t xReturned = xTaskCreatePinnedToCore(sntp_task, "sntp_task", 8000, NULL, 1, &sntp_task_handle, 0);
+	ESP_LOGI("MAIN", "Task created");
+	xEventGroupWaitBits(GlobalEventGroupHandle, BIT0, pdTRUE, pdFALSE, portMAX_DELAY);
+	vTaskDelete(sntp_task_handle);
+	ESP_LOGI("SNTP", "SNTP DONE");
+	// end_sntp
+
     i2c_master_init();
 
     gpio_init_leds();
 
-    // sntp
-    /* Declare a variable to hold the created event group. */
-    
-
-    /* Attempt to create the event group. */
-    sntp_evt_grp = xEventGroupCreate();
-    
-
-      /* Wait a maximum of 100ms for either bit 0 or bit 4 to be set within
-  the event group.  Clear the bits before exiting. */
-    BaseType_t xReturned = xTaskCreatePinnedToCore(sntp_task,
-                                                    "sntp_task",
-                                                    16000,
-                                                    NULL,
-                                                    1,
-                                                    NULL,
-                                                    0);
-
-    xEventGroupWaitBits(
-            sntp_evt_grp,   /* The event group being tested. */
-            SNTP_BIT, /* The bits within the event group to wait for. */
-            pdTRUE,        /* BIT_0 & BIT_4 should be cleared before returning. */
-            pdFALSE,       /* Don't wait for both bits, either bit will do. */
-            portMAX_DELAY );/* Wait a maximum of 100ms for either bit to be set. */
-    ESP_LOGI("SNTP", "SNTP DONE");
-    // end_sntp
-
-    GlobalEventGroupHandle = xEventGroupCreate();
-
     SDWriter *GlobalSDWriter = new SDWriter;
     GlobalSDWriter->InitSDMMC(SDMMC_INIT_RETRIES);
-    GlobalSDWriter->SetFileName("filename.bin");
+    strcat(TimeStringBuffer, ".bin");
+    GlobalSDWriter->SetFileName(TimeStringBuffer);
 
     DataProcessor *GlobalDataHandler = new DataProcessor;
     GlobalDataHandler->SetTimeoutValue(TIMEOUT_TIME_SEC * 1000);
@@ -224,7 +202,7 @@ extern "C" void app_main(void)
 
     SensorTask *st = new SensorTask(SENSORTASK_PRIORITY, *GlobalDoubleBuffer, *GlobalDataHandler);
 
-    //SdWriterTask *sdw = new SdWriterTask(WRITERTASK_PRIORITY, *GlobalDoubleBuffer, *GlobalSDWriter);
+    SdWriterTask *sdw = new SdWriterTask(WRITERTASK_PRIORITY, *GlobalDoubleBuffer, *GlobalSDWriter);
 
     StandbyController *sbc = new StandbyController(STANDBYCONT_PRIORITY);
 

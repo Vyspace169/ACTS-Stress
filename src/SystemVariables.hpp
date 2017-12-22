@@ -69,7 +69,7 @@ typedef struct {
 
 // Wifi settings
 #define WIFI_POLL_FREQUENCY_SEC	10
-#define WIFI_CONNECT_TIMEOUT	10000
+#define WIFI_CONNECT_TIMEOUT	9000
 #define WIFI_SSID				"ACTS"
 #define WIFI_PASSWORD			"12345678"
 
