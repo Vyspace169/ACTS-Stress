@@ -11,10 +11,31 @@
 #define BIT_0	( 1 << 0 )
 #define BIT_4	( 1 << 4 )
 
+/*// -------Flags for Tasks----------------------------
+// Flag for SensorTask to act upon
+const EventBits_t SensorMeasurementFlag = ( 1 << 0 );
+
+// Flag for SdWriterTask to act upon
+const EventBits_t SensorBufferSdReady   = ( 1 << 4 );
+
+
+// Flags for WifiTask to act upon
+const EventBits_t WifiActivateFlag      = (1 << 1);
+const EventBits_t WifiReadyFlag         = (1 << 2);
+
+// System error flag
+const EventBits_t SystemErrorFlag      = (1 << 9);
+const EventBits_t SystemErrorBit       = (1 << 10);*/
+
+//-------------------------------------------------
+
 #define WIFI_PRIO 1 // priority is lower than sd writer because sd writer could possibly otherwise not write correctly
 #define SD_PRIO 0
 #define SENSOR_PRIO // sensor task is prio 0
 
+/*bool remove_all_tasks() {
+
+}*/
 /// @brief The base class that contains the requirements that all tasks require to operate
 class BaseTask{
 public:
@@ -24,5 +45,7 @@ protected:
   ~BaseTask();
   unsigned int task_priority;
   virtual void main_task() = 0;
+  //virtual void remove_task() = 0;
+  //friend bool remove_all_tasks();
 };
 #endif //BASE_TASK_HPP

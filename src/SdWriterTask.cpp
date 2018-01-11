@@ -11,9 +11,10 @@ void run_sd_task(void *args) {
 
         if(uxBits & SensorBufferSdReady){
         	ESP_LOGI("WRITER TASK", "Writing data");
-        	sTask->SDWHandle.Open();
-        	sTask->DBHandle.writeToSd();
-        	sTask->SDWHandle.Close();
+        	if(sTask->SDWHandle.Open() == SD_WRITER_OK) {
+        		sTask->DBHandle.writeToSd();
+        		sTask->SDWHandle.Close();
+        	}
         }
 
         if(uxBits & StandbyWriterTaskUnhandled) {

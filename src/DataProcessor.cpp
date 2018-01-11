@@ -23,10 +23,6 @@ void DataProcessor::SetTrigger(int triggerx, int triggery, int triggerz) {
 	TriggerValueZ = triggerz;
 }
 
-void DataProcessor::ResetActivityData() {
-	ActivityData = 0;
-}
-
 void DataProcessor::HandleData(SampleData NewData) {
 	int DifferentialValue = 0;
 	bool TriggerOn = false;
@@ -63,34 +59,29 @@ void DataProcessor::HandleData(SampleData NewData) {
 	OldAcceleroXValue = NewData.accelX;
 	OldAcceleroYValue = NewData.accelY;
 	OldAcceleroZValue = NewData.accelZ;
-
-#ifdef DATA_THROUGH_TCP
-	sprintf(DataStringBuffer, "%llu,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,\r\n",
-			NewData.microTime,
-			NewData.accelX,
-			NewData.accelY,
-			NewData.accelZ,
-			NewData.gyroX,
-			NewData.gyroY,
-			NewData.gyroZ,
-			NewData.magnetoX,
-			NewData.magnetoY,
-			NewData.magnetoZ,
-			NewData.temp,
-			NewData.pressure);
-	xEventGroupSetBits(GlobalEventGroupHandle, WifiReadyFlag);
-#endif
 }
 
 double DataProcessor::GetActivityData() {
-	return ActivityData;
+	if(!ActivityDataQueue.empty()) {
+		return ActivityDataQueue.front();
+	}
+	else {
+		return 0;
+	}
 }
 
-#ifdef DATA_THROUGH_TCP
-char* DataProcessor::GetDataString() {
-	return DataStringBuffer;
+void DataProcessor::PopData() {
+	ActivityDataQueue.pop();
 }
-#endif
+
+void DataProcessor::PushData() {
+	ActivityDataQueue.push(ActivityData);
+	ActivityData = 0;
+}
+
+int DataProcessor::DataCount() {
+	return ActivityDataQueue.size();
+}
 
 DataProcessor::~DataProcessor(){
 

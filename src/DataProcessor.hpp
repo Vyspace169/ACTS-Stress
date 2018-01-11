@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <queue>
 
 #include "esp_log.h"
 
@@ -20,12 +21,11 @@ public:
     DataProcessor();
     void SetTimeoutValue(int NewTriggerms);
     void SetTrigger(int triggerx, int triggery, int triggerz);
-    void ResetActivityData();
     void HandleData(SampleData NewData);
     double GetActivityData();
-#ifdef DATA_THROUGH_TCP
-    char* GetDataString();
-#endif
+    void PopData();
+    void PushData();
+    int DataCount();
     ~DataProcessor();
 private:
     int TimeoutCounter;
@@ -38,7 +38,5 @@ private:
     int TriggerValueX;
     int TriggerValueY;
     int TriggerValueZ;
-#ifdef DATA_THROUGH_TCP
-    char DataStringBuffer[256];
-#endif
+    std::queue<double> ActivityDataQueue;
 };
