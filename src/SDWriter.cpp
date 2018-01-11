@@ -1,6 +1,7 @@
 #include "SDWriter.hpp"
 
 SDWriter::SDWriter() {
+	// set variables initial state
 	FileIsOpen = false;
 	CardIsWriting = false;
 	CardIsInitialized = false;
@@ -8,8 +9,13 @@ SDWriter::SDWriter() {
 	SDCardWriter = NULL;
 	FileForData = NULL;
 	memset(FileNameCharArray, 0, 256);
+	// initalize SD_DETECT pin
 	gpio_pad_select_gpio(GPIO_SD_DETECT);
 	gpio_set_direction(GPIO_SD_DETECT, GPIO_MODE_INPUT);
+	// Enable power to SD card
+	gpio_pad_select_gpio(GPIO_SD_POWER);
+	gpio_set_direction(GPIO_SD_POWER, GPIO_MODE_OUTPUT);
+	gpio_set_level(GPIO_SD_POWER, 0);
 }
 
 bool SDWriter::WaitForCard(int timeout) {
@@ -26,6 +32,7 @@ bool SDWriter::WaitForCard(int timeout) {
 		else {
 			counter += 100;
 		}
+		vTaskDelay(100 / portTICK_PERIOD_MS);
 	}
 
 	if(counter >= timeout) {
@@ -34,6 +41,13 @@ bool SDWriter::WaitForCard(int timeout) {
 	else {
 		return true;
 	}
+}
+
+bool SDWriter::CardDetectState() {
+	if(gpio_get_level(GPIO_SD_DETECT) == 1) {
+		return true;
+	}
+	return false;
 }
 
 SDWriterErrorCodes SDWriter::InitSDMMC(int retries) {
@@ -51,6 +65,10 @@ SDWriterErrorCodes SDWriter::InitSDMMC(int retries) {
 	esp_vfs_fat_sdmmc_mount_config_t mount_config;
 	mount_config.format_if_mount_failed = false;
 	mount_config.max_files = 5;
+
+	if(gpio_get_level(GPIO_SD_DETECT) == 0) {
+		return CARD_NOT_IN_SLOT;
+	}
 
 	int i = 0;
 	for(i=0;i<retries;i++) {
@@ -84,7 +102,7 @@ SDWriterErrorCodes SDWriter::InitSDMMC(int retries) {
 	}
 }
 
-void SDWriter::SetFileName(char* name) {
+void SDWriter::SetFileName(const char* name) {
 	if(name == NULL) {
 		return;
 	}
@@ -108,6 +126,10 @@ SDWriterErrorCodes SDWriter::Open() {
 		return CARD_NOT_INITIALIZED;
 	}
 
+	if(gpio_get_level(GPIO_SD_DETECT) == 0) {
+		return CARD_NOT_IN_SLOT;
+	}
+
 	if(FileIsOpen == true) {
 		return SD_WRITER_OK;
 	}
@@ -123,7 +145,7 @@ SDWriterErrorCodes SDWriter::Open() {
 	if (FileForData == NULL) {
 		// feedback
 		ESP_LOGE("SD WRITER", "Failed to open file for writing");
-		//return FILE_NOT_OPEN;
+		return FILE_NOT_OPEN;
 	}
 
 	FileIsOpen = true;
@@ -133,6 +155,10 @@ SDWriterErrorCodes SDWriter::Open() {
 SDWriterErrorCodes SDWriter::Write(SampleData in) {
 	if(CardIsInitialized == false) {
 		return CARD_NOT_INITIALIZED;
+	}
+
+	if(gpio_get_level(GPIO_SD_DETECT) == 0) {
+		return CARD_NOT_IN_SLOT;
 	}
 
 	if(FileIsOpen == false) {
@@ -172,6 +198,10 @@ SDWriterErrorCodes SDWriter::Write(const SampleData *in, int size) {
 		return CARD_NOT_INITIALIZED;
 	}
 
+	if(gpio_get_level(GPIO_SD_DETECT) == 0) {
+		return CARD_NOT_IN_SLOT;
+	}
+
 	if(FileIsOpen == false) {
 		return FILE_NOT_OPEN;
 	}
@@ -194,6 +224,10 @@ SDWriterErrorCodes SDWriter::Write(const SampleData *in, int size) {
 SDWriterErrorCodes SDWriter::Write(char *data) {
 	if(CardIsInitialized == false) {
 		return CARD_NOT_INITIALIZED;
+	}
+
+	if(gpio_get_level(GPIO_SD_DETECT) == 0) {
+		return CARD_NOT_IN_SLOT;
 	}
 
 	if(FileIsOpen == false) {

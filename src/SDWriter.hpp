@@ -27,7 +27,8 @@ enum SDWriterErrorCodes
 	CARD_NOT_INITIALIZED, 	/**< The SDMMC peripheral and card were not initialized */
 	FILE_NOT_OPEN, 			/**< The file was not opened */
 	WRITE_ERROR, 			/**< The write gave an error */
-	FILE_NAME_NOT_SET		/**< The file name was not yet set */
+	FILE_NAME_NOT_SET,		/**< The file name was not yet set */
+	CARD_NOT_IN_SLOT		/**< The card detect pin is asserted low, not high */
 };
 
 class SDWriter{
@@ -36,6 +37,7 @@ public:
 	SDWriter();
 
 	bool WaitForCard(int timeout);
+	bool CardDetectState();
 
 	/**
 	 * Initialization for the SDMMC peripheral on the ESP32.
@@ -45,7 +47,7 @@ public:
 	SDWriterErrorCodes InitSDMMC(int retries);
 
 
-	void SetFileName(char* name);
+	void SetFileName(const char* name);
 	SDWriterErrorCodes Open();
 	SDWriterErrorCodes Write(SampleData in);
 	SDWriterErrorCodes Write(const SampleData *in, int size);

@@ -1,41 +1,36 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <algorithm>
 
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/event_groups.h"
 
+#include "nvs.h"
 #include "nvs_flash.h"
+
 #include "esp_system.h"
 #include "esp_spi_flash.h"
 #include "esp_wifi.h"
 #include "esp_event_loop.h"
 
-#include "nvs.h"
-
 #include "driver/gpio.h"
 #include "driver/adc.h"
 
 #include "SystemVariables.hpp"
+#include "Systemerrors.hpp"
 
-#include "Sensor.hpp"
-#include "SDWriter.hpp"
-#include "WifiModule.hpp"
-#include "DoubleBuffer.hpp"
-#include "Mpu9250Implementation.hpp"
-#include "Bmp280Implementation.hpp"
-
-#include "BaseTask.hpp"
 #include "SensorTask.hpp"
-
 #include "SdWriterTask.hpp"
 #include "StandbyController.hpp"
 #include "WifiTask.hpp"
 
-#include "Systemerrors.hpp"
-
 EventGroupHandle_t GlobalEventGroupHandle;
+time_t GlobalStartTime;
+static gpio_num_t led_used_pin;
+static int led_time_on;
+static int led_time_off;
 
 static void gpio_init_leds() {
 	// Select gipo
@@ -52,18 +47,15 @@ static void gpio_init_leds() {
 	gpio_set_level(GPIO_LED_BLUE, 1);
 }
 
-void blink_task(void *pvParameter)
-{
-    while(1) {
-    	gpio_set_level(GPIO_LED_GREEN, 1);
-    	vTaskDelay(5000 / portTICK_PERIOD_MS);
-    	gpio_set_level(GPIO_LED_GREEN, 0);
-    	vTaskDelay(10 / portTICK_PERIOD_MS);
-    }
+void blink_set_led(gpio_num_t led, int time_on, int time_off) {
+	if(led == GPIO_LED_RED || led == GPIO_LED_GREEN || led == GPIO_LED_BLUE) {
+		led_used_pin = led;
+		led_time_on = time_on;
+		led_time_off = time_off;
+	}
 }
 
-static void i2c_master_init()
-{
+static void i2c_master_init() {
 	// give scl pin some clocks
 	gpio_pad_select_gpio(GPIO_SCL);
 	gpio_set_direction(GPIO_SCL, GPIO_MODE_OUTPUT);
@@ -134,21 +126,33 @@ void error_flash_init() {
     }
 }
 
-char TimeStringBuffer[64];
+void BuildFileName(char *TimeStringBuffer, int str_len) {
+	struct tm timeinfo;
+	localtime_r(&GlobalStartTime, &timeinfo);
+	strftime(TimeStringBuffer, str_len, "%Y_%m_%d_%H_%M_%S", &timeinfo);
+	ESP_LOGI("MAIN TASK", "Central time:  %s  ", TimeStringBuffer);
+	strcat(TimeStringBuffer, ".bin");
+}
+
+void blink_task(void *pvParameter)
+{
+    while(1) {
+    	gpio_set_level(led_used_pin, 1);
+    	vTaskDelay(led_time_off / portTICK_PERIOD_MS);
+    	gpio_set_level(led_used_pin, 0);
+    	vTaskDelay(led_time_on / portTICK_PERIOD_MS);
+    }
+}
 
 void sntp_task(void* param) {
     ESP_LOGI("SNTP TASK", "Initializing wifi");
     WiFiInitialize(WIFI_SSID, WIFI_PASSWORD);
 	bool enabled = WiFiConnect(WIFI_CONNECT_TIMEOUT);
-	time_t this_moment = WiFiGetTime(20);
+	ESP_LOGI("SNTP TASK", "Reading time");
+	GlobalStartTime = WiFiGetTime(SNTP_READ_TIME_RETRY);
 	WiFiDisconnect();
 
-	struct tm timeinfo;
-	localtime_r(&this_moment, &timeinfo);
-	strftime(TimeStringBuffer, sizeof(TimeStringBuffer), "%c", &timeinfo);
-	ESP_LOGI("SNTP TASK", "Central time:  %s  ", TimeStringBuffer);
-
-	xEventGroupSetBits(GlobalEventGroupHandle, BIT0);
+	xEventGroupSetBits(GlobalEventGroupHandle, SNTPTaskDoneFlag);
 
 	while(1) {
 	   	vTaskDelay(5000 / portTICK_PERIOD_MS);
@@ -164,35 +168,40 @@ extern "C" void app_main(void)
     if(WakeUpCause == ESP_SLEEP_WAKEUP_TIMER) {
     	ESP_LOGI("MAIN", "Woke up from a timer reset");
     }
+    else if(WakeUpCause == ESP_SLEEP_WAKEUP_EXT1) {
+    	ESP_LOGI("MAIN", "Woke up from a pin change reset");
+    }
     else {
-    	ESP_LOGI("MAIN", "Woke up from reset");
+    	ESP_LOGI("MAIN", "Woke up from normal reset");
     }
 
     if(nvs_flash_init() != ESP_OK)   {
     	ESP_LOGE("INIT_ERROR", "Error code: %i , message: nvs_flash_init failed!", ERROR_NVS_FLASH_INIT);
     }
 
-    error_flash_init();
+#warning sd detect pin has to be deinitiallized
+    //rtc_gpio_deinit(GPIO_SD_DETECT);
 
+    error_flash_init();
+    gpio_init_leds();
+    i2c_master_init();
     GlobalEventGroupHandle = xEventGroupCreate();
 
-    ESP_LOGI("MAIN", "Creating task...");
+    // Start blink task
+    blink_set_led(GPIO_LED_GREEN, 10, 5000);
+    xTaskCreatePinnedToCore(&blink_task, "blink_task", BLINKTASK_STACK_SIZE, NULL, BLINKTASK_PRIORITY, NULL, BLINKTASK_CORE_NUM);
+
+    ESP_LOGI("MAIN", "Creating SNTP task");
 	TaskHandle_t sntp_task_handle;
-	BaseType_t xReturned = xTaskCreatePinnedToCore(sntp_task, "sntp_task", 8000, NULL, 1, &sntp_task_handle, 0);
-	ESP_LOGI("MAIN", "Task created");
-	xEventGroupWaitBits(GlobalEventGroupHandle, BIT0, pdTRUE, pdFALSE, portMAX_DELAY);
+	xTaskCreatePinnedToCore(sntp_task, "sntp_task", SNTPTASK_STACK_SIZE, NULL, SNTPTASK_PRIORITY, &sntp_task_handle, SNTPTASK_CORE_NUM);
+	xEventGroupWaitBits(GlobalEventGroupHandle, SNTPTaskDoneFlag, pdTRUE, pdFALSE, portMAX_DELAY);
 	vTaskDelete(sntp_task_handle);
-	ESP_LOGI("SNTP", "SNTP DONE");
-	// end_sntp
 
-    i2c_master_init();
-
-    gpio_init_leds();
-
+    char name[64];
+    BuildFileName(name, sizeof(name));
     SDWriter *GlobalSDWriter = new SDWriter;
     GlobalSDWriter->InitSDMMC(SDMMC_INIT_RETRIES);
-    strcat(TimeStringBuffer, ".bin");
-    GlobalSDWriter->SetFileName(TimeStringBuffer);
+    GlobalSDWriter->SetFileName(name);
 
     DataProcessor *GlobalDataHandler = new DataProcessor;
     GlobalDataHandler->SetTimeoutValue(TIMEOUT_TIME_SEC * 1000);
@@ -207,9 +216,6 @@ extern "C" void app_main(void)
     StandbyController *sbc = new StandbyController(STANDBYCONT_PRIORITY);
 
     WifiTask *wt = new WifiTask(WIFITASK_PRIORITY, *GlobalDataHandler);
-
-    // Start blink task
-    xTaskCreate(&blink_task, "blink_task", configMINIMAL_STACK_SIZE, NULL, 5, NULL);
 
     ESP_LOGI("MAIN", "Init done");
 }

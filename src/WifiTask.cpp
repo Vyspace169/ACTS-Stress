@@ -11,26 +11,31 @@ void run_wifi_task(void *args)  {
 
         if((uxBits & WifiActivateFlag)) {
 			ESP_LOGI("WIFI TASK", "Connecting to wifi");
-
 			bool enabled = WiFiConnect(WIFI_CONNECT_TIMEOUT);
 
-			if(enabled == false) {
-				ESP_LOGI("WIFI TASK", "Wifi not connected");
-			}
-			else {
+			// push activity data in its fifo
+			sTask->DPHandle.PushData();
+
+			if(enabled == true) {
 				ESP_LOGI("WIFI TASK", "Wifi connected");
-
-				char send_string[50];
-				sprintf(send_string, "%.2f\n", sTask->DPHandle.GetActivityData());
-				sTask->DPHandle.ResetActivityData();
-
-				if(TCPConnectToServer("192.168.8.100", 3010) == true) {
-					ESP_LOGI("WIFI TASK", "Socket connected, sending to server: %s", send_string);
-					TCPSend(send_string, strlen(send_string));
+				if(TCPConnectToServer(WIFI_TCP_SERVER, WIFI_TCP_PORT) == true) {
+					ESP_LOGI("WIFI TASK", "Socket connected");
+					char send_string[50];
+					while(sTask->DPHandle.DataCount() != 0) {
+						sprintf(send_string, "%.2f\n", sTask->DPHandle.GetActivityData());
+						ESP_LOGI("WIFI TASK", "Sending data to server: %d: %s", sTask->DPHandle.DataCount(), send_string);
+						TCPSend(send_string, strlen(send_string));
+						sTask->DPHandle.PopData();
+					}
 					TCPDisconnect();
 				}
-
+				else {
+					ESP_LOGI("WIFI TASK", "Socket connection failed");
+				}
 				WiFiDisconnect();
+			}
+			else {
+				ESP_LOGI("WIFI TASK", "Wifi connection failed");
 			}
         }
 
@@ -39,15 +44,6 @@ void run_wifi_task(void *args)  {
             // TODO: Send data over wifi to the server
         	// TODO: MQTT frame builder class
         }
-
-#ifdef DATA_THROUGH_TCP
-        if(uxBits & WifiReadyFlag) {
-        	if(testmodule->ClientGetConnectionState() == true) {
-        		char* sendData = sTask->DPHandle.GetDataString();
-        		testmodule->TCPSend(sendData, strlen(sendData));
-        	}
-        }
-#endif
 
         if(uxBits & StandbyWifiTaskUnhandled) {
         	ESP_LOGI("WIFI TASK", "Ready to sleep");
