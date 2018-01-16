@@ -5,18 +5,21 @@
 * @brief switching buffer
 */
 #pragma once
+
+#include "BaseTask.hpp"
 #include "BinaryBuffer.hpp"
 #include "SDWriter.hpp"
 
-class DoubleBuffer{
+class DoubleBuffer {
 public:
-	DoubleBuffer(SDWriter);
-	void storeData( data in );
+	DoubleBuffer(SDWriter&);
+	void storeData(SampleData in );
 	void swap();
 	void emptyBuffer();
+	void writeToSd();
 	~DoubleBuffer();
 private:
-	SDWriter writer;
+	SDWriter &writer;
 	BinaryBuffer * firstBuffer;
 	BinaryBuffer * secondBuffer;
 	BinaryBuffer * current;

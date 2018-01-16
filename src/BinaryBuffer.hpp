@@ -7,20 +7,8 @@
 #pragma once
 #include <vector>
 
-typedef struct {
-	long long microTime;
-	float accelX;
-	float accelY;
-	float accelZ;
-	float gyroX;
-	float gyroY;
-	float gyroZ;
-	float magnetoX;
-	float magnetoY;
-	float magnetoZ;
-	float temp;
-	float pressure;
-} data;
+#include "SystemVariables.hpp"
+#include "esp_log.h"
 
 class BinaryBuffer{
 public:
@@ -28,12 +16,13 @@ public:
 	void readOnly();
 	void writeOnly();
 	void clear();
-	bool add( data in );
-	data get();
+	bool add( SampleData in );
+	const std::vector<SampleData>& get(); // should perhaps be a pointer, copy could be too slow on large scale operations?
 	bool isFull();
 	~BinaryBuffer();
 private:
 	bool readState();
 	bool state;
-	std::vector<data> buffer;
+	std::vector<SampleData> buffer;
+	const int BufferSize = BINARY_BUFFER_SIZE;
 };

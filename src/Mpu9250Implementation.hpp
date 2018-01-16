@@ -27,6 +27,7 @@
 #define NACK_VAL               		0x01              /*!< I2C nack value */
 #define I2C_WRITE_BIT           	0x00
 #define I2C_READ_BIT            	0x01
+#define I2C_TIMEOUT					100
 
 // I2C addresses
 #define MPU9250_I2C_ADDRESS     	0x68
@@ -44,6 +45,7 @@
 #define MPU9250_REG_ACCEL_ZL    	0x3F
 #define MPU9250_REG_BYPASS			0x37
 #define MPU9250_REG_PWR_MGMNT_1		0x6B
+#define MPU9250_REG_LPF				0x1D
 
 // MPU9250 settings
 #define GYROSCALE_250_DPS       	0x00
@@ -56,6 +58,8 @@
 #define ACCELSCALE_16G          	0x18
 #define MPU9250_SET_PWR_RESET		0x80
 #define MPU9250_SET_BYPASS			0x02
+#define MPU9250_SET_LPF_10HZ		0x05
+#define MPU9250_SET_SLEEP			0x50
 
 // AK8936 registers
 #define AK8936_REG_WHOAMI			0x00
@@ -63,36 +67,39 @@
 #define AK8936_REG_XOUT_L       	0x03
 #define AK8936_REG_CNTL1        	0x0A
 #define AK8963_REG_CNTL2			0x0B
+#define AK8963_REG_SENSE_X			0x10
+#define AK8963_REG_SENSE_Y			0x11
+#define AK8963_REG_SENSE_Z			0x12
 
 // AK8936 settings
 #define AK8936_SET_SING_SAMP		0x01
 #define AK8936_SET_CONT_MODE_1		0x02
 #define AK8936_SET_CONT_MODE_2		0x06
+#define AK8936_SET_FUSE_MODE		0x0F
 #define AK8936_SET_16BIT			0x10
 #define AK8963_SET_RESET			0x01
 
-class mpu9250_data{
-public:
-   short AccelerometerX;
-   short AccelerometerY;
-   short AccelerometerZ;
-   short GyroscopeX;
-   short GyroscopeY;
-   short GyroscopeZ;
-   short MagnetoX;
-   short MagnetoY;
-   short MagnetoZ;
-};
+void simple_test();
 
-
-class Mpu9250Implementation : public Sensor {
+class Mpu9250Implementation: public Sensor{
 public:
 	Mpu9250Implementation();
+	int DataSize() override;
 	unsigned short* SensorRead() override;
-	~Mpu9250Implementation();
+	void Sleep() override;
+	~Mpu9250Implementation() {}
 private:
-	unsigned short BackupMPUData[9];
+	unsigned short MPUData[9] = {0};
+	unsigned short BackupMPUData[9] = {0};
+	unsigned char AK8936SenseX;
+	unsigned char AK8936SenseY;
+	unsigned char AK8936SenseZ;
+	bool SensIsInitialized;
 	bool MPUIsInitialized;
 	bool AKIsInitialized;
+
+   void mpu_init();
+   void ak_init();
+   void init();
 protected:
 };

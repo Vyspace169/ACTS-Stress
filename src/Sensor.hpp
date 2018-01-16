@@ -10,8 +10,15 @@
 
 class Sensor{
 public:
-     Sensor();
-     virtual unsigned short* SensorRead() = 0;
-     ~Sensor();
+     Sensor() {}
+     virtual int DataSize();
+     virtual unsigned short* SensorRead();
+     virtual void Sleep();
+     ~Sensor() {}
+
+     /*
+     void setFrequency(int freq);
+     int getFrequency();
+     */
 private:
 };
