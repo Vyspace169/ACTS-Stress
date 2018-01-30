@@ -39,10 +39,6 @@ public:
 	 * This method clears the BinaryBuffer.
 	 */
 	void clear();
-<<<<<<< HEAD
-	bool add( SampleData in );
-	const std::vector<SampleData>& get(); // should perhaps be a pointer, copy could be too slow on large scale operations?
-=======
 
 	/*!
 	 * \brief add method
@@ -69,7 +65,6 @@ public:
 	 *
 	 * Returns true if the buffer is full
 	 */
->>>>>>> 6445be6125a08d7cdadab28488266c732473b202
 	bool isFull();
 
 	/*!

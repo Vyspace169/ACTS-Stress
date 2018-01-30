@@ -1,19 +1,3 @@
-/** \mainpage
-*
-****************************************************************************
-* Made for the DotDotFactory, by the Hogeschool Utrecht.
-*
-* Copyright The DotDotFactory ( 2018 - 2019 )
-*
-* Date : 26/01/2018
-*
-****************************************************************************
-*
-* \section License
-*
-* TODOOOOO 8===>
-**************************************************************************/
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -30,7 +14,6 @@
 #include "esp_spi_flash.h"
 #include "esp_wifi.h"
 #include "esp_event_loop.h"
-#include "esp_adc_cal.h"
 
 #include "rom/rtc.h"
 
@@ -46,7 +29,6 @@
 #include "SdWriterController.hpp"
 #include "SensorController.hpp"
 #include "StandbyController.hpp"
-#include "WifiController.hpp"
 
 RTC_DATA_ATTR struct timeval SleepEnterTime;
 EventGroupHandle_t GlobalEventGroupHandle;
@@ -114,17 +96,17 @@ extern "C" void app_main(void)
 
     DataProcessor *GlobalDataHandler = new DataProcessor;
     GlobalDataHandler->SetTimeoutValue(TIMEOUT_TIME_SEC * 1000);
-    GlobalDataHandler->SetTrigger(DP_SLEEP_THRESHOLD, DP_SLEEP_THRESHOLD, DP_SLEEP_THRESHOLD);
+    GlobalDataHandler->SetTrigger(TRIGGER_VALUE_X, TRIGGER_VALUE_Y, TRIGGER_VALUE_Z);
 
     DoubleBuffer *GlobalDoubleBuffer = new DoubleBuffer(*GlobalSDWriter);
 
+    SensorTask *st = new SensorTask(SENSORTASK_PRIORITY, *GlobalDoubleBuffer, *GlobalDataHandler);
+
+    SdWriterTask *sdw = new SdWriterTask(WRITERTASK_PRIORITY, *GlobalDoubleBuffer, *GlobalSDWriter);
+
     StandbyController *sbc = new StandbyController(STANDBYCONT_PRIORITY);
 
-    SensorController *st = new SensorController(SENSORTASK_PRIORITY, *GlobalDoubleBuffer, *GlobalDataHandler);
-
-    SdWriterController *sdw = new SdWriterController(WRITERTASK_PRIORITY, *GlobalDoubleBuffer, *GlobalSDWriter);
-
-    WifiController *wt = new WifiController(WIFITASK_PRIORITY, *GlobalDataHandler);
+    WifiTask *wt = new WifiTask(WIFITASK_PRIORITY, *GlobalDataHandler);
 
 	ESP_LOGI("MAIN", "Init done");
 }

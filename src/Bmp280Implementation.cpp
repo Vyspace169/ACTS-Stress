@@ -106,118 +106,71 @@ Bmp280Implementation::Bmp280Implementation() {
 
 	bmp280_com_functions.bus_write = BMP280_I2C_bus_write;
 	bmp280_com_functions.bus_read = BMP280_I2C_bus_read;
-<<<<<<< HEAD
 	bmp280_com_functions.dev_addr = BMP280_I2C_ADDRESS2;
-=======
-	bmp280_com_functions.dev_addr = BMP280_I2C_ADDRESS1;
->>>>>>> 6445be6125a08d7cdadab28488266c732473b202
 	bmp280_com_functions.delay_msec = BMP280_delay_msek;
 
 	if(bmp280_init(&bmp280_com_functions) != SUCCESS_ERR) {
 		IsInitialized = false;
 		error_type = BMP280ErrTypes::INIT_ERROR_1;
 		//this->error_code = 1;
-<<<<<<< HEAD
 		//ESP_LOGI(TAG_BMP280, "BMP not discovered, error 1");
 		//SystemErrorState |= BMP_ERROR;
 
 		//return;
-=======
-		//SystemErrorState |= BMP_ERROR;
-		ESP_LOGI(TAG_BMP280, "BMP not discovered, error 1");
-		return;
->>>>>>> 6445be6125a08d7cdadab28488266c732473b202
 	}
 
 	if(bmp280_set_oversamp_pressure(BMP280_OVERSAMP_16X) != SUCCESS_ERR) {
 		IsInitialized = false;
       error_type = BMP280ErrTypes::INIT_ERROR_2;
       //this->error_code = 2;
-<<<<<<< HEAD
 		//ESP_LOGI(TAG_BMP280, "BMP not discovered, error 2");
       //SystemErrorState |= BMP_ERROR;
 		//return;
-=======
-      //SystemErrorState |= BMP_ERROR;
-        ESP_LOGI(TAG_BMP280, "BMP not discovered, error 2");
-		return;
->>>>>>> 6445be6125a08d7cdadab28488266c732473b202
 	}
 
 	if(bmp280_set_oversamp_temperature(BMP280_OVERSAMP_2X) != SUCCESS_ERR) {
 		IsInitialized = false;
       error_type = BMP280ErrTypes::INIT_ERROR_3;
       //this->error_code = 3;
-<<<<<<< HEAD
 		//ESP_LOGI(TAG_BMP280, "BMP not discovered, error 3");
       //SystemErrorState |= BMP_ERROR;
 		//return;
-=======
-      //SystemErrorState |= BMP_ERROR;
-		ESP_LOGI(TAG_BMP280, "BMP not discovered, error 3");
-		return;
->>>>>>> 6445be6125a08d7cdadab28488266c732473b202
 	}
 
 	if(bmp280_set_standby_durn(BMP280_STANDBY_TIME_1_MS) != SUCCESS_ERR) {
 		IsInitialized = false;
       error_type = BMP280ErrTypes::INIT_ERROR_4;
       //this->error_code = 4;
-<<<<<<< HEAD
 		//ESP_LOGI(TAG_BMP280, "BMP not discovered, error 4");
       //SystemErrorState |= BMP_ERROR;
 		//return;
-=======
-      //SystemErrorState |= BMP_ERROR;
-      	ESP_LOGI(TAG_BMP280, "BMP not discovered, error 4");
-		return;
->>>>>>> 6445be6125a08d7cdadab28488266c732473b202
 	}
 
 	if(bmp280_set_filter(BMP280_FILTER_COEFF_16) != SUCCESS_ERR) {
 		IsInitialized = false;
       error_type = BMP280ErrTypes::INIT_ERROR_5;
       //this->error_code = 5;
-<<<<<<< HEAD
 		//ESP_LOGI(TAG_BMP280, "BMP not discovered, error 5");
       //SystemErrorState |= BMP_ERROR;
 		//return;
-=======
-      //SystemErrorState |= BMP_ERROR;
-      	ESP_LOGI(TAG_BMP280, "BMP not discovered, error 5");
-		return;
->>>>>>> 6445be6125a08d7cdadab28488266c732473b202
 	}
 
 	if(bmp280_set_power_mode(BMP280_NORMAL_MODE) != SUCCESS_ERR) {
 		IsInitialized = false;
       error_type = BMP280ErrTypes::INIT_ERROR_6;
       //this->error_code = 6;
-<<<<<<< HEAD
 		//ESP_LOGI(TAG_BMP280, "BMP not discovered, error 6");
       	//SystemErrorState |= BMP_ERROR;
 		//return;
 	}
-=======
-		ESP_LOGI(TAG_BMP280, "BMP not discovered, error 6");
-      	//SystemErrorState |= BMP_ERROR;
-		return;
-	}
-
->>>>>>> 6445be6125a08d7cdadab28488266c732473b202
    if(!IsInitialized)   {
 	   //Errorhandler::getInstance().ErrorInit(this);
 	   //Errorhandler::getInstance();
    }
    else  {
-<<<<<<< HEAD
 	   ESP_LOGI("BMP280", "Init ok");
 	   IsInitialized = true;
 	   //ESP_LOGI(TAG_BMP280, "BMP init ok");
-=======
-	   ESP_LOGI(TAG_BMP280, "BMP init ok");
-	   IsInitialized = true;
->>>>>>> 6445be6125a08d7cdadab28488266c732473b202
    }
 
 }

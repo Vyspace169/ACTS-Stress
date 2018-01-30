@@ -30,12 +30,9 @@ void DoubleBuffer::writeToSd(){
 	// write all elements to the file using the SdWriter
 	writer.Write(this->next->get().data(), this->next->get().size() * sizeof(SampleData));
 
-<<<<<<< HEAD
 	/*for(auto it = this->next->get().begin(); it != this->next->get().end(); ++it) {
 		writer.Write(*it);
 	}*/
-=======
->>>>>>> 6445be6125a08d7cdadab28488266c732473b202
 	// Clear the buffer for the next swap
 	this->next->clear();
 	

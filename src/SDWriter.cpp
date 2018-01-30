@@ -9,7 +9,6 @@ SDWriter::SDWriter() {
 	SDCardWriter = NULL;
 	FileForData = NULL;
 	memset(FileNameCharArray, 0, 256);
-<<<<<<< HEAD
 	// initalize SD_DETECT pin
 	gpio_pad_select_gpio(GPIO_SD_DETECT);
 	gpio_set_direction(GPIO_SD_DETECT, GPIO_MODE_INPUT);
@@ -17,8 +16,6 @@ SDWriter::SDWriter() {
 	gpio_pad_select_gpio(GPIO_SD_POWER);
 	gpio_set_direction(GPIO_SD_POWER, GPIO_MODE_OUTPUT);
 	gpio_set_level(GPIO_SD_POWER, 0);
-=======
->>>>>>> 6445be6125a08d7cdadab28488266c732473b202
 }
 
 bool SDWriter::WaitForCard(int timeout) {
@@ -46,7 +43,6 @@ bool SDWriter::WaitForCard(int timeout) {
 	}
 }
 
-<<<<<<< HEAD
 bool SDWriter::CardDetectState() {
 	if(gpio_get_level(GPIO_SD_DETECT) == 1) {
 		return true;
@@ -54,8 +50,6 @@ bool SDWriter::CardDetectState() {
 	return false;
 }
 
-=======
->>>>>>> 6445be6125a08d7cdadab28488266c732473b202
 SDWriterErrorCodes SDWriter::InitSDMMC(int retries) {
 	ESP_LOGI("SD WRITER", "Initializing SD card using SPI peripheral");
 
@@ -159,8 +153,6 @@ SDWriterErrorCodes SDWriter::Open() {
 }
 
 SDWriterErrorCodes SDWriter::Write(SampleData in) {
-<<<<<<< HEAD
-=======
 	if(CardIsInitialized == false) {
 		return CARD_NOT_INITIALIZED;
 	}
@@ -230,7 +222,6 @@ SDWriterErrorCodes SDWriter::Write(const SampleData *in, int size) {
 }
 
 SDWriterErrorCodes SDWriter::Write(char *data) {
->>>>>>> 6445be6125a08d7cdadab28488266c732473b202
 	if(CardIsInitialized == false) {
 		return CARD_NOT_INITIALIZED;
 	}
@@ -239,78 +230,6 @@ SDWriterErrorCodes SDWriter::Write(char *data) {
 		return CARD_NOT_IN_SLOT;
 	}
 
-<<<<<<< HEAD
-	if(FileIsOpen == false) {
-		return FILE_NOT_OPEN;
-	}
-
-	CardIsWriting = true;
-
-	// write the data to the file
-	//int BytesWritten = fprintf(FileForData, "%llu,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,%d,\r\n",in.microTime,in.accelX,in.accelY,in.accelZ,in.gyroX,in.gyroY,in.gyroZ,in.magnetoX,in.magnetoY,in.magnetoZ,in.temp,in.pressure);
-
-	int BytesWritten = 0;
-	BytesWritten += fwrite(&in.microTime, sizeof(long long), 1, FileForData);
-	BytesWritten += fwrite(&in.accelX, sizeof(short), 1, FileForData);
-	BytesWritten += fwrite(&in.accelY, sizeof(short), 1, FileForData);
-	BytesWritten += fwrite(&in.accelZ, sizeof(short), 1, FileForData);
-	BytesWritten += fwrite(&in.gyroX, sizeof(short), 1, FileForData);
-	BytesWritten += fwrite(&in.gyroY, sizeof(short), 1, FileForData);
-	BytesWritten += fwrite(&in.gyroZ, sizeof(short), 1, FileForData);
-	BytesWritten += fwrite(&in.magnetoX, sizeof(short), 1, FileForData);
-	BytesWritten += fwrite(&in.magnetoY, sizeof(short), 1, FileForData);
-	BytesWritten += fwrite(&in.magnetoZ, sizeof(short), 1, FileForData);
-	BytesWritten += fwrite(&in.temp, sizeof(int), 1, FileForData);
-	BytesWritten += fwrite(&in.pressure, sizeof(int), 1, FileForData);
-
-	CardIsWriting = false;
-
-	if(BytesWritten != 32) {
-		return WRITE_ERROR;
-	}
-
-	return SD_WRITER_OK;
-}
-
-SDWriterErrorCodes SDWriter::Write(const SampleData *in, int size) {
-	if(CardIsInitialized == false) {
-		return CARD_NOT_INITIALIZED;
-	}
-
-	if(gpio_get_level(GPIO_SD_DETECT) == 0) {
-		return CARD_NOT_IN_SLOT;
-	}
-
-	if(FileIsOpen == false) {
-		return FILE_NOT_OPEN;
-	}
-
-	CardIsWriting = true;
-
-	// write the data to the file
-	int BytesWritten = fwrite(in, size, 1, FileForData);
-
-	CardIsWriting = false;
-
-	if(BytesWritten != 1) {
-		ESP_LOGI("SD WRITER", "Write failed");
-		return WRITE_ERROR;
-	}
-
-	return SD_WRITER_OK;
-}
-
-SDWriterErrorCodes SDWriter::Write(char *data) {
-	if(CardIsInitialized == false) {
-		return CARD_NOT_INITIALIZED;
-	}
-
-	if(gpio_get_level(GPIO_SD_DETECT) == 0) {
-		return CARD_NOT_IN_SLOT;
-	}
-
-=======
->>>>>>> 6445be6125a08d7cdadab28488266c732473b202
 	if(FileIsOpen == false) {
 		return FILE_NOT_OPEN;
 	}
