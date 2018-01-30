@@ -1,7 +1,6 @@
 #include "Setup.hpp"
-<<<<<<< HEAD
+
 Setup::Setup() {
-=======
 
 static gpio_num_t UsedLEDPin;
 static int UsedLEDTimeOn;
@@ -128,8 +127,7 @@ void i2c_master_init() {
 
 	if(i2c_driver_install(I2C_NUM_0, conf.mode, 0, 0, 0) != ESP_OK) {
 		ESP_LOGE("INIT_ERROR", "Error code:%i , message: i2c driver install failed!", ERROR_I2C_DRIVER_INSTALL);
-	}
->>>>>>> 6445be6125a08d7cdadab28488266c732473b202
+    }
 }
 
 

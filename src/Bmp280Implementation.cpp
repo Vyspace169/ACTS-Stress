@@ -16,7 +16,7 @@ s8 BMP280_I2C_bus_write(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
 
    espRc = i2c_master_cmd_begin(I2C_NUM_0, cmd, 10/portTICK_PERIOD_MS);
    if (espRc == ESP_OK) {
-      iError = SUCCESS;
+      iError = SUCCESS_ERR;
    } else {
       iError = FAIL;
    }
@@ -47,7 +47,7 @@ s8 BMP280_I2C_bus_read(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
 
    espRc = i2c_master_cmd_begin(I2C_NUM_0, cmd, 10/portTICK_PERIOD_MS);
    if (espRc == ESP_OK) {
-      iError = SUCCESS;
+      iError = SUCCESS_ERR;
    } else {
       iError = FAIL;
    }
@@ -113,7 +113,7 @@ Bmp280Implementation::Bmp280Implementation() {
 >>>>>>> 6445be6125a08d7cdadab28488266c732473b202
 	bmp280_com_functions.delay_msec = BMP280_delay_msek;
 
-	if(bmp280_init(&bmp280_com_functions) != SUCCESS) {
+	if(bmp280_init(&bmp280_com_functions) != SUCCESS_ERR) {
 		IsInitialized = false;
 		error_type = BMP280ErrTypes::INIT_ERROR_1;
 		//this->error_code = 1;
@@ -129,7 +129,7 @@ Bmp280Implementation::Bmp280Implementation() {
 >>>>>>> 6445be6125a08d7cdadab28488266c732473b202
 	}
 
-	if(bmp280_set_oversamp_pressure(BMP280_OVERSAMP_16X) != SUCCESS) {
+	if(bmp280_set_oversamp_pressure(BMP280_OVERSAMP_16X) != SUCCESS_ERR) {
 		IsInitialized = false;
       error_type = BMP280ErrTypes::INIT_ERROR_2;
       //this->error_code = 2;
@@ -144,7 +144,7 @@ Bmp280Implementation::Bmp280Implementation() {
 >>>>>>> 6445be6125a08d7cdadab28488266c732473b202
 	}
 
-	if(bmp280_set_oversamp_temperature(BMP280_OVERSAMP_2X) != SUCCESS) {
+	if(bmp280_set_oversamp_temperature(BMP280_OVERSAMP_2X) != SUCCESS_ERR) {
 		IsInitialized = false;
       error_type = BMP280ErrTypes::INIT_ERROR_3;
       //this->error_code = 3;
@@ -159,7 +159,7 @@ Bmp280Implementation::Bmp280Implementation() {
 >>>>>>> 6445be6125a08d7cdadab28488266c732473b202
 	}
 
-	if(bmp280_set_standby_durn(BMP280_STANDBY_TIME_1_MS) != SUCCESS) {
+	if(bmp280_set_standby_durn(BMP280_STANDBY_TIME_1_MS) != SUCCESS_ERR) {
 		IsInitialized = false;
       error_type = BMP280ErrTypes::INIT_ERROR_4;
       //this->error_code = 4;
@@ -174,7 +174,7 @@ Bmp280Implementation::Bmp280Implementation() {
 >>>>>>> 6445be6125a08d7cdadab28488266c732473b202
 	}
 
-	if(bmp280_set_filter(BMP280_FILTER_COEFF_16) != SUCCESS) {
+	if(bmp280_set_filter(BMP280_FILTER_COEFF_16) != SUCCESS_ERR) {
 		IsInitialized = false;
       error_type = BMP280ErrTypes::INIT_ERROR_5;
       //this->error_code = 5;
@@ -189,7 +189,7 @@ Bmp280Implementation::Bmp280Implementation() {
 >>>>>>> 6445be6125a08d7cdadab28488266c732473b202
 	}
 
-	if(bmp280_set_power_mode(BMP280_NORMAL_MODE) != SUCCESS) {
+	if(bmp280_set_power_mode(BMP280_NORMAL_MODE) != SUCCESS_ERR) {
 		IsInitialized = false;
       error_type = BMP280ErrTypes::INIT_ERROR_6;
       //this->error_code = 6;
@@ -235,7 +235,7 @@ unsigned short* Bmp280Implementation::SensorRead() {
 
 	if (IsInitialized == true) {
 		int com_result = bmp280_read_uncomp_pressure_temperature(&v_uncomp_pressure_s32, &v_uncomp_temperature_s32);
-		if (com_result == SUCCESS) {
+		if (com_result == SUCCESS_ERR) {
 
 			int temperature = (int)bmp280_compensate_temperature_double(v_uncomp_temperature_s32);
 			int pressure = (int)bmp280_compensate_pressure_double(v_uncomp_pressure_s32);

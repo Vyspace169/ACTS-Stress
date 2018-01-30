@@ -1,6 +1,9 @@
 #include "WifiTask.hpp"
 
-WifiTask::WifiTask(unsigned int task_priority, DataProcessor &dp) : BaseTask(task_priority), DPHandle{dp}  { main_task(); }
+WifiTask::WifiTask(unsigned int task_priority, DataProcessor &dp) : BaseTask(task_priority), DPHandle{dp}  {
+	mqtt = new MQTTController(1);
+	main_task();
+}
 
 void run_wifi_task(void *args)  {
 	WifiTask *sTask = static_cast<WifiTask*>(args);
@@ -18,6 +21,7 @@ void run_wifi_task(void *args)  {
 
 			if(enabled == true) {
 				ESP_LOGI("WIFI TASK", "Wifi connected");
+				sTask->mqtt->connectMQTT();
 				if(TCPConnectToServer(WIFI_TCP_SERVER, WIFI_TCP_PORT) == true) {
 					ESP_LOGI("WIFI TASK", "Socket connected");
 					char send_string[50];
@@ -26,6 +30,7 @@ void run_wifi_task(void *args)  {
 						ESP_LOGI("WIFI TASK", "Sending data to server: %d: %s", sTask->DPHandle.DataCount(), send_string);
 						TCPSend(send_string, strlen(send_string));
 						sTask->DPHandle.PopData();
+						sTask->mqtt->connectMQTT();
 					}
 					TCPDisconnect();
 				}

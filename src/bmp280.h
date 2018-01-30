@@ -427,7 +427,7 @@ BMP280_BUS_RD_PARAM_TYPE to function calls used inside the API
 /************************************************/
 /**\name	ERROR CODES      */
 /************************************************/
-#define	SUCCESS			((u8)0)
+#define	SUCCESS_ERR			((u8)0)
 #define E_BMP280_NULL_PTR         ((s8)-127)
 #define E_BMP280_COMM_RES         ((s8)-1)
 #define E_BMP280_OUT_OF_RANGE     ((s8)-2)
@@ -759,7 +759,7 @@ struct bmp280_t {
  *
  *
 */
-BMP280_RETURN_FUNCTION_TYPE bmp280_init(struct bmp280_t *bmp280); 
+BMP280_RETURN_FUNCTION_TYPE bmp280_init(struct bmp280_t *bmp280);
 /**************************************************************/
 /**\name	FUNCTION FOR READ UNCOMPENSATED TEMPERATURE     */
 /**************************************************************/
@@ -1285,11 +1285,11 @@ BMP280_RETURN_FUNCTION_TYPE bmp280_get_forced_uncomp_pressure_temperature(
  *	This API write the data to
  *	the given register
  *
- *  
+ *
  *	@param v_addr_u8 -> Address of the register
  *	@param v_data_u8 -> The data from the register
  *	@param v_len_u8 -> no of bytes to read
- *  
+ *
  *
  *	@return results of bus communication function
  *	@retval 0 -> Success
