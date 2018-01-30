@@ -7,7 +7,7 @@ The use of this repository is limited to the ACTS project.
 - Linux, Mac or Windows
 - [ESP-IDF 2.1](http://esp-idf.readthedocs.io/en/v2.1/)
 
-![alt text](http://caffaknitted.typepad.com/.a/6a00e54f8f86dc883401287636e5db970c-800wi)
+![alt text](https://github.com/HU-ACTS/ACTS-Sensor/blob/master/sensorimg1.jpg)
 
 ### Required Hardware
 - ESP32 Wifi enabled microcontroller
