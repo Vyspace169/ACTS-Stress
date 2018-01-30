@@ -9,13 +9,6 @@ SDWriter::SDWriter() {
 	SDCardWriter = NULL;
 	FileForData = NULL;
 	memset(FileNameCharArray, 0, 256);
-	// initalize SD_DETECT pin
-	gpio_pad_select_gpio(GPIO_SD_DETECT);
-	gpio_set_direction(GPIO_SD_DETECT, GPIO_MODE_INPUT);
-	// Enable power to SD card
-	gpio_pad_select_gpio(GPIO_SD_POWER);
-	gpio_set_direction(GPIO_SD_POWER, GPIO_MODE_OUTPUT);
-	gpio_set_level(GPIO_SD_POWER, 0);
 }
 
 bool SDWriter::WaitForCard(int timeout) {
@@ -41,13 +34,6 @@ bool SDWriter::WaitForCard(int timeout) {
 	else {
 		return true;
 	}
-}
-
-bool SDWriter::CardDetectState() {
-	if(gpio_get_level(GPIO_SD_DETECT) == 1) {
-		return true;
-	}
-	return false;
 }
 
 SDWriterErrorCodes SDWriter::InitSDMMC(int retries) {

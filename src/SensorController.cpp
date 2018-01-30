@@ -1,17 +1,17 @@
-#include "SensorTask.hpp"
+#include "SensorController.hpp"
 
-SensorTask::SensorTask(unsigned int task_priority, DoubleBuffer &db, DataProcessor &dp) : 
-    BaseTask(task_priority), 
-    DBHandle{db}, 
-    DataHandler{dp},     
+SensorController::SensorController(unsigned int task_priority, DoubleBuffer &db, DataProcessor &dp) :
+    BaseTask(task_priority),
+    DBHandle{db},
+    DataHandler{dp},
     Sensor_MPU{new Mpu9250Implementation()},
     Sensor_BMP{new Bmp280Implementation()}
-    { 
-        main_task(); 
+    {
+        main_task();
     }
 
 void sensor_handle_task(void *args)  {
-	SensorTask *sTask = static_cast<SensorTask*>(args);
+	SensorController *sTask = static_cast<SensorController*>(args);
 	SampleData SensorData;
 	EventBits_t uxBits;
 	short MPUData[sTask->Sensor_MPU->DataSize() / sizeof(short)];
@@ -74,7 +74,7 @@ void set_sensor_measurement_bit( TimerHandle_t xTimer )  {
     xEventGroupSetBits(GlobalEventGroupHandle, SensorMeasurementFlag);
 }
 
-void SensorTask::main_task() {
+void SensorController::main_task() {
 	ESP_LOGI("SENSOR TASK", "Task starting...");
 
 	TimerHandle_t sample_poll_timer = NULL;

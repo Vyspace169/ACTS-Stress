@@ -1,10 +1,3 @@
-/*
- * Mpu9250Implementation.hpp
- *
- *  Created on: 16 nov. 2017
- *      Author: Sander
- */
-
 #pragma once
 
 #include <stdio.h>
@@ -21,10 +14,10 @@
 
 #define WRITE_BIT              		I2C_MASTER_WRITE /*!< I2C master write */
 #define READ_BIT               		I2C_MASTER_READ  /*!< I2C master read */
-#define ACK_CHECK_DIS          		0x00              /*!< I2C master will not check ack from slave */
-#define ACK_CHECK_EN           		0x01              /*!< I2C master will check ack from slave*/
-#define ACK_VAL                		0x00              /*!< I2C ack value */
-#define NACK_VAL               		0x01              /*!< I2C nack value */
+#define ACK_CHECK_DIS          		0x00             /*!< I2C master will not check ack from slave */
+#define ACK_CHECK_EN           		0x01             /*!< I2C master will check ack from slave*/
+#define ACK_VAL                		0x00             /*!< I2C ack value */
+#define NACK_VAL               		0x01             /*!< I2C nack value */
 #define I2C_WRITE_BIT           	0x00
 #define I2C_READ_BIT            	0x01
 #define I2C_TIMEOUT					100
@@ -46,6 +39,9 @@
 #define MPU9250_REG_BYPASS			0x37
 #define MPU9250_REG_PWR_MGMNT_1		0x6B
 #define MPU9250_REG_LPF				0x1D
+#define MPU9250_REG_INT_EN			0x38
+#define MPU9250_REG_WOM_THRES		0x1f
+#define MPU9250_REG_INT_CNTRL		0x69
 
 // MPU9250 settings
 #define GYROSCALE_250_DPS       	0x00
@@ -60,6 +56,8 @@
 #define MPU9250_SET_BYPASS			0x02
 #define MPU9250_SET_LPF_10HZ		0x05
 #define MPU9250_SET_SLEEP			0x50
+#define WOM_INTERRUPT_EN			0x40
+#define WOM_LOGIC_EN				0x80
 
 // AK8936 registers
 #define AK8936_REG_WHOAMI			0x00
@@ -79,14 +77,66 @@
 #define AK8936_SET_16BIT			0x10
 #define AK8963_SET_RESET			0x01
 
-void simple_test();
+/**
+* @file Mpu9250Implementation.hpp
+* @data 21 september, 2017
+*
+* \class Mpu9250Implementation
+*
+* This class handles the MPU9250 communication. It
+* inherrits from the Sensor class and has the same
+* methods.
+*
+*/
 
 class Mpu9250Implementation: public Sensor{
 public:
+	/*!
+	 * \brief Mpu9250Implementation constructor
+	 *
+	 * This method initializes all used states in this
+	 * class. It also intializes the MPU9250 so that all
+	 * data can be read with a single method (SensorRead).
+	 *
+	 * Warning: I2C_NUM_0 is used and should be initialized
+	 * before calling this constructor.
+	 */
 	Mpu9250Implementation();
+
+	/*!
+	 * \brief Mpu9250Implementation DataSize method
+	 * \return Datasize of SensorRead method in bytes
+	 *
+	 * This method returns the datasize of a single
+	 * sensorread. This value is given in bytes.
+	 *
+	 * For the MPU9250, is is a static value of 18 bytes.
+	 */
 	int DataSize() override;
+
+	/*!
+	 * \brief Mpu9250Implementation SensorRead method
+	 * \return Pointer to an unsigned short array with data
+	 *
+	 * This method reads data from the MPU9250 using
+	 * the I2C bus (I2C_NUM_0). A unsigned short
+	 * pointer is returned with 9 axis data.
+	 */
 	unsigned short* SensorRead() override;
+
+	/*!
+	 * \brief Mpu9250Implementation Sleep method
+	 *
+	 * This method will put the MPU9250 in sleep
+	 * mode.
+	 */
 	void Sleep() override;
+
+	/*!
+	 * \brief Mpu9250Implementation destructor
+	 *
+	 * Empty, not implemented.
+	 */
 	~Mpu9250Implementation() {}
 private:
 	unsigned short MPUData[9] = {0};
@@ -97,9 +147,5 @@ private:
 	bool SensIsInitialized;
 	bool MPUIsInitialized;
 	bool AKIsInitialized;
-
-   void mpu_init();
-   void ak_init();
-   void init();
 protected:
 };

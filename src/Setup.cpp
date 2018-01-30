@@ -1,7 +1,4 @@
 #include "Setup.hpp"
-
-Setup::Setup() {
-
 static gpio_num_t UsedLEDPin;
 static int UsedLEDTimeOn;
 static int UsedLEDTimeOff;
@@ -210,4 +207,14 @@ void BuildFileName(char *TimeStringBuffer, int str_len) {
 	}
 }
 
+void CheckForSdcard() {
+	// init sd detect pin and variables
+	ESP_LOGI("MAIN", "Checking if SD-Card is in socket");
+	gpio_pad_select_gpio(GPIO_SD_DETECT);
+	gpio_set_direction(GPIO_SD_DETECT, GPIO_MODE_INPUT);
+	if(gpio_get_level(GPIO_SD_DETECT) == 0) {
+		ESP_LOGI("MAIN", "No SD-Card found, going to sleep");
+		esp_sleep_enable_ext1_wakeup((1<<GPIO_SD_DETECT), ESP_EXT1_WAKEUP_ANY_HIGH);
+		esp_deep_sleep_start();
+	}
 }

@@ -1,3 +1,19 @@
+/**
+* @file SensorTask.hpp
+* @data 21 september, 2017
+*
+* \class SensorTask
+*
+* This task will sample at a frequency of SAMPLE_RATE_H data
+* from all sensors (in this case BMP280 and MPU9250). A xTimer
+* will run at that frequency and set a bit. The task will then
+* read data from the sensors (which are connected through I2C)
+* and send this data to the DoubleBuffer and DataProcessor.
+*
+* If the sleepbit has been set this task will go into an infinite loop.
+*
+*/
+
 #ifndef SENSOR_TASK_HPP
 #define SENSOR_TASK_HPP
 
@@ -17,9 +33,9 @@
 #include "Mpu9250Implementation.hpp"
 #include "Bmp280Implementation.hpp"
 
-class SensorTask : BaseTask {
+class SensorController : BaseTask {
 public:
-    SensorTask(unsigned int task_priority, DoubleBuffer &db, DataProcessor &dp);
+	SensorController(unsigned int task_priority, DoubleBuffer &db, DataProcessor &dp);
     friend void sensor_handle_task(void *args);
 private:
     DoubleBuffer &DBHandle;

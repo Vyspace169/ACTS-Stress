@@ -5,12 +5,12 @@ DataProcessor::DataProcessor() {
 	OldAcceleroYValue = 0;
 	OldAcceleroZValue = 0;
 	TimeoutCounter = 0;
-	TimeoutTrigger = TIMEOUT_TIME_SEC * 1000;
+	TimeoutTrigger = 60000;
 	LastTriggerOn = false;
 	ActivityData = 0;
-	TriggerValueX = TRIGGER_VALUE_X;
-	TriggerValueY = TRIGGER_VALUE_Y;
-	TriggerValueZ = TRIGGER_VALUE_Z;
+	TriggerValueX = 2000;
+	TriggerValueY = 2000;
+	TriggerValueZ = 2000;
 }
 
 void DataProcessor::SetTimeoutValue(int NewTriggerms) {
@@ -62,25 +62,11 @@ void DataProcessor::HandleData(SampleData NewData) {
 }
 
 double DataProcessor::GetActivityData() {
-	if(!ActivityDataQueue.empty()) {
-		return ActivityDataQueue.front();
-	}
-	else {
-		return 0;
-	}
+	return ActivityData;
 }
 
-void DataProcessor::PopData() {
-	ActivityDataQueue.pop();
-}
-
-void DataProcessor::PushData() {
-	ActivityDataQueue.push(ActivityData);
+void DataProcessor::ResetActivityData() {
 	ActivityData = 0;
-}
-
-int DataProcessor::DataCount() {
-	return ActivityDataQueue.size();
 }
 
 DataProcessor::~DataProcessor(){
