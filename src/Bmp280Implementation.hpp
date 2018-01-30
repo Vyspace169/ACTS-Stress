@@ -23,12 +23,76 @@ enum class BMP280ErrTypes{
    INIT_ERROR_5,
    INIT_ERROR_6,
 };
+<<<<<<< HEAD
 class Bmp280Implementation: public Sensor{
 public:
    Bmp280Implementation();
    int DataSize() override;
    unsigned short* SensorRead() override;
    void Sleep() override {}
+=======
+
+/**
+* @file Bmp280Implementation.hpp
+* @data 21 september, 2017
+*
+* \class Bmp280Implementation
+*
+* This class handles the BMP280 communication. It
+* inherrits from the Sensor class and has the same
+* methods.
+*
+*/
+class Bmp280Implementation: public Sensor{
+public:
+
+	/*!
+	 * \brief Bmp280Implementation constructor
+	 *
+	 * This method initializes all used states in this
+	 * class. It also intializes the BMP280 so that all
+	 * data can be read with a single method (SensorRead).
+	 *
+	 * Warning: I2C_NUM_0 is used and should be initialized
+	 * before calling this constructor.
+	 */
+   Bmp280Implementation();
+
+   /*!
+   	 * \brief Bmp280Implementation DataSize method
+   	 * \return Datasize of SensorRead method in bytes
+   	 *
+   	 * This method returns the datasize of a single
+   	 * sensorread. This value is given in bytes.
+   	 *
+   	 * For the BMP280, is is a static value of 8 bytes.
+   	 */
+   int DataSize() override;
+
+   /*!
+   	 * \brief Bmp280Implementation SensorRead method
+   	 * \return Pointer to an unsigned short array with data
+   	 *
+   	 * This method reads data from the BMP280 using
+   	 * the I2C bus (I2C_NUM_0). A unsigned short
+   	 * pointer is returned with temparature and
+   	 * airpressure data.
+   	 */
+   unsigned short* SensorRead() override;
+
+   /*!
+   	 * \brief Bmp280Implementation Sleep method
+   	 *
+   	 * Empty, not implemented.
+   	 */
+   void Sleep() override {}
+
+   /*!
+   	 * \brief Bmp280Implementation destructor
+   	 *
+   	 * Empty, not implemented.
+   	 */
+>>>>>>> 6445be6125a08d7cdadab28488266c732473b202
    ~Bmp280Implementation() {}
 private:
    struct bmp280_t bmp280_com_functions;
