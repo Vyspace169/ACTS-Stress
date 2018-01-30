@@ -28,8 +28,6 @@
 #include "SystemVariables.hpp"
 #include "Systemerrors.hpp"
 
-#include "Setup.hpp"
-
 #include "SdWriterController.hpp"
 #include "SensorController.hpp"
 #include "StandbyController.hpp"

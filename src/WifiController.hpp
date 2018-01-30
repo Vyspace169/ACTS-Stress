@@ -23,11 +23,13 @@
 #include "WiFiC.h"
 #include "BaseTask.hpp"
 #include "DataProcessor.hpp"
+#include "MQTTController.hpp"
 
 class WifiController : BaseTask {
 public:
 	WifiController(unsigned int TaskPriority, DataProcessor &dp);
 	friend void run_wifi_task(void *args);
+	MQTTController *mqtt;
 private:
 	DataProcessor &DPHandle;
     void *WIFITASK_TIMER_ID = 0;

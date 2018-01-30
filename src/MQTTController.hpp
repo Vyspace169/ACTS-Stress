@@ -37,9 +37,6 @@ private:
     const char* topic = "ref_v";
     const char* user = "Sensor";
     short unsigned int port = 8883;
-    char* host = "a3oyj9w6dlgtya.iot.eu-west-2.amazonaws.com:8883";
-
-    char* ssid = "DasInternet";
-    char* pass = "Hvbek83#etJK";
+    char* host = "a3oyj9w6dlgtya.iot.eu-central-1.amazonaws.com";
 };
 #endif //WIFI_CONTROLLER_HPP

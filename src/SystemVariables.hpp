@@ -118,7 +118,7 @@ typedef struct {
 #define WIFI_PASSWORD			"12345678"
 
 /*! Wifi poll frequency in seconds */
-#define WIFI_POLL_FREQUENCY_SEC	55
+#define WIFI_POLL_FREQUENCY_SEC	10
 
 /*! Wifi timeout in milliseconds */
 #define WIFI_CONNECT_TIMEOUT	10000
@@ -164,7 +164,7 @@ typedef struct {
 /*! Wifitask defines */
 #define WIFITASK_CORE_NUM 		0
 #define WIFITASK_PRIORITY 		0
-#define WIFITASK_STACK_SIZE 	4096
+#define WIFITASK_STACK_SIZE 	8192
 
 /*! Standbycontroller defines */
 #define STANDBYCONT_CORE_NUM 	1
