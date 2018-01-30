@@ -159,9 +159,7 @@ void sntp_task(void* param) {
 	}
 }
 
-
-extern "C" void app_main(void)
-{
+extern "C" void app_main(void){
     ESP_LOGI("MAIN", "Booting completed");
 
     int WakeUpCause = esp_sleep_get_wakeup_cause();
@@ -179,7 +177,7 @@ extern "C" void app_main(void)
     	ESP_LOGE("INIT_ERROR", "Error code: %i , message: nvs_flash_init failed!", ERROR_NVS_FLASH_INIT);
     }
 
-#warning sd detect pin has to be deinitiallized
+#warning sd detect pin has to be deinitiallize
     //rtc_gpio_deinit(GPIO_SD_DETECT);
 
     error_flash_init();
@@ -216,6 +214,5 @@ extern "C" void app_main(void)
     StandbyController *sbc = new StandbyController(STANDBYCONT_PRIORITY);
 
     WifiTask *wt = new WifiTask(WIFITASK_PRIORITY, *GlobalDataHandler);
-
-    ESP_LOGI("MAIN", "Init done");
+	ESP_LOGI("MAIN", "Init done");
 }

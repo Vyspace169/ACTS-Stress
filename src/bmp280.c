@@ -635,7 +635,7 @@ BMP280_RETURN_FUNCTION_TYPE bmp280_set_oversamp_temperature(u8 v_value_u8)
 		com_rslt = p_bmp280->BMP280_BUS_READ_FUNC(p_bmp280->dev_addr,
 				BMP280_CTRL_MEAS_REG_OVERSAMP_TEMPERATURE__REG,
 				&v_data_u8, BMP280_GEN_READ_WRITE_DATA_LENGTH);
-		if (com_rslt == SUCCESS) {
+		if (com_rslt == SUCCESS_ERR) {
 			/* write over sampling*/
 			v_data_u8 = BMP280_SET_BITSLICE(v_data_u8,
 				BMP280_CTRL_MEAS_REG_OVERSAMP_TEMPERATURE,
@@ -732,7 +732,7 @@ BMP280_RETURN_FUNCTION_TYPE bmp280_set_oversamp_pressure(u8 v_value_u8)
 		com_rslt = p_bmp280->BMP280_BUS_READ_FUNC(p_bmp280->dev_addr,
 				BMP280_CTRL_MEAS_REG_OVERSAMP_PRESSURE__REG,
 				&v_data_u8, BMP280_GEN_READ_WRITE_DATA_LENGTH);
-		if (com_rslt == SUCCESS) {
+		if (com_rslt == SUCCESS_ERR) {
 			/* write pressure over sampling */
 			v_data_u8 = BMP280_SET_BITSLICE(v_data_u8,
 					BMP280_CTRL_MEAS_REG_OVERSAMP_PRESSURE,
@@ -932,7 +932,7 @@ BMP280_RETURN_FUNCTION_TYPE bmp280_set_spi3(u8 v_enable_disable_u8)
 		com_rslt = p_bmp280->BMP280_BUS_READ_FUNC(p_bmp280->dev_addr,
 				BMP280_CONFIG_REG_SPI3_ENABLE__REG, &v_data_u8,
 				BMP280_GEN_READ_WRITE_DATA_LENGTH);
-		if (com_rslt == SUCCESS) {
+		if (com_rslt == SUCCESS_ERR) {
 			v_data_u8 = BMP280_SET_BITSLICE(v_data_u8,
 					BMP280_CONFIG_REG_SPI3_ENABLE,
 					v_enable_disable_u8);
@@ -1007,7 +1007,7 @@ BMP280_RETURN_FUNCTION_TYPE bmp280_get_filter(u8 *v_value_u8)
  */
 BMP280_RETURN_FUNCTION_TYPE bmp280_set_filter(u8 v_value_u8)
 {
-	BMP280_RETURN_FUNCTION_TYPE com_rslt = SUCCESS;
+	BMP280_RETURN_FUNCTION_TYPE com_rslt = SUCCESS_ERR;
 	u8 v_data_u8 = BMP280_INIT_VALUE;
 	/* check the p_bmp280 structure pointer as NULL*/
 	if (p_bmp280 == BMP280_NULL) {
@@ -1017,7 +1017,7 @@ BMP280_RETURN_FUNCTION_TYPE bmp280_set_filter(u8 v_value_u8)
 		com_rslt = p_bmp280->BMP280_BUS_READ_FUNC(p_bmp280->dev_addr,
 				BMP280_CONFIG_REG_FILTER__REG, &v_data_u8,
 				BMP280_GEN_READ_WRITE_DATA_LENGTH);
-		if (com_rslt == SUCCESS) {
+		if (com_rslt == SUCCESS_ERR) {
 			v_data_u8 = BMP280_SET_BITSLICE(v_data_u8,
 					BMP280_CONFIG_REG_FILTER, v_value_u8);
 			com_rslt += p_bmp280->BMP280_BUS_WRITE_FUNC(
@@ -1119,7 +1119,7 @@ BMP280_RETURN_FUNCTION_TYPE bmp280_set_standby_durn(u8 v_standby_durn_u8)
 		com_rslt = p_bmp280->BMP280_BUS_READ_FUNC(p_bmp280->dev_addr,
 				BMP280_CONFIG_REG_STANDBY_DURN__REG, &v_data_u8,
 				BMP280_GEN_READ_WRITE_DATA_LENGTH);
-		if (com_rslt == SUCCESS) {
+		if (com_rslt == SUCCESS_ERR) {
 			v_data_u8 = BMP280_SET_BITSLICE(v_data_u8,
 					BMP280_CONFIG_REG_STANDBY_DURN,
 					v_standby_durn_u8);
@@ -1166,7 +1166,7 @@ BMP280_RETURN_FUNCTION_TYPE bmp280_set_work_mode(u8 v_work_mode_u8)
 				p_bmp280->dev_addr,
 				BMP280_CTRL_MEAS_REG, &v_data_u8,
 				BMP280_GEN_READ_WRITE_DATA_LENGTH);
-		if (com_rslt == SUCCESS) {
+		if (com_rslt == SUCCESS_ERR) {
 			switch (v_work_mode_u8) {
 			/* write work mode*/
 			case BMP280_ULTRA_LOW_POWER_MODE:
@@ -1493,7 +1493,7 @@ u32 bmp280_compensate_pressure_int64(s32 v_uncomp_pressure_s32)
 BMP280_RETURN_FUNCTION_TYPE bmp280_compute_wait_time(u8 *v_delaytime_u8r)
 {
 	/* variable used to return communication result*/
-	BMP280_RETURN_FUNCTION_TYPE com_rslt = SUCCESS;
+	BMP280_RETURN_FUNCTION_TYPE com_rslt = SUCCESS_ERR;
 
 	*v_delaytime_u8r = (T_INIT_MAX + T_MEASURE_PER_OSRS_MAX * (((1
 			<< p_bmp280->oversamp_temperature)
