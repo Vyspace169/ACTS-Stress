@@ -5,9 +5,9 @@ The use of this repository is limited to the ACTS project.
 ## Project Setup
 ### Required software
 - Linux, Mac or Windows
-- [Atom IDE](https://atom.io/)
-- [Platformio](http://platformio.org/), a plugin that runs on top of Atom
-- [ESP-IDF](https://esp-idf.readthedocs.io/en/latest/get-started/index.html)
+- [ESP-IDF 2.1](http://esp-idf.readthedocs.io/en/v2.1/)
+
+![alt text](http://www.dreamviews.com/dream-views-favorites/108515-random-image-thread.html)
 
 ### Required Hardware
 - ESP32 Wifi enabled microcontroller
