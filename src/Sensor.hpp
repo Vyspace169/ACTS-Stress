@@ -6,14 +6,20 @@
 */
 #pragma once
 #define OUTPUT_SIZE 4
-#include<DoubleDuffer>
-class  Sensor{
-    public:
-        Sensor(int frequency): frequency{frequency} {}
-        virtual short int [OUTPUT_SIZE] read();
-        void setFrequency(int freq);
-        int getFrequency();
-        ~Sensor();
-    private:
-        int frequency;
+#include "DoubleBuffer.hpp"
+class Sensor{
+public:
+     Sensor() {}
+     virtual int DataSize();
+     virtual unsigned short* SensorRead();
+     virtual void Sleep();
+     ~Sensor() {}
+
+     /*
+     void setFrequency(int freq);
+     int getFrequency();
+     */
+private:
+protected:
+        // int frequency;
 };
