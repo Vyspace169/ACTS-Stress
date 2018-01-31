@@ -3,14 +3,9 @@ This repository contains code for the ACTS sensor module.
 The use of this repository is limited to the ACTS project.
 
 --- New documentation ---
-ACTS-Sensor
-
-Brief explanation about project
-### Required software
-- Linux, Mac or Windows
-- [ESP-IDF 2.1](http://esp-idf.readthedocs.io/en/v2.1/)
-
-ACTS-Sensor
+# ACTS-Sensor
+This repository contains code for the ACTS sensor module.
+The use of this repository is limited to the ACTS (sensor) project.
 
 ## Brief explanation about project
 This project is meant to collect detailed data from cva patients. This can then be parsed by complex algorithms and scientists to study movement in these patients. The sensor module also creates a simple performance index that is sent to an aws backend server. These performance indexes are then parsed to provide feedback to therapists and cva patients on which they can improve.
@@ -19,15 +14,54 @@ This project is meant to collect detailed data from cva patients. This can then 
 This project can be run on a esp32 with ESP-iDF (2.1). It collects data sensor data from a BMP280 and MPU9250.
 This data is sampled at (currently) 100Hz and stored in an sd card. It also creates a performance index counter based on intensity of sampling data. This is then send to an aws backend server. The results can be retrieved from the backend server to generate statistics.
 
+## Recommendations
+Before using this project, we recommend that you study the following subjects and resources carefully:
+
+### FreeRTOS
+ESP-IDF uses FreeRTOS.
+FreeRTOS is a RTOS (Real Time Operating System).
+ESP-IDF has a slightly modified version of FreeRTOS but much of it remains the same.
+We recommend that you read up on the following resources:
+https://www.freertos.org/
+
+### ESP-IDF (2.1)
+ESP-IDF is the C framework that is used as the basis for this project.
+We commend a read up on the following resources before working on this project:
+
+http://esp-idf.readthedocs.io/en/v2.1/get-started/index.html
+http://esp-idf.readthedocs.io/en/v2.1/api-guides/general-notes.html
+
+A link to the github page that contains examples, which we recommend you also study:
+
+https://github.com/espressif/esp-idf/tree/release/v2.1
+
+### C++ Language
+While FreeRTOS and ESP-IDF (2.1) are written in C and some parts in assembly, this project is mostly written in C++.
+We recommend that the reader knows the basics of C++ and the  OOP (object oriented programming) paradigm that comes with it.
+
+### Required software
+- Linux, Mac or Windows
+- [ESP-IDF 2.1](http://esp-idf.readthedocs.io/en/v2.1/)
+
+ACTS-Sensor
+
+
+
 ## Project Setup
-	Requirements
-	Software
-		- Linux, Mac or Windows
-		- [ESP-IDF 2.1](http://esp-idf.readthedocs.io/en/v2.1/)
-		
-		Recommended
-		-	Eclipse IDE
-	Installation
+### Software
+	- Linux, Mac or Windows
+	- [ESP-IDF 2.1] (http://esp-idf.readthedocs.io/en/v2.1/)
+
+	Recommended
+	-	Eclipse IDE (https://esp-idf.readthedocs.io/en/v2.0/eclipse-setup.html)
+### Installation
+Installation of ESP-IDF 2.1 can be found on the github page of ESP-IDF. 
+ESP-IDF 2.1 installation guide
+https://github.com/espressif/esp-idf/tree/release/v2.1
+	
+## Project features
+### Software
+
 Project features
 Software how to guide
 	Models + description
