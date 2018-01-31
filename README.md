@@ -39,14 +39,6 @@ https://github.com/espressif/esp-idf/tree/release/v2.1
 While FreeRTOS and ESP-IDF (2.1) are written in C and some parts in assembly, this project is mostly written in C++.
 We recommend that the reader knows the basics of C++ and the  OOP (object oriented programming) paradigm that comes with it.
 
-### Required software
-- Linux, Mac or Windows
-- [ESP-IDF 2.1](http://esp-idf.readthedocs.io/en/v2.1/)
-
-ACTS-Sensor
-
-
-
 ## Project Setup
 ### Software
 	- Linux, Mac or Windows
@@ -54,13 +46,27 @@ ACTS-Sensor
 
 	Recommended
 	-	Eclipse IDE (https://esp-idf.readthedocs.io/en/v2.0/eclipse-setup.html)
+	
 ### Installation
 Installation of ESP-IDF 2.1 can be found on the github page of ESP-IDF. 
 ESP-IDF 2.1 installation guide
 https://github.com/espressif/esp-idf/tree/release/v2.1
 	
 ## Project features
-### Software
+## Software description
+This chapter will describe how the software is build from multiple perspectives. 
+First a general overview is given about the software. After that the interfaces with explanation followed by a concurrency diagram for task responsibility within FreeRTOS. Afterwards a short guide is given on how to create and change the project to meet the users requirements.
+
+### General overview
+The esp32 is a duocore system. This project is designed to utilize both cores with different responsibilities. In short this means that the app core (core 1) is used as the sampling core for fast code routines that do not require alot of time to finish or compute.
+Currently the app core samples its peripherals at a 100Hz, however this could be increased if desired.
+The second core runs more complex code and code that has a long deadline to finish. The wifi code can easily take up 5 seconds of cpu time to finish with its retries. Because of the split of responibilities this is acceptable within the current project.
+
+### Interface description
+First, a simple overview of all classess is given, with their respective responsibilities. Aftwards a more in-depth version is given that shows the interface of each class.
+
+### Task structuring
+### Project short guide
 
 Project features
 Software how to guide
