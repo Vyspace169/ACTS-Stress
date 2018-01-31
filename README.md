@@ -2,6 +2,35 @@
 This repository contains code for the ACTS sensor module.
 The use of this repository is limited to the ACTS project.
 
+--- New documentation ---
+ACTS-Sensor
+
+Brief explanation about project
+### Required software
+- Linux, Mac or Windows
+- [ESP-IDF 2.1](http://esp-idf.readthedocs.io/en/v2.1/)
+
+ACTS-Sensor
+
+##Brief explanation about project
+This project is meant to collect detailed data from cva patients. This can then be parsed by complex algorithms and scientists to study movement in these patients. The sensor module also creates a simple performance index that is sent to an aws backend server. These performance indexes are then parsed to provide feedback to therapists and cva patients on which they can improve.
+
+###Technical description
+This project can be run on a esp32 with ESP-iDF (2.1). It collects data sensor data from a BMP280 and MPU9250.
+This data is sampled at (currently) 100Hz and stored in an sd card. It also creates a performance index counter based on intensity of sampling data. This is then send to an aws backend server. The results can be retrieved from the backend server to generate statistics.
+
+Project Setup
+	Requirements
+	Installation
+Project features
+Software how to guide
+	Models + description
+	setup own project types
+Known bugs/issues
+Future version features/fixes
+
+--- End of new documentation ---
+
 ## Project Setup
 ### Required software
 - Linux, Mac or Windows
