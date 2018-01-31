@@ -45,16 +45,28 @@ void standbycontroller_handle_task(void *args)  {
 		}
 		else {
 
-			//
-			/*float BatteryVoltage = adc1_get_raw(ADC_BATTERY) / ADC_TO_BAT_VOLTAGE;
-			if(BatteryVoltage < TURN_OFF_VOLTAGE) {
+			// Battery voltage measurement
+			float BatteryVoltage = adc1_get_raw(ADC_BATTERY) / ADC_TO_BAT_VOLTAGE;
+			if(gpio_get_level(GPIO_CHARGE_DETECT) == 0 && BatteryVoltage > 4.15) {
+				blink_set_led(GPIO_LED_GREEN, 10000, 0);
+			}
+			else if(gpio_get_level(GPIO_CHARGE_DETECT) == 0 && BatteryVoltage <= 4.15) {
+				blink_set_led(GPIO_LED_GREEN, 10, 1000);
+			}
+			else {
+				if(BatteryVoltage < BAT_LED_VALUE_VOLTAGE) {
+					blink_set_led(GPIO_LED_RED, 10, 1000);
+				}
+				else if(BatteryVoltage >= BAT_LED_VALUE_VOLTAGE) {
+					blink_set_led(GPIO_LED_GREEN, 10, 5000);
+				}
+			}
+			/*if(BatteryVoltage < TURN_OFF_VOLTAGE) {
 				ESP_LOGI("SLEEP TASK", "Setting bits due to a low battery");
 				xEventGroupSetBits(GlobalEventGroupHandle, (StandbySensorTaskUnhandled | StandbyWifiTaskUnhandled | StandbyWriterTaskUnhandled));
 				InfinityReset = true;
 				EventBitsSet = true;
 			}*/
-
-			//ESP_LOGI("SBC", "State: %d", gpio_get_level(GPIO_MPU_INT));
 
 			// If the card is removed, this loop will be run
 			if(gpio_get_level(GPIO_SD_DETECT) == 0) {

@@ -18,13 +18,13 @@ esp_err_t i2c_sensor_read_array(unsigned char dev_address, unsigned char address
 	i2c_master_start(cmd);
 	i2c_master_write_byte(cmd, dev_address << 1 | I2C_READ_BIT, ACK_CHECK_EN);
 	for(int i = 0; i < count - 1; i++) {
-		i2c_master_read_byte(cmd, read_data++, (i2c_ack_type_t) ACK_VAL);
+		i2c_master_read_byte(cmd, read_data++, ACK_VAL);
 	}
-	i2c_master_read_byte(cmd, read_data, (i2c_ack_type_t)NACK_VAL);
+	i2c_master_read_byte(cmd, read_data, NACK_VAL);
 	i2c_master_stop(cmd);
 	ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, I2C_TIMEOUT / portTICK_RATE_MS);
 	i2c_cmd_link_delete(cmd);
-
+   
 	return ret;
 }
 
@@ -45,7 +45,7 @@ esp_err_t i2c_sensor_read_byte(unsigned char dev_address, unsigned char address,
    cmd = i2c_cmd_link_create();
    i2c_master_start(cmd);
    i2c_master_write_byte(cmd, dev_address << 1 | I2C_READ_BIT, ACK_CHECK_EN);
-   i2c_master_read_byte(cmd, read_data, (i2c_ack_type_t)NACK_VAL);
+   i2c_master_read_byte(cmd, read_data, NACK_VAL);
    i2c_master_stop(cmd);
    ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, I2C_TIMEOUT / portTICK_RATE_MS);
    i2c_cmd_link_delete(cmd);
@@ -206,22 +206,21 @@ unsigned short* Mpu9250Implementation::SensorRead() {
 }
 
 void Mpu9250Implementation::Sleep() {
-	//if(MPUIsInitialized) {
-	//	if(i2c_sensor_write_byte(MPU9250_I2C_ADDRESS, MPU9250_REG_PWR_MGMNT_1, MPU9250_SET_SLEEP) != ESP_OK) {
-	//		ESP_LOGI("I2C", "Failed to enable sleep mode on MPU9250");
-	//	}
-	//}
+	//i2c_sensor_write_byte(MPU9250_I2C_ADDRESS, MPU9250_REG_INT_EN, WOM_INTERRUPT_EN);
+	//i2c_sensor_write_byte(MPU9250_I2C_ADDRESS, MPU9250_REG_INT_CNTRL, WOM_LOGIC_EN);
+	//i2c_sensor_write_byte(MPU9250_I2C_ADDRESS, MPU9250_REG_WOM_THRES, WAKE_UP_THRESSHOLD);
+
+	i2c_sensor_write_byte(MPU9250_I2C_ADDRESS, 108, 0b00000111);
+
+	i2c_sensor_write_byte(MPU9250_I2C_ADDRESS, MPU9250_REG_ACCEL_CONFIG_2, 0b00001001);
 
 	i2c_sensor_write_byte(MPU9250_I2C_ADDRESS, MPU9250_REG_INT_EN, WOM_INTERRUPT_EN);
 
-	//i2c_sensor_write_byte(MPU9250_I2C_ADDRESS, 105, 0b11000000);
-	i2c_sensor_write_byte(MPU9250_I2C_ADDRESS, MPU9250_REG_INT_CNTRL, WOM_LOGIC_EN);
-
-	//i2c_sensor_write_byte(MPU9250_I2C_ADDRESS, 108, 0b00000111);
+	i2c_sensor_write_byte(MPU9250_I2C_ADDRESS, MPU9250_REG_INT_CNTRL, 0b11000000);
 
 	i2c_sensor_write_byte(MPU9250_I2C_ADDRESS, MPU9250_REG_WOM_THRES, WAKE_UP_THRESSHOLD);
 
-	//i2c_sensor_write_byte(MPU9250_I2C_ADDRESS, 30, 4);
+	i2c_sensor_write_byte(MPU9250_I2C_ADDRESS, 30, 4);
 
-	//i2c_sensor_write_byte(MPU9250_I2C_ADDRESS, MPU9250_REG_PWR_MGMNT_1, (1<<5));
+	i2c_sensor_write_byte(MPU9250_I2C_ADDRESS, MPU9250_REG_PWR_MGMNT_1, (1<<5));
 }

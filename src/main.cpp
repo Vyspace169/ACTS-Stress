@@ -56,7 +56,7 @@ time_t GlobalStartTime;
 extern "C" void app_main(void)
 {
 	ESP_LOGI("MAIN", "Booting completed");
-
+	
 	// Print wakeup cause
 	int WakeUpCause = esp_sleep_get_wakeup_cause();
 	switch(WakeUpCause) {

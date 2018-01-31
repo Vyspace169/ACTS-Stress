@@ -33,6 +33,7 @@
 #define MPU9250_REG_GYRO_YL     	0x45
 #define MPU9250_REG_GYRO_ZL     	0x47
 #define MPU9250_REG_ACCEL_CONFIG	0x1C
+#define MPU9250_REG_ACCEL_CONFIG_2	0x1D
 #define MPU9250_REG_ACCEL_XL    	0x3B
 #define MPU9250_REG_ACCEL_YL    	0x3D
 #define MPU9250_REG_ACCEL_ZL    	0x3F
@@ -82,6 +83,8 @@
 * @data 21 september, 2017
 *
 * \class Mpu9250Implementation
+*
+* \brief MPU9250 data read and setup
 *
 * This class handles the MPU9250 communication. It
 * inherrits from the Sensor class and has the same

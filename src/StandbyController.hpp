@@ -4,6 +4,8 @@
 *
 * \class StandbyController
 *
+* \brief Class that controlls the devices sleepmodes
+*
 * This class will take care of every sleep and reset condition.
 * Currently the system knows the following:
 *  - Reset when the device gets taken of the charger;
@@ -28,6 +30,8 @@
 #include <sys/time.h>
 
 #include "BaseTask.hpp"
+
+#include "Setup.hpp"
 
 class  StandbyController : BaseTask {
 public:
