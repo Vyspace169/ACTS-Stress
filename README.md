@@ -64,11 +64,11 @@ The second core runs more complex code and code that has a long deadline to fini
 
 ### Interface description
 First, a simple overview of all classess is given, with their respective responsibilities. Aftwards a more in-depth version is given that shows the interface of each class.
-![alt text](/readme-content/actsclassbasic.jpg)
+![alt text](./readme-content/actsclassbasic.jpg)
 
-![alt text](/readme-content/actsclassinterface.jpg)
+![alt text](./readme-content/actsclassinterface.jpg)
 ### Task structuring
-![alt text](/readme-content/actsconcurrency.jpg)
+![alt text](./readme-content/actsconcurrency.jpg)
 ### Project short guide
 
 Project features
