@@ -7,11 +7,7 @@ extern const uint8_t certificate_pem_crt_end[] asm("_binary_certificate_pem_crt_
 extern const uint8_t private_pem_key_start[] asm("_binary_private_pem_key_start");
 extern const uint8_t private_pem_key_end[] asm("_binary_private_pem_key_end");
 
-//static EventGroupHandle_t wifi_event_group;
-//const int CONNECTED_BIT = BIT0;
-
 MQTTController::MQTTController() {
-    //WiFiInitialize(ssid, pass);
 }
 
 void MQTTController::publish(double value) {
@@ -23,15 +19,7 @@ void MQTTController::publish(double value) {
     paramsQOS1.payload = (void *) cPayload;
     paramsQOS1.isRetained = 0;
 
-    /* Publish without Acknowledge, -Jop
-    ESP_LOGI(TAG, "-->sleep");
-    vTaskDelay(1000 / portTICK_RATE_MS);
-    sprintf(cPayload, "%s : %d ", "hello from ESP32 (QOS0)", i++);
-    paramsQOS0.payloadLen = strlen(cPayload);
-    rc = aws_iot_mqtt_publish(&client, TOPIC, TOPIC_LEN, &paramsQOS0);
-    */
-
-    sprintf(cPayload, "%s : %lf ", MQTT_USER_KEY_CODE, value);
+    sprintf(cPayload, "{\"key\" :\"%s\",\"value\" : \"%lf\"}", MQTT_USER_KEY_CODE, value);
     paramsQOS1.payloadLen = strlen(cPayload);
     rc = aws_iot_mqtt_publish(&client, TOPIC, TOPIC_LEN, &paramsQOS1);
     if (rc == MQTT_REQUEST_TIMEOUT_ERROR) {
@@ -46,10 +34,6 @@ void MQTTController::disconnect(){
         ESP_LOGE(TAG, "Unable to set Auto Reconnect to true - %d", rc);
     }
     aws_iot_mqtt_disconnect(&client);
-}
-
-MQTTController::~MQTTController(){
-    disconnect();
 }
 
 static void iot_subscribe_callback_handler(
@@ -126,4 +110,8 @@ void MQTTController::connectMQTT() {
     if(SUCCESS != rc) {
         ESP_LOGE(TAG, "Unable to set Auto Reconnect to true - %d", rc);
     }
+}
+
+MQTTController::~MQTTController(){
+    disconnect();
 }

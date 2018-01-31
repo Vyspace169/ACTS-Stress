@@ -39,7 +39,7 @@ private:
 
     const char* TAG = "MQTT Controller";
     const char* client_id = "1";
-    const char* TOPIC = "client/result";
+    const char* TOPIC = "acts/result";
     const int TOPIC_LEN = strlen(TOPIC);
     const char* user = "Sensor";
     short unsigned int port = 8883;
