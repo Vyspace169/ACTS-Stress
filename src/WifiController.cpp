@@ -4,43 +4,34 @@ WifiController::WifiController(unsigned int task_priority, DataProcessor &dp) :
 	BaseTask(task_priority),
 	DPHandle{dp}
 	{
-		mqtt = new MQTTController(1);
+		mqtt = new MQTTController();
 		main_task();
 	}
 
 void run_wifi_task(void *args)  {
 	WifiController *sTask = static_cast<WifiController*>(args);
 	MovementStack MovementSaver;
-	ESP_LOGI("WIFI TASK", "Doing Stuff")
+
     while(1)  {
-		ESP_LOGI("WIFI TASK", "Doing more Stuff")
         EventBits_t uxBits;
         uxBits = xEventGroupWaitBits(GlobalEventGroupHandle, (WifiActivateFlag | WifiReadyFlag | StandbyWifiTaskUnhandled), pdTRUE, pdFALSE, portMAX_DELAY);
 		ESP_LOGI("WIFI TASK", "Connecting to wifi");
         if((uxBits & WifiActivateFlag)) {
 			ESP_LOGI("WIFI TASK", "Connecting to wifi");
 			bool enabled = WiFiConnect(WIFI_CONNECT_TIMEOUT);
-
+			ESP_LOGI("WIFI TASK", "geil");
 			// push activity data in its fifo
 			MovementSaver.PushData(sTask->DPHandle.GetActivityData());
-			sTask->DPHandle.ResetActivityData();
-			sTask->mqtt->connectMQTT();
 			if(enabled == true) {
 				ESP_LOGI("WIFI TASK", "Wifi connected");
-				if(TCPConnectToServer(WIFI_TCP_SERVER, WIFI_TCP_PORT) == true) {
-					ESP_LOGI("WIFI TASK", "Socket connected");
-					char send_string[50];
-					while(MovementSaver.DataCount() != 0) {
-						sprintf(send_string, "%.2f\n", MovementSaver.GetActivityData());
-						ESP_LOGI("WIFI TASK", "Sending data to server: %d: %s", MovementSaver.DataCount(), send_string);
-						TCPSend(send_string, strlen(send_string));
-						MovementSaver.PopData();
-					}
-					TCPDisconnect();
+				sTask->mqtt->connectMQTT();
+				while(MovementSaver.DataCount() != 0) {
+					sTask->mqtt->publish(MovementSaver.GetActivityData());
+					MovementSaver.PopData();
 				}
-				else {
-					ESP_LOGI("WIFI TASK", "Socket connection failed");
-				}
+				sTask->mqtt->disconnect();
+				ESP_LOGI("WIFI TASK", "Wifi done");
+
 				WiFiDisconnect();
 			}
 			else {
@@ -49,9 +40,7 @@ void run_wifi_task(void *args)  {
         }
 
         if(uxBits & WifiReadyFlag) {
-        	// TODO: WifiReadyFlag must be set by something
-            // TODO: Send data over wifi to the server
-        	// TODO: MQTT frame builder class
+			//pass
         }
 
         if(uxBits & StandbyWifiTaskUnhandled) {
@@ -65,7 +54,6 @@ void run_wifi_task(void *args)  {
 }
 
 void wifi_timers_callback( TimerHandle_t xTimer )  {
-	ESP_LOGI("NIGGA", "NIGGA NIGGA");
 	xEventGroupSetBits(GlobalEventGroupHandle, WifiActivateFlag);
 }
 

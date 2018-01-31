@@ -129,6 +129,9 @@ typedef struct {
  */
 #define SNTP_READ_TIME_RETRY	50
 
+/*! User key, change to patient key as stored in MySql Database*/
+#define MQTT_USER_KEY_CODE		"4a6bcefb6217984f477b27c8226200fe3c2a414d"
+
 /*! MovementStack maximum queue size.
  * Whenever the dataprocessor's data cant be send,
  * the data will be writen to the MovementStack.

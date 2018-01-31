@@ -15,6 +15,8 @@
 #include "esp_event_loop.h"
 #include "esp_log.h"
 
+#include "SystemVariables.hpp"
+
 #include "aws_iot_config.h"
 #include "aws_iot_error.h"
 #include "aws_iot_log.h"
@@ -24,17 +26,21 @@
 /// @brief MQTTController that handles the writing to the sd.
 class MQTTController{
 public:
-  MQTTController(int user);
-  void publish(long time, int value);
+  MQTTController();
+  void publish(double value);
   void connectMQTT();
   void disconnect();
   //void iot_subscribe_callback_handler(AWS_IoT_Client *pClient, char *topicName, uint16_t topicNameLen, IoT_Publish_Message_Params *params, void *pData);
   ~MQTTController();
 private:
-    //static EventGroupHandle_t wifi_event_group;
+    AWS_IoT_Client client;
+    IoT_Publish_Message_Params paramsQOS0;
+    IoT_Publish_Message_Params paramsQOS1;
+
     const char* TAG = "MQTT Controller";
     const char* client_id = "1";
-    const char* topic = "ref_v";
+    const char* TOPIC = "client/result";
+    const int TOPIC_LEN = strlen(TOPIC);
     const char* user = "Sensor";
     short unsigned int port = 8883;
     char* host = "a3oyj9w6dlgtya.iot.eu-central-1.amazonaws.com";
