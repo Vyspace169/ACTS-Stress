@@ -130,6 +130,16 @@ Aws SnS allows the user to easily send messages using standardized protocols out
 #### aws RDS
 Aws RDS is a database management service. It allows the user to store information in a database.
 
+## Links/References
+* ESP32: http://espressif.com/en/products/hardware/esp32/overview
+* ESP32 setup: http://espressif.com/en/products/hardware/esp32/overview
+* Atom: https://atom.io/
+* PlatformIO: http://platformio.org/
+4. Install the Platformio plugin on top of Atom: 
+http://platformio.org/get-started/ide?install=atom
+Note: Both Atom and Platformio might take a while to install.
+
+~Good luck developing more content from the ACTS Team and me ♥.
 
 Project features
 Software how to guide
@@ -138,7 +148,7 @@ Software how to guide
 Known bugs/issues
 Future version features/fixes
 
-~Good luck developing more content from the ACTS Team and me ♥.
+
 
 --- End of new documentation ---
 
@@ -261,11 +271,4 @@ To run your project, a tab to the left should show an arrow pointing to the righ
 ~Good luck developing more content from the ACTS Team and me ♥.
 ## More reads
 
-## Links/References
-* ESP32: http://espressif.com/en/products/hardware/esp32/overview
-* ESP32 setup: http://espressif.com/en/products/hardware/esp32/overview
-* Atom: https://atom.io/
-* PlatformIO: http://platformio.org/
-4. Install the Platformio plugin on top of Atom: 
-http://platformio.org/get-started/ide?install=atom
-Note: Both Atom and Platformio might take a while to install.
+
