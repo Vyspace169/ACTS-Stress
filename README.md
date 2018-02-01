@@ -102,7 +102,7 @@ Markup :
 * MPU-9250 9DOF Magneto, Gyro, Accel
 
 ### Hardware pinout
-![alt text](readme-content/acts-hardware-pinout.png)
+![alt text](readme-content/esp32-connections.png)
 
 ## Server
 The aws platform is used as the server platform. This chapter will be a small guide consisting mostly of references to explain how the backend works.
