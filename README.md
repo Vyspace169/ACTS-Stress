@@ -108,6 +108,13 @@ The aws platform is used as the server platform. This chapter will be a small gu
 MQTT is used as communication protocol to exchange data between the sensor module (this project) and the server.
 
 ![project connection image](readme-content/english-db-structure.jpg)
+
+The server consists of three parts: the database, an online environment and a MQTT bus Broker. In the database there are three tables, these are displayed in the cloud. The tables are named results, goals and users. In the light blue blocks connected to the tables, the data inside the tables is described. 
+
+The MQTT broker runs in Amazon Web Services (AWS). The broker provides the sensor module to get the data online available with a MQTT HTPPS/socket connection. The security is important so it uses an embedded certificate to connect. On top of that there is also a difference between the users and the sensor modules by the usage of keys. The broker uses a lambda function written in Python to include the incoming data in the database. The build in lambda system in AWS and Python code that uses a MySQL connector module to add data, are used for this action.
+
+On the broker it’s automatically checked if a user already has a goal for the concerning day. If this is not the case the Python code that is running on the server takes by means of a query the average of the past 7 days. This value then gets increased with a set percentage increase that can be picked per patient.
+
 ### Server setup
 Note that for every aws service the eu-central Frankfurt server is used.
 #### aws IoT
