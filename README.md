@@ -89,6 +89,15 @@ The StandbyTask is an activate task with the lowest priority (otherwise it would
 It will then respond to interrupts that are system generated.
 
 ### Project short guide
+Description on recommendations on different project types (such as complex sampling, lots of sampling or lots of wifi connections). Also fast sampling rates (max 1000Hz espidf?)
+
+## Hardware
+
+### Hardware requirements
+### Hardware pinout
+
+## Server
+### Server setup
 
 Project features
 Software how to guide
