@@ -143,10 +143,7 @@ AWS RDS is a database management service. It allows the user to store informatio
 * ESP32: http://espressif.com/en/products/hardware/esp32/overview
 * ESP32 setup: http://espressif.com/en/products/hardware/esp32/overview
 
-## Bugs
-
 ## Creating a working device
-
 ### Programming / uploading to the device
 The standard device should operate at 160 MHz minimum to guarantee that all operations are performed in time.
 Other than that, the project should just be compiled and uploaded to the esp32 device.
@@ -158,12 +155,12 @@ After x time the sensor device will try to send the performance index to the ser
 #### MQTT testing
 AWS allows for testing on topics. You can subscribe to specific topics or a range of topics.
 
-
-	ToDo
-	Bugs/issues
-	version
-	Software recommendations
-	How to create a device from scratch and link it to the database?
-	
+## Bugs	
 ~Good luck developing more content from the ACTS Team and me ♥.
+
+## Future improvements
+improvements and / or changes:
+Markup : 
+* DataProcessor to data processing task (when doing complex calculations)
+* Controllers and Basetask changed to allow a generic way of creating the actual tasks in ESP-IDF, this can be done by calling a function ptr in the basetask that calls the main_task again. By implementing the main_task in its children, internal logic can change but interface stays the same.
 
