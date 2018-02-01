@@ -74,8 +74,20 @@ The same is true for the controllers. These controllers also act as tasks, so th
 
 ![alt text](readme-content/actsclassinterface.png)
 
+For a further detailed explanation about each class, every class is documented and doxygen has been used to generate html pages with the documentation. 
+
 ### Task structuring
 ![alt text](readme-content/actsconcurrency.png)
+
+The Sensortask is activated every 10 ms (100Hz) by a timer and with retrieve a sample of the sensors. The results of the measurement will be send to the DoubleBuffer who stores it internally in a BinaryBuffer that is swappable. When 1 of the 2 internal BinaryBuffers are full, Sensortask will set the BufferReady flag which tells the SdWriterTask to write that BinaryBuffer onto the sd card.
+
+The SdWriterTask is activated when one of the BinaryBuffers is full, writes the data to the sd card and goes back to wait for the flag to be set again.
+
+The WifiTask is acivated every x time (currently 5 min?). The Wifitask sends the Movement stack data, which contains performance values to the aws server. It will retry x times and if it fails will go back to sleep, If a succesful connection could be established all data will be send to the aws server.
+
+The StandbyTask is an activate task with the lowest priority (otherwise it would block the system from sampling!). If the StandbyTask receives a signal from any part of the system to set the system in sleep, it will send the connected flags to SensorTask, SdWriterTask and WifiTask.
+It will then respond to interrupts that are system generated.
+
 ### Project short guide
 
 Project features
