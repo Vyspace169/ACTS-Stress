@@ -14,9 +14,15 @@
 
 #pragma once
 
+#include <queue>
+#include <stdlib.h>
+#include <string.h>
+
 #include "esp_log.h"
 #include "SystemVariables.hpp"
-#include <queue>
+
+#include "nvs.h"
+#include "nvs_flash.h"
 
 class  MovementStack{
 public:
@@ -26,7 +32,7 @@ public:
 	 *
 	 * Empty, not implemented.
 	 */
-    MovementStack() {}
+    MovementStack();
 
     /*!
      * \brief GetActivityData method
@@ -37,15 +43,7 @@ public:
      * this data, this must be done with the PopData
      * method.
      */
-    double GetActivityData();
-
-    /*!
-     * \brief PopData method
-     *
-     * This method removes a data sample from the
-     * FIFO.
-     */
-    void PopData();
+    movement_type_t GetActivityData();
 
     /*!
      * \brief PushData method
@@ -54,7 +52,7 @@ public:
      * The data sent as a parameter is written in
      * the FIFO.
      */
-    void PushData(double ActivityData);
+    void PushData(movement_type_t ActivityData);
 
     /*!
      * \brief DataCount method
@@ -65,6 +63,8 @@ public:
      */
     int DataCount();
 
+    void WriteStackToFlash();
+
     /*!
      * \brief MovementStack deconstructor
      *
@@ -72,5 +72,6 @@ public:
      */
     ~MovementStack() {}
 private:
-    std::queue<double> ActivityDataQueue;
+    int DataStackPointer;
+    movement_type_t DataStack[(NFS_BLOB_SIZE / sizeof(movement_type_t))];
 };

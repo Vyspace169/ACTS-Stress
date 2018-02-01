@@ -1,0 +1,21 @@
+<map id="C:/ESP32/ACTS&#45;Sensor&#45;develop/src/StandbyController.hpp" name="C:/ESP32/ACTS&#45;Sensor&#45;develop/src/StandbyController.hpp">
+<area shape="rect" id="node7" href="$_base_task_8hpp.html" title="BaseTask.hpp" alt="" coords="908,468,1013,495"/>
+<area shape="rect" id="node13" href="$_setup_8hpp.html" title="This file contains all setup functions. " alt="" coords="2428,95,2509,121"/>
+<area shape="rect" id="node11" href="$_system_variables_8hpp.html" title="SystemVariables.hpp" alt="" coords="2383,617,2530,644"/>
+<area shape="rect" id="node12" href="$_systemerrors_8hpp_source.html" title="Systemerrors.hpp" alt="" coords="337,543,462,569"/>
+<area shape="rect" id="node28" href="$_sd_writer_controller_8hpp.html" title="SdWriterController.hpp" alt="" coords="2595,319,2748,345"/>
+<area shape="rect" id="node33" href="$_sensor_controller_8hpp.html" title="SensorController.hpp" alt="" coords="1569,169,1712,196"/>
+<area shape="rect" id="node44" href="$_wifi_controller_8hpp.html" title="WifiController.hpp" alt="" coords="2648,244,2772,271"/>
+<area shape="rect" id="node29" href="$_double_buffer_8hpp.html" title="DoubleBuffer.hpp" alt="" coords="1074,393,1194,420"/>
+<area shape="rect" id="node30" href="$_binary_buffer_8hpp.html" title="BinaryBuffer.hpp" alt="" coords="1235,543,1353,569"/>
+<area shape="rect" id="node31" href="$_s_d_writer_8hpp.html" title="SDWriter.hpp" alt="" coords="1191,468,1291,495"/>
+<area shape="rect" id="node34" href="$_data_processor_8hpp.html" title="DataProcessor.hpp" alt="" coords="2083,319,2217,345"/>
+<area shape="rect" id="node37" href="$_mpu9250_implementation_8hpp.html" title="Mpu9250Implementation.hpp" alt="" coords="1060,244,1248,271"/>
+<area shape="rect" id="node41" href="$_bmp280_implementation_8hpp.html" title="Bmp280Implementation.hpp" alt="" coords="615,244,797,271"/>
+<area shape="rect" id="node36" href="$_movement_stack_8hpp.html" title="MovementStack.hpp" alt="" coords="2240,393,2380,420"/>
+<area shape="rect" id="node40" href="$_sensor_8hpp.html" title="Sensor.hpp" alt="" coords="994,319,1082,345"/>
+<area shape="rect" id="node42" href="$bmp280_8h.html" title="BMP280 Sensor Driver Support Header File. " alt="" coords="579,319,657,345"/>
+<area shape="rect" id="node43" href="$_errorhandler_8hpp_source.html" title="Errorhandler.hpp" alt="" coords="1218,393,1335,420"/>
+<area shape="rect" id="node45" href="$_wi_fi_c_8h_source.html" title="WiFiC.h" alt="" coords="3277,468,3346,495"/>
+<area shape="rect" id="node50" href="$_m_q_t_t_controller_8hpp.html" title="MQTTController.hpp" alt="" coords="2963,468,3100,495"/>
+</map>

@@ -83,6 +83,24 @@ SDWriterErrorCodes SDWriter::InitSDMMC(int retries) {
 		return CARD_NOT_INITIALIZED;
 	}
 	else {
+
+		// Create directory for measurement data
+		struct stat st;
+		char *DirStr = new char[256];
+		strcpy(DirStr, "/sdcard/");
+		strcat(DirStr, DIRECTORY_NAME);
+		if(stat(DirStr, &st) == -1) {
+		    if(mkdir(DirStr, ACCESSPERMS) == -1){
+		    	ESP_LOGI("SD WRITTER", "Creating directory %s failed", DirStr);
+		    	perror("mkdri: ");
+		    }
+		    else {
+		    	ESP_LOGI("SD WRITTER", "Creating directory succeded");
+		    }
+		}
+		delete(DirStr);
+
+
 		ESP_LOGI("SD WRITER", "Card init OK. Retries: %d", i + 1);
 		return SD_WRITER_OK;
 	}
@@ -93,14 +111,10 @@ void SDWriter::SetFileName(const char* name) {
 		return;
 	}
 
-	if(*name == '/') {
-		strcpy(FileNameCharArray, "/sdcard");
-		strcpy(&FileNameCharArray[7], name);
-	}
-	else {
-		strcpy(FileNameCharArray, "/sdcard/");
-		strcpy(&FileNameCharArray[8], name);
-	}
+	strcpy(FileNameCharArray, "/sdcard/");
+	strcat(FileNameCharArray, DIRECTORY_NAME);
+	strcat(FileNameCharArray, "/");
+	strcat(FileNameCharArray, name);
 
 	ESP_LOGI("SD WRITER", "File name set: %s", FileNameCharArray);
 
@@ -124,7 +138,7 @@ SDWriterErrorCodes SDWriter::Open() {
 		return FILE_NAME_NOT_SET;
 	}
 
-	// Write data
+	// Open file
 	FileForData = fopen(FileNameCharArray, "a");
 
 	// check if file open succeeded

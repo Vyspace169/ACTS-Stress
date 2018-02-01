@@ -1,0 +1,4 @@
+<map id="WifiController" name="WifiController">
+<area shape="rect" id="node2" href="$class_base_task.html" title="Parent class for all Tasks/Controllers. " alt="" coords="5,5,85,32"/>
+<area shape="rect" id="node3" href="$class_m_q_t_t_controller.html" title="Class that handles all MQTT communication. " alt="" coords="109,5,221,32"/>
+</map>

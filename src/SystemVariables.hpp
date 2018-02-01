@@ -21,6 +21,9 @@ extern struct timeval GlobalTimeValNow;
 
 extern time_t GlobalStartTime;
 
+/*! Movement index data type */
+typedef unsigned int movement_type_t;
+
 /**
  * @brief Sample data structure
  *
@@ -107,6 +110,16 @@ typedef struct {
 /*! SDWriter init retry define */
 #define SDMMC_INIT_RETRIES		4
 
+/*!
+ * Directory used for all the movement data
+ * The root partition in a FAT32 memory is limited
+ * to a single cluster. There will be a lot of files
+ * in this folder, so a single cluster will not be
+ * sufficient. This define declares which folder
+ * (not root) the measured data should be stored in.
+ */
+#define DIRECTORY_NAME			"Movement Data"
+
 /*! I2C SDA pin define */
 #define GPIO_SDA				GPIO_NUM_25
 
@@ -140,7 +153,7 @@ typedef struct {
  * This tells after how many seconds the device
  * will try to connect to WiFi.
  */
-#define WIFI_POLL_FREQUENCY_SEC	55
+#define WIFI_POLL_FREQUENCY_SEC	15
 
 /*! Wifi timeout in milliseconds.
  * Whenever the devices tries to connect
@@ -158,13 +171,21 @@ typedef struct {
 /*! User key, change to patient key as stored in MySql Database*/
 #define MQTT_USER_KEY_CODE		"4a6bcefb6217984f477b27c8226200fe3c2a414d"
 
+/*!
+ * Blob size for NVS library
+ * This value is the maximum amount of bytes that
+ * can be written to a single blob in a NVS section.
+ * See ESP32 NVS documentation for more info.
+ */
+#define NFS_BLOB_SIZE			1984
+
 /*! MovementStack maximum queue size.
  * Whenever the dataprocessor's data cant be send,
  * the data will be writen to the MovementStack.
  * This constant declares te maximum size of the
  * MovementStack.
  */
-#define QUEUE_MAX_SIZE			300
+#define QUEUE_MAX_SIZE			NFS_BLOB_SIZE / sizeof(movement_type_t)
 
 /*! Dataprocessor trigger. Whenever dataprocessors
  * timeout counter rises above this value, the
@@ -234,6 +255,5 @@ typedef struct {
 
 /*! Wifi event bit used in WiFiC.c file */
 #define WIFI_EVENT_BIT			1
-
 
 #endif //SYSTEM_VARS_HPP

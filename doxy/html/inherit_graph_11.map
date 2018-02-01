@@ -1,0 +1,5 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$class_sensor.html" title="Parent class for all sensors. " alt="" coords="5,31,68,57"/>
+<area shape="rect" id="node2" href="$class_bmp280_implementation.html" title="Wrapper around &quot;bmp280.c&quot; code. " alt="" coords="118,5,277,32"/>
+<area shape="rect" id="node3" href="$class_mpu9250_implementation.html" title="MPU9250 data read and setup. " alt="" coords="116,56,279,83"/>
+</map>

@@ -15,6 +15,13 @@
 * the movement was lower than the set triggervalues. The
 * StandbyController will handle the next actions.
 *
+* The movement index is calculated using the Gyro data from
+* the MPU9250. The differential from this data is compared
+* to a trigger. When this value is higher, the movement index
+* is increased with the measued data divided by the trigger value.
+* If the measured data is lower than the trigger, the timeout
+* counter will be incremented.
+*
 */
 
 #pragma once
@@ -81,7 +88,7 @@ public:
      *
      * The measured activitydata is returned.
      */
-    double GetActivityData();
+    movement_type_t GetActivityData();
 
     /*!
      * \brief ResetActivityData method
@@ -105,7 +112,7 @@ private:
     int OldAcceleroXValue;
     int OldAcceleroYValue;
     int OldAcceleroZValue;
-    double ActivityData;
+    movement_type_t ActivityData;
     int TriggerValueX;
     int TriggerValueY;
     int TriggerValueZ;

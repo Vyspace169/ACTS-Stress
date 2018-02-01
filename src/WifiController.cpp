@@ -12,24 +12,33 @@ void run_wifi_task(void *args)  {
 	WifiController *sTask = static_cast<WifiController*>(args);
 	MovementStack MovementSaver;
 
+	int size = MovementSaver.DataCount();
+	while(size != 0) {
+		double test2 = MovementSaver.GetActivityData();
+	    ESP_LOGI("WIFI TASK", "%f, %d", test2, size);
+	    size--;
+	}
+
     while(1)  {
         EventBits_t uxBits;
         uxBits = xEventGroupWaitBits(GlobalEventGroupHandle, (WifiActivateFlag | WifiReadyFlag | StandbyWifiTaskUnhandled), pdTRUE, pdFALSE, portMAX_DELAY);
-		ESP_LOGI("WIFI TASK", "Connecting to wifi");
+
         if((uxBits & WifiActivateFlag)) {
 			ESP_LOGI("WIFI TASK", "Connecting to wifi");
 			bool enabled = WiFiConnect(WIFI_CONNECT_TIMEOUT);
-			ESP_LOGI("WIFI TASK", "geil");
+
 			// push activity data in its fifo
 			MovementSaver.PushData(sTask->DPHandle.GetActivityData());
 			if(enabled == true) {
+
 				ESP_LOGI("WIFI TASK", "Wifi connected");
+
 				sTask->mqtt->connectMQTT();
 				while(MovementSaver.DataCount() != 0) {
 					sTask->mqtt->publish(MovementSaver.GetActivityData());
-					MovementSaver.PopData();
 				}
 				sTask->mqtt->disconnect();
+
 				ESP_LOGI("WIFI TASK", "Wifi done");
 
 				WiFiDisconnect();
@@ -45,6 +54,7 @@ void run_wifi_task(void *args)  {
 
         if(uxBits & StandbyWifiTaskUnhandled) {
         	ESP_LOGI("WIFI TASK", "Ready to sleep");
+        	MovementSaver.WriteStackToFlash();
         	xEventGroupClearBits(GlobalEventGroupHandle, StandbyWifiTaskUnhandled);
         	while(1) {
         		vTaskDelay(1000 / portTICK_PERIOD_MS);

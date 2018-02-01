@@ -1,0 +1,13 @@
+<map id="C:/ESP32/ACTS&#45;Sensor&#45;develop/src/BaseTask.hpp" name="C:/ESP32/ACTS&#45;Sensor&#45;develop/src/BaseTask.hpp">
+<area shape="rect" id="node2" href="$_double_buffer_8hpp.html" title="C:/ESP32/ACTS&#45;Sensor\l&#45;develop/src/DoubleBuffer.hpp" alt="" coords="485,95,678,136"/>
+<area shape="rect" id="node5" href="$_sensor_controller_8hpp.html" title="C:/ESP32/ACTS&#45;Sensor\l&#45;develop/src/SensorController.hpp" alt="" coords="448,363,664,404"/>
+<area shape="rect" id="node7" href="$_standby_controller_8hpp.html" title="C:/ESP32/ACTS&#45;Sensor\l&#45;develop/src/StandbyController.hpp" alt="" coords="543,541,766,583"/>
+<area shape="rect" id="node10" href="$_wifi_controller_8hpp.html" title="C:/ESP32/ACTS&#45;Sensor\l&#45;develop/src/WifiController.hpp" alt="" coords="760,273,957,315"/>
+<area shape="rect" id="node11" href="$_sd_writer_controller_8hpp.html" title="C:/ESP32/ACTS&#45;Sensor\l&#45;develop/src/SdWriterController.hpp" alt="" coords="901,184,1128,225"/>
+<area shape="rect" id="node12" href="$_errorhandler_8hpp_source.html" title="C:/ESP32/ACTS&#45;Sensor\l&#45;develop/src/Errorhandler.hpp" alt="" coords="234,95,425,136"/>
+<area shape="rect" id="node3" href="$_sensor_8hpp.html" title="C:/ESP32/ACTS&#45;Sensor\l&#45;develop/src/Sensor.hpp" alt="" coords="381,184,544,225"/>
+<area shape="rect" id="node9" href="$_data_processor_8hpp.html" title="C:/ESP32/ACTS&#45;Sensor\l&#45;develop/src/DataProcessor.hpp" alt="" coords="619,184,826,225"/>
+<area shape="rect" id="node4" href="$_bmp280_implementation_8hpp.html" title="C:/ESP32/ACTS&#45;Sensor\l&#45;develop/src/Bmp280Implementation.hpp" alt="" coords="93,273,349,315"/>
+<area shape="rect" id="node8" href="$_mpu9250_implementation_8hpp.html" title="C:/ESP32/ACTS&#45;Sensor\l&#45;develop/src/Mpu9250Implementation.hpp" alt="" coords="373,273,635,315"/>
+<area shape="rect" id="node6" href="$_setup_8hpp.html" title="This file contains all setup functions. " alt="" coords="573,452,736,493"/>
+</map>

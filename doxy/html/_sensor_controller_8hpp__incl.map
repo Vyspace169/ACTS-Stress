@@ -1,0 +1,15 @@
+<map id="C:/ESP32/ACTS&#45;Sensor&#45;develop/src/SensorController.hpp" name="C:/ESP32/ACTS&#45;Sensor&#45;develop/src/SensorController.hpp">
+<area shape="rect" id="node9" href="$_base_task_8hpp.html" title="BaseTask.hpp" alt="" coords="2339,319,2445,345"/>
+<area shape="rect" id="node12" href="$_double_buffer_8hpp.html" title="DoubleBuffer.hpp" alt="" coords="1340,244,1460,271"/>
+<area shape="rect" id="node23" href="$_data_processor_8hpp.html" title="DataProcessor.hpp" alt="" coords="427,169,560,196"/>
+<area shape="rect" id="node28" href="$_mpu9250_implementation_8hpp.html" title="Mpu9250Implementation.hpp" alt="" coords="1134,95,1322,121"/>
+<area shape="rect" id="node32" href="$_bmp280_implementation_8hpp.html" title="Bmp280Implementation.hpp" alt="" coords="1630,95,1813,121"/>
+<area shape="rect" id="node10" href="$_system_variables_8hpp.html" title="SystemVariables.hpp" alt="" coords="1476,468,1623,495"/>
+<area shape="rect" id="node11" href="$_systemerrors_8hpp_source.html" title="Systemerrors.hpp" alt="" coords="2379,393,2504,420"/>
+<area shape="rect" id="node13" href="$_binary_buffer_8hpp.html" title="BinaryBuffer.hpp" alt="" coords="1491,393,1608,420"/>
+<area shape="rect" id="node16" href="$_s_d_writer_8hpp.html" title="SDWriter.hpp" alt="" coords="1107,319,1207,345"/>
+<area shape="rect" id="node25" href="$_movement_stack_8hpp.html" title="MovementStack.hpp" alt="" coords="423,244,563,271"/>
+<area shape="rect" id="node31" href="$_sensor_8hpp.html" title="Sensor.hpp" alt="" coords="1397,169,1485,196"/>
+<area shape="rect" id="node33" href="$bmp280_8h.html" title="BMP280 Sensor Driver Support Header File. " alt="" coords="1721,169,1799,196"/>
+<area shape="rect" id="node34" href="$_errorhandler_8hpp_source.html" title="Errorhandler.hpp" alt="" coords="1828,244,1945,271"/>
+</map>

@@ -61,7 +61,7 @@ void DataProcessor::HandleData(SampleData NewData) {
 	OldAcceleroZValue = NewData.accelZ;
 }
 
-double DataProcessor::GetActivityData() {
+movement_type_t DataProcessor::GetActivityData() {
 	return ActivityData;
 }
 

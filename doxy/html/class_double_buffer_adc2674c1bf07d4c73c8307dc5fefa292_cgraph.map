@@ -1,0 +1,7 @@
+<map id="DoubleBuffer::storeData" name="DoubleBuffer::storeData">
+<area shape="rect" id="node2" href="$class_binary_buffer.html#a365a0ca23c04dd809964ca4f92023bc5" title="isFull method " alt="" coords="213,5,344,32"/>
+<area shape="rect" id="node3" href="$class_binary_buffer.html#af0a7f048a9c38f09e9ef66ad5531135d" title="add method " alt="" coords="218,56,339,83"/>
+<area shape="rect" id="node4" href="$class_double_buffer.html#ae7920f4d315b9b6b7289d7fbb623dcc1" title="swap method " alt="" coords="212,107,345,133"/>
+<area shape="rect" id="node5" href="$class_binary_buffer.html#a1503387630eebaf1d8d3d45912098be6" title="writeOnly method " alt="" coords="393,81,548,108"/>
+<area shape="rect" id="node6" href="$class_binary_buffer.html#a1e6b40a6905cbbd53c2fe8099561033a" title="readOnly method " alt="" coords="395,132,547,159"/>
+</map>

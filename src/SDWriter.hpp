@@ -18,7 +18,9 @@
 #pragma once
 
 #include <string.h>
+#include <stdlib.h>
 #include <stdio.h>
+#include <sys/stat.h>
 
 #include "esp_vfs_fat.h"
 #include "driver/sdmmc_host.h"

@@ -1,0 +1,7 @@
+<map id="BaseTask" name="BaseTask">
+<area shape="rect" id="node2" href="$class_errorhandler.html" title="Errorhandler" alt="" coords="5,80,97,107"/>
+<area shape="rect" id="node3" href="$class_sd_writer_controller.html" title="Task that handles writing to SD&#45;Card. " alt="" coords="122,80,250,107"/>
+<area shape="rect" id="node4" href="$class_sensor_controller.html" title="Task that handles all sensor communication. " alt="" coords="275,80,393,107"/>
+<area shape="rect" id="node5" href="$class_standby_controller.html" title="Class that controlls the devices sleepmodes. " alt="" coords="418,80,543,107"/>
+<area shape="rect" id="node6" href="$class_wifi_controller.html" title="Task that handles all wifi communication. " alt="" coords="567,80,666,107"/>
+</map>

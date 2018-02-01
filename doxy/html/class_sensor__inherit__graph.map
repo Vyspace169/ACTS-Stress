@@ -1,0 +1,4 @@
+<map id="Sensor" name="Sensor">
+<area shape="rect" id="node2" href="$class_bmp280_implementation.html" title="Wrapper around &quot;bmp280.c&quot; code. " alt="" coords="5,80,164,107"/>
+<area shape="rect" id="node3" href="$class_mpu9250_implementation.html" title="MPU9250 data read and setup. " alt="" coords="189,80,351,107"/>
+</map>
