@@ -4,9 +4,13 @@
 *
 * \class WifiController
 *
+* \brief Task that handles all wifi communication
+*
 * This class handles all the wifi communication.
+* An xTimer will run and set the WifiActivateFlag.
 * If the WifiActivateFlag is set, the wifi will
-* be enabled and try to connect to the set SSID.
+* be enabled and try to connect to the set WIFI_SSID
+* using the set WIFI_PASSWORD.
 *
 * When connected, the activity data will be read
 * and sent to the server.

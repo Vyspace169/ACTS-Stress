@@ -1,8 +1,14 @@
 /**
 * @file doubleBuffer.hpp
-* @Author Jop van Buuren.
 * @data 21 september, 2017
-* @brief switching buffer
+*
+* \class DoubleBuffer
+*
+* \brief Combination of two buffers to a ping-pong buffer
+*
+* This class combines two BinaryBuffer classes into a single
+* class and handles all writing and reading. This class acts
+* as a ping-pong buffer.
 */
 #pragma once
 

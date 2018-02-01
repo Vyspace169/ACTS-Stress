@@ -4,6 +4,8 @@
 *
 * \class SDWriter
 *
+* \brief Wrapper for ESP-IDF SD-Card functions
+*
 * This class handles writing data to
 * the SD card. The transactions are all
 * done in SPI mode. The class uses the

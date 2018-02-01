@@ -1,8 +1,10 @@
 /**
-* @file SdWriterTask.hpp
+* @file SdWriterController.hpp
 * @data 21 september, 2017
 *
-* \class SdWriterTask
+* \class SdWriterController
+*
+* \brief Task that handles writing to SD-Card
 *
 * This task will write all data to the SDCard when one of the
 * DoubleBuffers is full. When this happens a bit will be set and

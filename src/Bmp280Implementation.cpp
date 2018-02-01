@@ -40,9 +40,9 @@ s8 BMP280_I2C_bus_read(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
    i2c_master_write_byte(cmd, (dev_addr << 1) | I2C_MASTER_READ, true);
 
    if (cnt > 1) {
-      i2c_master_read(cmd, reg_data, cnt-1, (i2c_ack_type_t)I2C_MASTER_ACK);
+      i2c_master_read(cmd, reg_data, cnt-1, I2C_MASTER_ACK);
    }
-   i2c_master_read_byte(cmd, reg_data+cnt-1, (i2c_ack_type_t)I2C_MASTER_NACK);
+   i2c_master_read_byte(cmd, reg_data + cnt - 1, I2C_MASTER_NACK);
    i2c_master_stop(cmd);
 
    espRc = i2c_master_cmd_begin(I2C_NUM_0, cmd, 10/portTICK_PERIOD_MS);

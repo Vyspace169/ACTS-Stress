@@ -1,3 +1,17 @@
+#pragma once
+
+#include "esp_sleep.h"
+#include "esp_log.h"
+
+#include "driver/adc.h"
+
+#include <time.h>
+#include <sys/time.h>
+
+#include "BaseTask.hpp"
+
+#include "Setup.hpp"
+
 /**
 * @file StandbyController.hpp
 * @data 21 september, 2017
@@ -18,20 +32,6 @@
 * all three bits have been reset and will enable the ESP32's deep sleep.
 *
 */
-
-#pragma once
-
-#include "esp_sleep.h"
-#include "esp_log.h"
-
-#include "driver/adc.h"
-
-#include <time.h>
-#include <sys/time.h>
-
-#include "BaseTask.hpp"
-
-#include "Setup.hpp"
 
 class  StandbyController : BaseTask {
 public:

@@ -4,11 +4,12 @@
 *
 * \class MovementStack
 *
+* \brief FiFo for sending data
+*
 * This class puts all activity data in
 * a FIFO. Whenever the user is ready to read
 * all data, the FIFO can be read using the
 * GetActivityData an PopData method.
-*
 */
 
 #pragma once

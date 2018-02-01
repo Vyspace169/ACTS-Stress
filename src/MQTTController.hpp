@@ -1,3 +1,19 @@
+/**
+* @file MQTTController.hpp
+* @data 21 september, 2017
+*
+* \class MQTTController
+*
+* \brief Class that handles all MQTT communication
+*
+* This class uses ESP-IDF built in functions in order
+* to communicate with the AWS sever. All server
+* declarations are done in the private section of
+* this class and the user key code is defined in
+* SystemVariables.
+*
+*/
+
 #ifndef WIFI_CONTROLLER_HPP
 #define WIFI_CONTROLLER_HPP
 
@@ -23,14 +39,49 @@
 #include "aws_iot_version.h"
 #include "aws_iot_mqtt_client_interface.h"
 
-/// @brief MQTTController that handles the writing to the sd.
 class MQTTController{
 public:
+ /*!
+  * \brief MQTTController constructor
+  *
+  * Empty, not implemented.
+  */
   MQTTController();
+
+  /*!
+   * \brief publish method
+   * \param value MovementIndex to be sent to the server
+   *
+   * When connected, this method will send the data to the
+   * server. This data will be published to the TOPIC
+   * part of the database.
+   */
   void publish(double value);
+
+  /*!
+   * \brief connectMQTT method
+   *
+   * This method connects to the MQTT server using
+   * the built in functions from ESP-IDF.
+   */
   void connectMQTT();
+
+  /*!
+   * \brief disconnect method
+   *
+   * This method disconnects the sensor client from
+   * the server.
+   */
   void disconnect();
+
   //void iot_subscribe_callback_handler(AWS_IoT_Client *pClient, char *topicName, uint16_t topicNameLen, IoT_Publish_Message_Params *params, void *pData);
+
+  /*!
+   * \brief MQTTController deconstructor
+   *
+   * If there is a connection, this deconstructor
+   * will disconnect.
+   */
   ~MQTTController();
 private:
     AWS_IoT_Client client;

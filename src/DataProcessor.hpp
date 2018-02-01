@@ -4,6 +4,8 @@
 *
 * \class DataProcessor
 *
+* \brief Processes data received from SensorController
+*
 * This class handles the data received from the sensors.
 * This data is sent throug a SampleData structure. With
 * the received samples a activity index will be calculated.

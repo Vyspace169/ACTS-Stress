@@ -1,9 +1,15 @@
 /**
 * @file Sensor.hpp
-* @Author Jop van Buuren.
 * @data 21 september, 2017
-* @brief
+*
+* \class Sensor
+*
+* \brief Parent class for all sensors
+*
+* This class is a parent class for all sensor
+* which are used in this project.
 */
+
 #pragma once
 #define OUTPUT_SIZE 4
 #include "DoubleBuffer.hpp"

@@ -1,3 +1,12 @@
+/*!
+ * @file SystemVariables.hpp
+ * @data 21 september, 2017
+ *
+ * This file contains all global defined variables and
+ * defines that change the behaviour of the complete
+ * program.
+ */
+
 #ifndef SYSTEM_VARS_HPP
 #define SYSTEM_VARS_HPP
 
@@ -38,30 +47,38 @@ typedef struct {
 #define SensorMeasurementFlag 		( 1 << 0 )
 /*! Flags for WifiTask to act upon */
 #define WifiActivateFlag 			( 1 << 1 )
+/*! Flags for WifiTask to start sending data (not implemented yet) */
 #define WifiReadyFlag 				( 1 << 2 )
 /*! Flag for SdWriterTask to act upon */
 #define SensorBufferSdReady 		( 1 << 4 )
 /*! Flag to signal movement timeout count has been reached */
 #define MovementTimeoutReached 		( 1 << 5 )
-/*! Flags for tasks stating that they are ready to sleep */
+/*! Flags for sensor task stating that it is ready to sleep */
 #define StandbySensorTaskUnhandled 	( 1 << 6 )
+/*! Flags for wifi task stating that it is ready to sleep */
 #define StandbyWifiTaskUnhandled   	( 1 << 7 )
+/*! Flags for writer task stating that it is ready to sleep */
 #define StandbyWriterTaskUnhandled 	( 1 << 8 )
 /*! Flag for system errors */
 #define SystemErrorFlag      		( 1 << 9 )
+/*! Flag for system errors */
 #define SystemErrorBit       		( 1 << 10 )
 /*! Flag to signal that he SNTP task is done receiving time */
 #define SNTPTaskDoneFlag			( 1 << 11 )
 
-/*! LED GPIO defines */
+/*! Blue LED GPIO define */
 #define GPIO_LED_BLUE			GPIO_NUM_13
+/*! Green LED GPIO define */
 #define GPIO_LED_GREEN			GPIO_NUM_14
+/*! Red LED GPIO define */
 #define GPIO_LED_RED			GPIO_NUM_17
-/*! SD card GPIO defines */
+/*! SD card detect GPIO define */
 #define GPIO_SD_DETECT			GPIO_NUM_4
+/*! SD card power enable GPIO define */
 #define GPIO_SD_POWER			GPIO_NUM_27
-/*! Power GPIO defines */
+/*! Charge detect GPIO define */
 #define GPIO_CHARGE_DETECT		GPIO_NUM_21
+/*! Battery voltage measurement GPIO define */
 #define GPIO_PW_ADC				GPIO_NUM_34   //adc 1 channel 6
 /*! MPU9250 interrupt GPIO define */
 #define GPIO_MPU_INT			GPIO_NUM_35
@@ -75,10 +92,13 @@ typedef struct {
 /*! Binary buffer size, the system initializes two of these on startup */
 #define BINARY_BUFFER_SIZE		1000
 
-/*! SDWriter pin defines */
+/*! SDWriter MISO pin define */
 #define PIN_NUM_MISO 			GPIO_NUM_23
+/*! SDWriter MOSI pin define */
 #define PIN_NUM_MOSI 			GPIO_NUM_19
+/*! SDWriter CLK pin define */
 #define PIN_NUM_CLK 			GPIO_NUM_18
+/*! SDWriter CS pin define */
 #define PIN_NUM_CS 				GPIO_NUM_5
 
 /*! SDWriter spi speed define in KHZ */
@@ -99,17 +119,16 @@ typedef struct {
 /*! When the ADC reads a voltage lower than this, the device goes to sleep */
 #define TURN_OFF_VOLTAGE		3.0
 
+/*! Define which tells when the LED should blink red
+ * due to low battery.
+ */
+#define BAT_LED_VALUE_VOLTAGE	3.45
+
 /*! ADC division factor for battery voltage reading */
-#define ADC_TO_BAT_VOLTAGE		587.0
+#define ADC_TO_BAT_VOLTAGE		554.0
 
 /*! SD Detect debounce time in milliseconds */
 #define SD_DET_DEBOUNCE_MS		50
-
-/*! TCP server ip */
-#define WIFI_TCP_SERVER			"192.168.8.101"
-
-/*! TCP server port */
-#define WIFI_TCP_PORT			3010
 
 /*! Wifi ssid to connect to */
 #define WIFI_SSID				"ACTS"
@@ -117,10 +136,17 @@ typedef struct {
 /*! Wifi password associated with the ssid */
 #define WIFI_PASSWORD			"12345678"
 
-/*! Wifi poll frequency in seconds */
-#define WIFI_POLL_FREQUENCY_SEC	10
+/*! Wifi poll frequency in seconds.
+ * This tells after how many seconds the device
+ * will try to connect to WiFi.
+ */
+#define WIFI_POLL_FREQUENCY_SEC	55
 
-/*! Wifi timeout in milliseconds */
+/*! Wifi timeout in milliseconds.
+ * Whenever the devices tries to connect
+ * to the WiFi, this defines how many milliseconds
+ * the device will try to connect.
+ */
 #define WIFI_CONNECT_TIMEOUT	10000
 
 /*! SNTP read time retry count.
@@ -147,42 +173,63 @@ typedef struct {
 #define DP_SLEEP_THRESHOLD		500
 
 /*! Wake up threshold.
- * ( value * 4mG )
+ * When going to sleep due to a activity timeout,
+ * the MPU9250 will enable its motion interrupt.
+ * If the movement is higher than
+ * ( WAKE_UP_THRESSHOLD * 4mG ) the MPU9250 will
+ * set its interrupt pin and wake up the ESP32.
  */
 #define WAKE_UP_THRESSHOLD 		40
 
-/*! Movement timeout in seconds */
+/*! Movement timeout in seconds.
+ * This define tells the movement stack after how
+ * many seconds of inactivety the device needs to
+ * go to sleep.
+ */
 #define TIMEOUT_TIME_SEC		60
 
-/*! Sensortask defines */
+/*! Sensortask core num define */
 #define SENSORTASK_CORE_NUM 	1
+/*! Sensortask priority define */
 #define SENSORTASK_PRIORITY 	2
+/*! Sensortask stack size define */
 #define SENSORTASK_STACK_SIZE 	2048
 
-/*! Writertask defines */
+/*! Writertask core num define */
 #define WRITERTASK_CORE_NUM 	0
+/*! Writertask priority define */
 #define WRITERTASK_PRIORITY 	2
+/*! Writertask stack size define */
 #define WRITERTASK_STACK_SIZE 	4096
 
-/*! Wifitask defines */
+/*! Wifitask core num define */
 #define WIFITASK_CORE_NUM 		0
+/*! Wifitask priority define */
 #define WIFITASK_PRIORITY 		0
-#define WIFITASK_STACK_SIZE 	8192
+/*! Wifitask stack size define */
+#define WIFITASK_STACK_SIZE 	4096
 
-/*! Standbycontroller defines */
+/*! Standbycontroller core num define */
 #define STANDBYCONT_CORE_NUM 	1
+/*! Standbycontroller priority define */
 #define STANDBYCONT_PRIORITY 	4
+/*! Standbycontroller stack size define */
 #define STANDBYCONT_STACK_SIZE 	2048
+/*! Standbycontroller loop delay define */
 #define STANDBYCONT_LOOP_DELAY	250
 
-/*! SNTPtask defines */
+/*! SNTPtask core num define */
 #define SNTPTASK_CORE_NUM 		0
+/*! SNTPtask priority define */
 #define SNTPTASK_PRIORITY 		1
-#define SNTPTASK_STACK_SIZE 	8000
+/*! SNTPtask stack size define */
+#define SNTPTASK_STACK_SIZE 	6144
 
-/*! SNTPtask defines */
+/*! SNTPtask core num define */
 #define BLINKTASK_CORE_NUM 		0
+/*! SNTPtask priority define */
 #define BLINKTASK_PRIORITY 		5
+/*! SNTPtask stack size define */
 #define BLINKTASK_STACK_SIZE 	2048
 
 /*! Wifi event bit used in WiFiC.c file */

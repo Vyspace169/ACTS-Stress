@@ -1,8 +1,13 @@
 /**
 * @file binaryBuffer.hpp
-* @Author Jop van Buuren.
 * @data 21 september, 2017
-* @brief Buffer between sensor and SPI SD write
+*
+* \class BinaryBuffer
+*
+* \brief Buffer between sensor and SPI SD write
+*
+* This class holds a finite amount of data and acts
+* as a FiFo.
 */
 #pragma once
 #include <vector>

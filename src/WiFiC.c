@@ -2,8 +2,6 @@
 
 static bool WifiEnabled = false;
 static bool connected = false;
-static int SocketHandle = -1;
-static struct sockaddr_in tcpServerAddr;
 static EventGroupHandle_t wifi_event_group_1;
 
 esp_err_t local_wifi_Event_handler(void *ctx, system_event_t *event)
@@ -101,46 +99,4 @@ time_t WiFiGetTime(int retries) {
 
 bool WiFiGetConnectionStatus(void) {
 	return connected;
-}
-
-bool TCPConnectToServer(char *IPAddress, int port) {
-	if(connected == false) {
-		return false;
-	}
-	tcpServerAddr.sin_addr.s_addr = inet_addr(IPAddress);
-	tcpServerAddr.sin_family = AF_INET;
-	tcpServerAddr.sin_port = htons(port);
-	SocketHandle = socket(AF_INET, SOCK_STREAM, 0);
-
-	if (SocketHandle < 0) {
-		ESP_LOGI("TCP CLIENT", "Failed to allocate socket");
-		return false;
-	}
-	if (connect(SocketHandle, (struct sockaddr *) &tcpServerAddr, sizeof(tcpServerAddr)) != 0) {
-		ESP_LOGI("TCP CLIENT", "Socket connect failed errno = %d", errno);
-		close(SocketHandle);
-		SocketHandle = -1;
-		return false;
-	}
-	return true;
-}
-
-bool TCPSend(char *Data, int size) {
-	if(connected == false) {
-		return false;
-	}
-	if (SocketHandle < 0) {
-		return false;
-	}
-	if (write(SocketHandle, Data, size) < 0) {
-		ESP_LOGI("TCP CLIENT", "Send failed");
-		close(SocketHandle);
-		return false;
-	}
-	return true;
-}
-
-void TCPDisconnect(void) {
-	close(SocketHandle);
-	SocketHandle = -1;
 }
