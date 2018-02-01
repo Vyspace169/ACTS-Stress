@@ -142,16 +142,28 @@ AWS RDS is a database management service. It allows the user to store informatio
 ## Links/References
 * ESP32: http://espressif.com/en/products/hardware/esp32/overview
 * ESP32 setup: http://espressif.com/en/products/hardware/esp32/overview
-* Atom: https://atom.io/
-* PlatformIO: http://platformio.org/
-4. Install the Platformio plugin on top of Atom: 
-http://platformio.org/get-started/ide?install=atom
-Note: Both Atom and Platformio might take a while to install.
+
+## Bugs
+
+## Creating a working device
+
+### Programming / uploading to the device
+The standard device should operate at 160 MHz minimum to guarantee that all operations are performed in time.
+Other than that, the project should just be compiled and uploaded to the esp32 device.
+### Generating data
+After uploading the device should start running. If possible check with a terminal for device input that could suggest system faults.
+If no errors are detected the device should generate data when moving the device around (dont let it go into deepsleep mode) and after x time try and send it to the server.
+### Sending it to the server
+After x time the sensor device will try to send the performance index to the server. The protocol used is MQTT. The messages are send to topics in AWS.
+#### MQTT testing
+AWS allows for testing on topics. You can subscribe to specific topics or a range of topics.
+
 
 	ToDo
 	Bugs/issues
 	version
 	Software recommendations
 	How to create a device from scratch and link it to the database?
+	
 ~Good luck developing more content from the ACTS Team and me ♥.
 
