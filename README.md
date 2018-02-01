@@ -147,5 +147,10 @@ Aws RDS is a database management service. It allows the user to store informatio
 http://platformio.org/get-started/ide?install=atom
 Note: Both Atom and Platformio might take a while to install.
 
+	ToDo
+	Bugs/issues
+	version
+	Software recommendations
+	How to create a device from scratch and link it to the database?
 ~Good luck developing more content from the ACTS Team and me ♥.
 
