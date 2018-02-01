@@ -92,12 +92,26 @@ It will then respond to interrupts that are system generated.
 Description on recommendations on different project types (such as complex sampling, lots of sampling or lots of wifi connections). Also fast sampling rates (max 1000Hz espidf?)
 
 ## Hardware
-
+Description about the current hardware platform that is used and its interfaces.
 ### Hardware requirements
+Hardware List
+Markup : 
+* esp32 512 kB ram+
+* SD Cardreader SPI
+* BMP280 Pressure & Temperature sensor
+* MPU-9250 9DOF Magneto, Gyro, Accel
+
 ### Hardware pinout
+![alt text](readme-content/acts-hardware-pinout.png)
 
 ## Server
+The aws platform is used as the server platform. This chapter will be a small guide consisting mostly of references to explain how the backend works.
+MQTT is used as communication protocol to exchange data between the sensor module (this project) and the server.
 ### Server setup
+#### aws IoT
+#### aws Lambda
+#### aws SnS
+#### aws RDS
 
 Project features
 Software how to guide
@@ -105,6 +119,8 @@ Software how to guide
 	setup own project types
 Known bugs/issues
 Future version features/fixes
+
+~Good luck developing more content from the ACTS Team and me ♥.
 
 --- End of new documentation ---
 
