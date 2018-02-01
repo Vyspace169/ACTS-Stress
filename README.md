@@ -3,11 +3,11 @@ This repository contains code for the ACTS sensor module.
 The use of this repository is limited to the ACTS (sensor) project.
 
 ## Brief explanation about project
-This project is meant to collect detailed data from cva patients. This can then be parsed by complex algorithms and scientists to study movement in these patients. The sensor module also creates a simple performance index that is sent to an aws backend server. These performance indexes are then parsed to provide feedback to therapists and cva patients on which they can improve.
+This project is meant to collect detailed data from CVA (Cerebral Vasculair Attack) patients. This can then be parsed by complex algorithms and scientists to study movement in these patients. The sensor module also creates a simple performance index that is sent to an AWS backend server. These performance indexes are then parsed to provide feedback to therapists and CVA patients on which they can improve.
 
 ### Technical description
-This project can be run on a esp32 with ESP-iDF (2.1). It collects data sensor data from a BMP280 and MPU9250.
-This data is sampled at (currently) 100Hz and stored in an sd card. It also creates a performance index counter based on intensity of sampling data. This is then send to an aws backend server. The results can be retrieved from the backend server to generate statistics.
+This project can be run on a ESP32 with ESP-iDF (2.1). It collects sensor data from the BMP280 and MPU9250.
+This data is sampled at (currently) 100Hz and stored in an SD-card. It also creates a performance index counter based on intensity of sampling data. This is then send to an aws backend server. The results can be retrieved from the backend server to generate statistics.
 
 ## Recommendations
 Before using this project, we recommend that you study the following subjects and resources carefully:
@@ -26,7 +26,8 @@ We commend a read up on the following resources before working on this project:
 http://esp-idf.readthedocs.io/en/v2.1/get-started/index.html
 http://esp-idf.readthedocs.io/en/v2.1/api-guides/general-notes.html
 
-A link to the github page that contains examples, which we recommend you also study:
+A link to the 
+page that contains examples, which we recommend you also study:
 
 https://github.com/espressif/esp-idf/tree/release/v2.1
 
@@ -43,7 +44,7 @@ We recommend that the reader knows the basics of C++ and the  OOP (object orient
 	-	Eclipse IDE (https://esp-idf.readthedocs.io/en/v2.0/eclipse-setup.html)
 	
 ### Installation
-Installation of ESP-IDF 2.1 can be found on the github page of ESP-IDF. 
+Installation of ESP-IDF 2.1 can be found on the GitHub page of ESP-IDF. 
 ESP-IDF 2.1 installation guide
 https://github.com/espressif/esp-idf/tree/release/v2.1
 	
@@ -55,7 +56,7 @@ First a general overview is given about the software. After that the interfaces 
 ### General overview
 The esp32 is a duocore system. This project is designed to utilize both cores with different responsibilities. In short this means that the app core (core 1) is used as the sampling core for fast code routines that do not require alot of time to finish or compute.
 Currently the app core samples its peripherals at a 100Hz, however this could be increased if desired.
-The second core runs more complex code and code that has a long deadline to finish. The wifi code can easily take up 5 seconds of cpu time to finish with its retries. Because of the split of responibilities this is acceptable within the current project.
+The second core runs more complex code and code that has a long deadline to finish. The WiFi code can easily take up 5 seconds of CPU time to finish with its retries. Because of the split of responibilities this is acceptable within the current project.
 
 ### Interface description
 First, a simple overview of all classess is given, with their respective responsibilities. Aftwards a more in-depth version is given that shows the interface of each class.
@@ -73,22 +74,22 @@ The same is true for the controllers. These controllers also act as tasks, so th
 
 ![alt text](readme-content/actsclassinterface.png)
 
-For a further detailed explanation about each class, every class is documented and doxygen has been used to generate html pages with the documentation. 
+For a further detailed explanation about each class, every class is documented and doxygen has been used to generate HTML pages with the documentation. 
 
 ### Task structuring
 ![alt text](readme-content/actsconcurrency.png)
 
-The Sensortask is activated every 10 ms (100Hz) by a timer and with retrieve a sample of the sensors. The results of the measurement will be send to the DoubleBuffer who stores it internally in a BinaryBuffer that is swappable. When 1 of the 2 internal BinaryBuffers are full, Sensortask will set the BufferReady flag which tells the SdWriterTask to write that BinaryBuffer onto the sd card.
+The Sensortask is activated every 10 ms (100Hz) by a timer and with retrieve a sample of the sensors. The results of the measurement will be send to the DoubleBuffer who stores it internally in a BinaryBuffer that is swappable. When 1 of the 2 internal BinaryBuffers are full, Sensortask will set the BufferReady flag which tells the SdWriterTask to write that BinaryBuffer onto the SD-card.
 
 The SdWriterTask is activated when one of the BinaryBuffers is full, writes the data to the sd card and goes back to wait for the flag to be set again.
 
-The WifiTask is acivated every x time (currently 5 min?). The Wifitask sends the Movement stack data, which contains performance values to the aws server. It will retry x times and if it fails will go back to sleep, If a succesful connection could be established all data will be send to the aws server.
+The WifiTask is acivated every x time. The Wifitask sends the Movement stack data, which contains performance values to the aws server. It will retry x times and if it fails will go back to sleep, if a succesful connection could be established all data will be send to the AWS server.
 
 The StandbyTask is an activate task with the lowest priority (otherwise it would block the system from sampling!). If the StandbyTask receives a signal from any part of the system to set the system in sleep, it will send the connected flags to SensorTask, SdWriterTask and WifiTask.
 It will then respond to interrupts that are system generated.
 
 ### Project short guide
-Description on recommendations on different project types (such as complex sampling, lots of sampling or lots of wifi connections). Also fast sampling rates (max 1000Hz espidf?)
+Description on recommendations on different project types (such as complex sampling, lots of sampling or lots of WiFi connections). Also fast sampling rates (max 1000Hz espidf?)
 
 ## Hardware
 Description about the current hardware platform that is used and its interfaces.
@@ -117,8 +118,8 @@ On the broker it’s automatically checked if a user already has a goal for the 
 
 ### Server setup
 Note that for every aws service the eu-central Frankfurt server is used.
-#### aws IoT
-To get started with the aws IoT service, we recommend following this guide:
+#### AWS IoT
+To get started with the AWS IoT service, we recommend following this guide:
 https://docs.aws.amazon.com/iot/latest/developerguide/iot-gs.html
 
 To test the server instance from a client device you can use curl to emulate MQTT messages using the following command type:
@@ -127,16 +128,16 @@ To test the server instance from a client device you can use curl to emulate MQT
 
 The certificate and keys can be generated by aws when following the guide.
 
-#### aws Lambda
-The aws Lambda service makes it possible to execute code routines. These can be linked to other aws services. This means that the aws Lambda will execute when the aws IoT service receives specific packages on specific topics.
+#### AWS Lambda
+The AWS Lambda service makes it possible to execute code routines. These can be linked to other AWS services. This means that the AWS Lambda will execute when the AWS IoT service receives specific packages on specific topics.
 
 see https://docs.aws.amazon.com/iot/latest/developerguide/iot-lambda-rule.html for more information about this topic.
 
-#### aws SnS
-Aws SnS allows the user to easily send messages using standardized protocols outside of the aws space. This allows the user to set up rules that if triggered, can send emails, sms (text messages) or trigger other html pages on the web in a very easy manner. For testing this is very convienent because every time a aws rule is triggered, an email can be send.
+#### AWS SnS
+AWS SnS allows the user to easily send messages using standardized protocols outside of the AWS space. This allows the user to set up rules that if triggered, can send emails, sms (text messages) or trigger other html pages on the web in a very easy manner. For testing this is very convienent because every time a AWS rule is triggered, an email can be send.
 
-#### aws RDS
-Aws RDS is a database management service. It allows the user to store information in a database.
+#### AWS RDS
+AWS RDS is a database management service. It allows the user to store information in a database.
 
 ## Links/References
 * ESP32: http://espressif.com/en/products/hardware/esp32/overview
