@@ -107,6 +107,8 @@ Markup :
 ## Server
 The aws platform is used as the server platform. This chapter will be a small guide consisting mostly of references to explain how the backend works.
 MQTT is used as communication protocol to exchange data between the sensor module (this project) and the server.
+
+![project connection image](readme-content/english-db-structure.jpg)
 ### Server setup
 Note that for every aws service the eu-central Frankfurt server is used.
 #### aws IoT
