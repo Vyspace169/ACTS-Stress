@@ -1,7 +1,3 @@
-# ACTS-Sensor
-This repository contains code for the ACTS sensor module.
-The use of this repository is limited to the ACTS project.
-
 --- New documentation ---
 # ACTS-Sensor
 This repository contains code for the ACTS sensor module.
@@ -66,6 +62,11 @@ The second core runs more complex code and code that has a long deadline to fini
 First, a simple overview of all classess is given, with their respective responsibilities. Aftwards a more in-depth version is given that shows the interface of each class.
 ![alt text](readme-content/actsclassbasic.png)
 
+Blue represents Controller classes. These are responable for system logic. They execute what should be executed and handle task management among them.
+
+Purple represents Boundary classes. These classes interface with the hardware and drivers.
+
+Red represents the Utility classes. These are support classes for the rest of the system created for maintanability and code structuring (reducing complexity).
 ![alt text](readme-content/actsclassinterface.png)
 ### Task structuring
 ![alt text](readme-content/actsconcurrency.png)
