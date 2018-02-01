@@ -62,12 +62,18 @@ The second core runs more complex code and code that has a long deadline to fini
 First, a simple overview of all classess is given, with their respective responsibilities. Aftwards a more in-depth version is given that shows the interface of each class.
 ![alt text](readme-content/actsclassbasic.png)
 
-Blue represents Controller classes. These are responable for system logic. They execute what should be executed and handle task management among them.
+Markup :
+* Blue represents Controller classes. These are responable for system logic. They execute what should be executed and handle task management among them.
 
-Purple represents Boundary classes. These classes interface with the hardware and drivers.
+* Purple represents Boundary classes. These classes interface with the hardware and drivers.
 
-Red represents the Utility classes. These are support classes for the rest of the system created for maintanability and code structuring (reducing complexity).
+* Red represents the Utility classes. These are support classes for the rest of the system created for maintanability and code structuring (reducing complexity).
+
+The Sensor classes share a common parent which is Sensor. This ensures that they share the same interface to access functionality.
+The same is true for the controllers. These controllers also act as tasks, so they share a BaseTask parent. This is done to make it easier to customize the project or expand upon it. By ensuring all tasks are made in the same way maintanablity and developped becomes easier. It is recommended to follow this pattern when expanding upon this project.
+
 ![alt text](readme-content/actsclassinterface.png)
+
 ### Task structuring
 ![alt text](readme-content/actsconcurrency.png)
 ### Project short guide
