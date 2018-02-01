@@ -156,11 +156,14 @@ After x time the sensor device will try to send the performance index to the ser
 AWS allows for testing on topics. You can subscribe to specific topics or a range of topics.
 
 ## Bugs	
-~Good luck developing more content from the ACTS Team and me ♥.
+
 
 ## Future improvements
 improvements and / or changes:
 Markup : 
 * DataProcessor to data processing task (when doing complex calculations)
 * Controllers and Basetask changed to allow a generic way of creating the actual tasks in ESP-IDF, this can be done by calling a function ptr in the basetask that calls the main_task again. By implementing the main_task in its children, internal logic can change but interface stays the same.
+
+
+~Good luck developing more content from the ACTS Team and me ♥.
 
