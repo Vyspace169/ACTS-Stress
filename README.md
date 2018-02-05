@@ -93,15 +93,16 @@ It will then respond to interrupts that are system generated.
 The system restarts when it is removed from the wireless charger. It resumes in normal bootmode and follows the ad (activity diagram). First it starts a sntp task to get a datetime from the internet. When this task is does, it shuts down and starts its peripherals (BMP280, MPU9250, sd card and some other stuff). After that is complete it starts the main tasks and startup (system init) will be complete.
 
 ### Project short guide
-Description on recommendations on different project types (such as complex sampling, lots of sampling or lots of WiFi connections). Also fast sampling rates (max 1000Hz espidf?)
+Description on recommendations on different project types (such as complex sampling, lots of sampling or lots of WiFi connections). Also fast sampling rates (note that espidf supports a maximum task switch of 1000Hz).
 
 #### Current task structure
 
 | Core 0 | Core 1 |
 | ---- | ----- |
 | WifiTask | SensorTask |
-| StandbyTask | SdWriteTask |
+| SdWriteTask | StandbyTask |
 
+StandbyTask has a lower priority than SensorTask, thus it never blocks the SensorTask.
 
 ## Hardware
 Description about the current hardware platform that is used and its interfaces.
