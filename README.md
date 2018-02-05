@@ -2,6 +2,44 @@
 This repository contains code for the ACTS sensor module.
 The use of this repository is limited to the ACTS (sensor) project.
 
+**Table of Contents**  *generated with [DocToc](http://doctoc.herokuapp.com/)*
+
+- [ACTS-Sensor](#)
+	- [Brief explanation about project](#)
+		- [Technical description](#)
+	- [Recommendations](#)
+		- [FreeRTOS](#)
+		- [ESP-IDF (2.1)](#)
+		- [C++ Language](#)
+	- [Project Setup](#)
+		- [Software](#)
+		- [Installation](#)
+	- [Project features](#)
+	- [Software description](#)
+		- [General overview](#)
+		- [Interface description](#)
+		- [Task structuring](#)
+		- [Activity Diagram](#)
+		- [Project short guide](#)
+			- [Current task structure](#)
+	- [Hardware](#)
+		- [Hardware requirements](#)
+		- [Hardware pinout](#)
+	- [Server](#)
+		- [Server setup](#)
+			- [AWS IoT](#)
+			- [AWS Lambda](#)
+			- [AWS SnS](#)
+			- [AWS RDS](#)
+	- [Links/References](#)
+	- [Creating a working device](#)
+		- [Programming / uploading to the device](#)
+		- [Generating data](#)
+		- [Sending it to the server](#)
+			- [MQTT testing](#)
+	- [Bugs](#)
+	- [Future improvements](#)
+	
 ## Brief explanation about project
 This project is meant to collect detailed data from CVA (Cerebral Vasculair Attack) patients. This can then be parsed by complex algorithms and scientists to study movement in these patients. The sensor module also creates a simple performance index that is sent to an AWS backend server. These performance indexes are then parsed to provide feedback to therapists and CVA patients on which they can improve.
 
