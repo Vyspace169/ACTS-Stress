@@ -158,15 +158,16 @@ After x time the sensor device will try to send the performance index to the ser
 #### MQTT testing
 AWS allows for testing on topics. You can subscribe to specific topics or a range of topics.
 
-## Bugs	and issues
+## Bugs	
 
 
 ## Future improvements
 improvements and / or changes:
 Markup : 
-* DataProcessor to data processing task (when doing complex calculations)
+* DataProcessor to data processing task (when doing complex calculations).
 * Controllers and Basetask changed to allow a generic way of creating the actual tasks in ESP-IDF, this can be done by calling a function ptr in the basetask that calls the main_task again. By implementing the main_task in its children, internal logic can change but interface stays the same.
-* ESPIDF 2.1 to ESPIDF 3.0+
+* The global system time should be read from the RTC whenever the system reboots from a reset. This is done in the SNTP task, but this funciton is not yet tested.
+* The SD-Card will throw a CRC error when trying to initialize the system. This error can be resolved by turning the CRC checking of in ESP-IDF. This can be done by chaning the file "sdmmc_cmd.c" in the ESP_IDF. Change "err = sdmmc_send_cmd_crc_on_off(card, true);" to "err = sdmmc_send_cmd_crc_on_off(card, false);". In the future this should be done without changing the ESP-IDF source code.
 
 
 ~Good luck developing more content from the ACTS Team and me ♥.
