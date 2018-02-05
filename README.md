@@ -88,6 +88,9 @@ The WifiTask is acivated every x time. The Wifitask sends the Movement stack dat
 The StandbyTask is an activate task with the lowest priority (otherwise it would block the system from sampling!). If the StandbyTask receives a signal from any part of the system to set the system in sleep, it will send the connected flags to SensorTask, SdWriterTask and WifiTask.
 It will then respond to interrupts that are system generated.
 
+### Activity Diagrams
+![alt text](readme-content/actsactivitydiagramstartup.png)
+
 ### Project short guide
 Description on recommendations on different project types (such as complex sampling, lots of sampling or lots of WiFi connections). Also fast sampling rates (max 1000Hz espidf?)
 
