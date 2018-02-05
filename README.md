@@ -166,7 +166,7 @@ improvements and / or changes:
 Markup : 
 * DataProcessor to data processing task (when doing complex calculations).
 * Controllers and Basetask changed to allow a generic way of creating the actual tasks in ESP-IDF, this can be done by calling a function ptr in the basetask that calls the main_task again. By implementing the main_task in its children, internal logic can change but interface stays the same.
-* The global system time should be read from the RTC whenever the system reboots from a reset. This is done in the SNTP task, but this funciton is not yet tested.
+* The global system time should be read from the RTC whenever the system reboots from a deep sleep. This is currently done in the SNTP task, but this funciton is not yet tested.
 * The SD-Card will throw a CRC error when trying to initialize the system. This error can be resolved by turning the CRC checking of in ESP-IDF. This can be done by chaning the file "sdmmc_cmd.c" in the ESP_IDF. Change "err = sdmmc_send_cmd_crc_on_off(card, true);" to "err = sdmmc_send_cmd_crc_on_off(card, false);". In the future this should be done without changing the ESP-IDF source code.
 
 
