@@ -87,8 +87,10 @@ The WifiTask is acivated every x time. The Wifitask sends the Movement stack dat
 The StandbyTask is an activate task with the lowest priority (otherwise it would block the system from sampling!). If the StandbyTask receives a signal from any part of the system to set the system in sleep, it will send the connected flags to SensorTask, SdWriterTask and WifiTask.
 It will then respond to interrupts that are system generated.
 
-### Activity Diagrams
+### Activity Diagram
 ![alt text](readme-content/actsactivitydiagramstartup.png)
+
+The system restarts when it is removed from the wireless charger. It resumes in normal bootmode and follows the ad (activity diagram). First it starts a sntp task to get a datetime from the internet. When this task is does, it shuts down and starts its peripherals (BMP280, MPU9250, sd card and some other stuff). After that is complete it starts the main tasks and startup (system init) will be complete.
 
 ### Project short guide
 Description on recommendations on different project types (such as complex sampling, lots of sampling or lots of WiFi connections). Also fast sampling rates (max 1000Hz espidf?)
