@@ -97,9 +97,10 @@ Description on recommendations on different project types (such as complex sampl
 
 #### Current task structure
 
-| test | test1 |
+| Core 0 | Core 1 |
 | ---- | ----- |
-| test | test2 |
+| WifiTask | SensorTask |
+| StandbyTask | SdWriteTask |
 
 
 ## Hardware
