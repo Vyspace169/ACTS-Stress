@@ -95,6 +95,13 @@ The system restarts when it is removed from the wireless charger. It resumes in 
 ### Project short guide
 Description on recommendations on different project types (such as complex sampling, lots of sampling or lots of WiFi connections). Also fast sampling rates (max 1000Hz espidf?)
 
+#### Current task structure
+
+| test | test1 |
+| ---- | ----- |
+| test | test2 |
+
+
 ## Hardware
 Description about the current hardware platform that is used and its interfaces.
 ### Hardware requirements
