@@ -62,7 +62,6 @@ The second core runs more complex code and code that has a long deadline to fini
 First, a simple overview of all classess is given, with their respective responsibilities. Aftwards a more in-depth version is given that shows the interface of each class.
 ![alt text](readme-content/actsclassbasic.png)
 
-Markup :
 * Blue represents Controller classes. These are responable for system logic. They execute what should be executed and handle task management among them.
 
 * Purple represents Boundary classes. These classes interface with the hardware and drivers.
@@ -98,7 +97,7 @@ Description on recommendations on different project types (such as complex sampl
 Description about the current hardware platform that is used and its interfaces.
 ### Hardware requirements
 Hardware List
-Markup : 
+
 * esp32 512 kB ram+
 * SD Cardreader SPI
 * BMP280 Pressure & Temperature sensor
@@ -163,7 +162,7 @@ AWS allows for testing on topics. You can subscribe to specific topics or a rang
 
 ## Future improvements
 improvements and / or changes:
-Markup : 
+
 * DataProcessor to data processing task (when doing complex calculations).
 * Controllers and Basetask changed to allow a generic way of creating the actual tasks in ESP-IDF, this can be done by calling a function ptr in the basetask that calls the main_task again. By implementing the main_task in its children, internal logic can change but interface stays the same.
 * The global system time should be read from the RTC whenever the system reboots from a deep sleep. This is currently done in the SNTP task, but this funciton is not yet tested.
