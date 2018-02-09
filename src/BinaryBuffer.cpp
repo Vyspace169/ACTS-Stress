@@ -16,12 +16,20 @@ void BinaryBuffer::clear(){
 	buffer.clear();
 }
 
-void BinaryBuffer::add( data in ){
-	(state) ? buffer.push_back(in) : throw Exception;
+bool BinaryBuffer::add( SampleData in ){
+	if(state){
+		buffer.push_back(in);
+		return true;
+	}else{
+		return false;
+	}
+}
+const std::vector<SampleData>& BinaryBuffer::get() {
+	return buffer;
 }
 
 bool BinaryBuffer::isFull(){
-	return buffer.size()>=100;
+	return buffer.size() >= BufferSize;
 }
 
 BinaryBuffer::~BinaryBuffer(){

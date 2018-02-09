@@ -1,0 +1,6 @@
+<map id="MovementStack::MovementStack" name="MovementStack::MovementStack">
+<area shape="rect" id="node2" href="$class_movement_stack.html#abe420cd74d3cd5962aedbeb72c91ad14" title="GetActivityData method. " alt="" coords="269,5,483,32"/>
+<area shape="rect" id="node3" href="$class_movement_stack.html#adfd558c4d3b631a085bdf0833c08f082" title="PopData method. " alt="" coords="289,56,463,83"/>
+<area shape="rect" id="node4" href="$class_movement_stack.html#a353d03015776e9ee7922bd672d179879" title="PushData method. " alt="" coords="286,107,466,133"/>
+<area shape="rect" id="node5" href="$class_movement_stack.html#a8b80aa6b40fcc4055a2da0a91fff34ec" title="DataCount method. " alt="" coords="284,157,468,184"/>
+</map>

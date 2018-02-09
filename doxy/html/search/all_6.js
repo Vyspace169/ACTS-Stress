@@ -1,0 +1,19 @@
+var searchData=
+[
+  ['get',['get',['../class_binary_buffer.html#aef4c35fa21fc3a44ea78c4ee019c75fa',1,'BinaryBuffer']]],
+  ['getactivitydata',['GetActivityData',['../class_data_processor.html#af3ad5f3bcf6b4040eed493ec9c9c6ff3',1,'DataProcessor::GetActivityData()'],['../class_movement_stack.html#a565458f1c0245bf3c01f23446921e3fd',1,'MovementStack::GetActivityData()']]],
+  ['gpio_5fcharge_5fdetect',['GPIO_CHARGE_DETECT',['../_system_variables_8hpp.html#af2adee83dfa0d400295382318cca23df',1,'SystemVariables.hpp']]],
+  ['gpio_5finit_5fall',['gpio_init_all',['../_setup_8hpp.html#a59b5692d1587651595e337756c1f1d15',1,'Setup.cpp']]],
+  ['gpio_5fled_5fblue',['GPIO_LED_BLUE',['../_system_variables_8hpp.html#a1b68be6e2122ae14a5c7ab39f0680c2b',1,'SystemVariables.hpp']]],
+  ['gpio_5fled_5fgreen',['GPIO_LED_GREEN',['../_system_variables_8hpp.html#ad367d31df0a2c9cc31261352ff319be4',1,'SystemVariables.hpp']]],
+  ['gpio_5fled_5fred',['GPIO_LED_RED',['../_system_variables_8hpp.html#a1fd0cf674bbdfc6697e383c9ff58ba92',1,'SystemVariables.hpp']]],
+  ['gpio_5fmpu_5fint',['GPIO_MPU_INT',['../_system_variables_8hpp.html#a3e8dfa493e778fa85b05ba0e892f0587',1,'SystemVariables.hpp']]],
+  ['gpio_5fpw_5fadc',['GPIO_PW_ADC',['../_system_variables_8hpp.html#ad07303c83e7ff388a38aa6bfbca17400',1,'SystemVariables.hpp']]],
+  ['gpio_5fscl',['GPIO_SCL',['../_system_variables_8hpp.html#a3aee7cda0d9a53b19c24e4475440af5b',1,'SystemVariables.hpp']]],
+  ['gpio_5fsd_5fdetect',['GPIO_SD_DETECT',['../_system_variables_8hpp.html#a1866e7ee5aa8c5a24165e8f7ecd00dc7',1,'SystemVariables.hpp']]],
+  ['gpio_5fsd_5fpower',['GPIO_SD_POWER',['../_system_variables_8hpp.html#a8e953ed9ae38b290ac6cd59b8ec6b7db',1,'SystemVariables.hpp']]],
+  ['gpio_5fsda',['GPIO_SDA',['../_system_variables_8hpp.html#aeb622b19abeba29bac7cdff483bebf86',1,'SystemVariables.hpp']]],
+  ['gyrox',['gyroX',['../struct_sample_data.html#a94d8f718dffbef5e1367bd35bfabf5a9',1,'SampleData']]],
+  ['gyroy',['gyroY',['../struct_sample_data.html#a7e0e6051f49b68b1c42e1eac7051528b',1,'SampleData']]],
+  ['gyroz',['gyroZ',['../struct_sample_data.html#a98ddddf4ffe478b43c668dda32a323f2',1,'SampleData']]]
+];

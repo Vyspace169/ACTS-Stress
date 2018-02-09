@@ -1,0 +1,12 @@
+<map id="C:/ESP32/ACTS&#45;Sensor&#45;develop/src/WifiController.hpp" name="C:/ESP32/ACTS&#45;Sensor&#45;develop/src/WifiController.hpp">
+<area shape="rect" id="node3" href="$_wi_fi_c_8h_source.html" title="WiFiC.h" alt="" coords="807,319,876,345"/>
+<area shape="rect" id="node18" href="$_base_task_8hpp.html" title="BaseTask.hpp" alt="" coords="2509,319,2614,345"/>
+<area shape="rect" id="node20" href="$_data_processor_8hpp.html" title="DataProcessor.hpp" alt="" coords="1459,95,1592,121"/>
+<area shape="rect" id="node37" href="$_m_q_t_t_controller_8hpp.html" title="MQTTController.hpp" alt="" coords="2741,319,2878,345"/>
+<area shape="rect" id="node17" href="$_system_variables_8hpp.html" title="SystemVariables.hpp" alt="" coords="1803,401,1949,427"/>
+<area shape="rect" id="node19" href="$_systemerrors_8hpp_source.html" title="Systemerrors.hpp" alt="" coords="2259,401,2384,427"/>
+<area shape="rect" id="node24" href="$_movement_stack_8hpp.html" title="MovementStack.hpp" alt="" coords="1051,319,1191,345"/>
+<area shape="rect" id="node27" href="$_double_buffer_8hpp.html" title="DoubleBuffer.hpp" alt="" coords="1627,169,1747,196"/>
+<area shape="rect" id="node28" href="$_binary_buffer_8hpp.html" title="BinaryBuffer.hpp" alt="" coords="1368,319,1485,345"/>
+<area shape="rect" id="node30" href="$_s_d_writer_8hpp.html" title="SDWriter.hpp" alt="" coords="1759,244,1859,271"/>
+</map>
