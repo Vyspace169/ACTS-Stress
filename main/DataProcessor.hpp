@@ -124,8 +124,6 @@ public:
      */
     ~DataProcessor();
 private:
-    DoubleBuffer &DBHandleDP;
-    DataProcessor &DataHandler;
     int TimeoutCounter;
     int TimeoutTrigger;
     bool LastTriggerOn;

@@ -53,7 +53,7 @@ public:
 	 * This method stores RR-intervals in the
 	 * currently used buffer.
 	 */
-	void storeRRData(SampleData in);
+	void storeRRData(RRSeries in);
 
 	/*!
 	 * \brief swap method
@@ -62,6 +62,22 @@ public:
 	 * next one.
 	 */
 	void swap();
+
+	/*!
+	 * \brief swap method
+	 *
+	 * This method swaps the ping pong buffer to the
+	 * next one.
+	 */
+	void swapR();
+
+	/*!
+	 * \brief swap method
+	 *
+	 * This method swaps the ping pong buffer to the
+	 * next one.
+	 */
+	void swapRR();
 
 	/*!
 	 * \brief emptyBuffer method

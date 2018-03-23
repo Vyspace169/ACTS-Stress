@@ -14,6 +14,7 @@ SensorController::SensorController(unsigned int task_priority, DoubleBuffer &db,
 void sensor_handle_task(void *args)  {
 	SensorController *sTask = static_cast<SensorController*>(args);
 	SampleData SensorData;
+	RData Potential_R;
 	EventBits_t uxBits;
 	short MPUData[sTask->Sensor_MPU->DataSize() / sizeof(short)];
 	int BMPData[sTask->Sensor_BMP->DataSize() / sizeof(int)];
@@ -27,25 +28,29 @@ void sensor_handle_task(void *args)  {
         	memcpy(BMPData, sTask->Sensor_BMP->SensorRead(), sTask->Sensor_BMP->DataSize());
         	memcpy(ECGData, sTask->Sensor_ECG->SensorRead(), sTask->Sensor_ECG->DataSize());
 
-        	SensorData.accelX = 		MPUData[sTask->DATA_OFFSET_ACCELERO_X];
-        	SensorData.accelY = 		MPUData[sTask->DATA_OFFSET_ACCELERO_Y];
-        	SensorData.accelZ = 		MPUData[sTask->DATA_OFFSET_ACCELERO_Z];
-        	SensorData.gyroX = 			MPUData[sTask->DATA_OFFSET_GYRO_X];
-        	SensorData.gyroY = 			MPUData[sTask->DATA_OFFSET_GYRO_Y];
-        	SensorData.gyroZ = 			MPUData[sTask->DATA_OFFSET_GYRO_Z];
-        	SensorData.magnetoX = 		MPUData[sTask->DATA_OFFSET_MAGNETO_X];
-        	SensorData.magnetoY = 		MPUData[sTask->DATA_OFFSET_MAGNETO_Y];
-        	SensorData.magnetoZ = 		MPUData[sTask->DATA_OFFSET_MAGNETO_Z];
-        	SensorData.temp = 			BMPData[sTask->DATA_OFFSET_TEMPERATURE];
-        	SensorData.pressure = 		BMPData[sTask->DATA_OFFSET_PRESSURE];
-        	SensorData.microTime =  	xTaskGetTickCount();
-        	SensorData.ECGSampleValue = ECGData[sTask->DATA_OFFSET_SAMPLE_VALUE];
-        	SensorData.ECGSampleNr =	ECGData[sTask->DATA_OFFSET_SAMPLE_NR];
-        	SensorData.ECGPotentialR = 	ECGData[sTask->DATA_OFFSET_POTENTIAL_R];
+        	SensorData.accelX = 			MPUData[sTask->DATA_OFFSET_ACCELERO_X];
+        	SensorData.accelY = 			MPUData[sTask->DATA_OFFSET_ACCELERO_Y];
+        	SensorData.accelZ = 			MPUData[sTask->DATA_OFFSET_ACCELERO_Z];
+        	SensorData.gyroX = 				MPUData[sTask->DATA_OFFSET_GYRO_X];
+        	SensorData.gyroY = 				MPUData[sTask->DATA_OFFSET_GYRO_Y];
+        	SensorData.gyroZ = 				MPUData[sTask->DATA_OFFSET_GYRO_Z];
+        	SensorData.magnetoX = 			MPUData[sTask->DATA_OFFSET_MAGNETO_X];
+        	SensorData.magnetoY = 			MPUData[sTask->DATA_OFFSET_MAGNETO_Y];
+        	SensorData.magnetoZ = 			MPUData[sTask->DATA_OFFSET_MAGNETO_Z];
+        	SensorData.temp = 				BMPData[sTask->DATA_OFFSET_TEMPERATURE];
+        	SensorData.pressure = 			BMPData[sTask->DATA_OFFSET_PRESSURE];
+        	SensorData.microTime =  		xTaskGetTickCount();
+        	SensorData.ECGSampleValue = 	ECGData[sTask->DATA_OFFSET_SAMPLE_VALUE];
+        	SensorData.ECGSampleNumber = 	ECGData[sTask->DATA_OFFSET_SAMPLE_VALUE];
 
         	sTask->DataHandler.HandleData(SensorData);
         	sTask->DBHandle.storeData(SensorData);
-        	sTask->DataHandler.HandleECGData(SensorData);
+
+        	if(SensorData.ECGSampleValue > R_PEAK_THRESHOLD){
+        		Potential_R.potentialRPeak = 	SensorData.ECGSampleValue;
+        		Potential_R.sampleNr = 			SensorData.ECGSampleNumber;
+        		sTask->DBHandle.storeRData(Potential_R);
+        	}
         }
 
         if(uxBits & StandbySensorTaskUnhandled) {
@@ -75,8 +80,7 @@ void print_struct(SampleData SensorData) {
    			SensorData.magnetoZ,
    			SensorData.temp,
    			SensorData.pressure,
-			SensorData.ECGSampleValue,
-			SensorData.ECGSampleNr);
+			SensorData.ECGSampleValue);
 }
 
 

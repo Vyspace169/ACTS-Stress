@@ -45,13 +45,18 @@ typedef struct {
 	int temp;				/**< Temperature */
 	int pressure;			/**< Air pressure */
 	int ECGSampleValue;		/**< ECG sample value */
-	int ECGSampleNr;		/**< ECG sample number */
+	int ECGSampleNumber;	/**< ECG sample number */
 } SampleData;
 
 typedef struct {
 	int potentialRPeak;		/**< ECG sample values greater then set threshold */
 	int sampleNr;			/**< sample number of ECG sample mentioned above */
 } RData;
+
+typedef struct {
+	int RRInterval;			/**< RR-interval is milliseconds */
+	int RRTotal;			/**< Cumulative RR-intervals */
+} RRSeries;
 
 /*! Flag for SensorTask to act upon */
 #define SensorMeasurementFlag 		( 1 << 0 )
@@ -76,7 +81,9 @@ typedef struct {
 /*! Flag to signal that he SNTP task is done receiving time */
 #define SNTPTaskDoneFlag			( 1 << 11 )
 /*! Flag to signal that one of the R-buffers is full */
-#define RBufferReady				( 1 << 12 )
+#define RBufferReadyFlag			( 1 << 12 )
+/*! Flag to signal that one of the RR-interval buffers is full */
+#define RRBufferReadyFlag			( 1 << 13 )
 
 /*! Blue LED GPIO define */
 #define GPIO_LED_BLUE			GPIO_NUM_13
@@ -97,7 +104,7 @@ typedef struct {
 /*! Battery ADC channel */
 #define ADC_BATTERY				ADC1_CHANNEL_6
 /*! Ecg ADC channel */
-#define ADC_ECG					ADC1_CHANNEL_0
+#define ADC_ECG					ADC1_CHANNEL_7
 
 /*! Sample rate in hz define */
 #define SAMPLE_RATE_H			125
@@ -113,7 +120,7 @@ typedef struct {
 /*! SDWriter CLK pin define */
 #define PIN_NUM_CLK 			GPIO_NUM_18
 /*! SDWriter CS pin define */
-#define PIN_NUM_CS 				GPIO_NUM_5
+#define PIN_NUM_CS 				GPIO_NUM_15
 
 /*! SDWriter spi speed define in KHZ */
 #define SD_CARD_SPI_SPEED_KHZ	1000
@@ -129,7 +136,7 @@ typedef struct {
  * sufficient. This define declares which folder
  * (not root) the measured data should be stored in.
  */
-#define DIRECTORY_NAME			"Movement Data"
+#define DIRECTORY_NAME			"Sensor Data"
 
 /*! I2C SDA pin define */
 #define GPIO_SDA				GPIO_NUM_25
@@ -221,7 +228,7 @@ typedef struct {
 #define TIMEOUT_TIME_SEC		60
 
 /*! R-peak threshold in binary value.
- * This define tells the ECGImplementation which
+ * This define tells the SensorController which
  * Values should be written to a separate buffer
  * for R-peak detection.
  */
@@ -246,7 +253,7 @@ typedef struct {
 /*! Wifitask priority define */
 #define WIFITASK_PRIORITY 		0
 /*! Wifitask stack size define */
-#define WIFITASK_STACK_SIZE 	4096
+#define WIFITASK_STACK_SIZE 	8192
 
 /*! Standbycontroller core num define */
 #define STANDBYCONT_CORE_NUM 	1

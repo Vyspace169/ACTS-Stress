@@ -115,8 +115,11 @@ extern "C" void app_main(void)
     SDWriter *GlobalSDWriter = new SDWriter;
     // Initialize card
     GlobalSDWriter->InitSDMMC(SDMMC_INIT_RETRIES);
-    // Set filename used for writing
+    // Set filename used for writing movement data
     GlobalSDWriter->SetFileName(name);
+    // Set filename used for writing RR data
+    GlobalSDWriter->SetFileName("RR_intervals");
+
 
     // Create DataProcessor object
     DataProcessor *GlobalDataHandler = new DataProcessor;

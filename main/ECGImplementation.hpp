@@ -6,20 +6,24 @@
  */
 
 #pragma once
-#include "driver/gpio.h"
-#include "driver/adc.h"
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "esp_err.h"
 #include "esp_log.h"
-#include "freertos/task.h"
-#include "Sensor.hpp"
-#include "Systemerrors.hpp"
-#include "Errorhandler.hpp"
-#include "BinaryBuffer.hpp"
 
-#define TAG_ECG "ECG"
+#include "driver/gpio.h"
+#include "driver/adc.h"
+
+#include "Sensor.hpp"
 
 class ECGImplementation: public Sensor{
 public:
+
+	ECGImplementation();
+
    /*!
 	 * \brief ecgImplementation DataSize method
 	 * \return Datasize of SensorRead method in bytes
@@ -42,39 +46,21 @@ public:
    unsigned short* SensorRead() override;
 
 	/*!
-	 * \brief swap method
+	 * \brief ECGImplementation Sleep method
 	 *
-	 * This method swaps the ping pong buffer to the
-	 * next one.
+	 * This method will put the ECG in sleep
+	 * mode.
 	 */
-	void swap();
-
-	/*!
-	 * \brief storeData method
-	 * \param in SampleData structure
-	 *
-	 * This method stores potential R-peaks in the
-	 * currently used Rbuffer.
-	 */
-	void storeRData(RData in);
-
-   int RBuffer_length = 500;
-   BinaryBuffer * firstRBuffer;
-   BinaryBuffer * secondRBuffer;
+	void Sleep() override;
 
 private:
-   int kernel_length = 5;
-   int i;
-   int k;
-   bool kernel_filled;
-   int sample_number;
+   int kernel_size = 5;
+   int i = 0;
+   int j = 0;
+   int sample_number = 0;
    int sample_value[5];
-   int sample_value_filtered; //evt float van maken
-   unsigned short ECGData[2];
-
-   BinaryBuffer * currentR;
-   BinaryBuffer * nextR;
-
+   int sample_value_filtered = 0; //evt float van maken
+   unsigned short ECGData[4];
 };
 
 

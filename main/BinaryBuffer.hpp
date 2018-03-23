@@ -56,6 +56,26 @@ public:
 	bool add( SampleData in );
 
 	/*!
+	 * \brief add method
+	 * \param in SampleData structure
+	 * \return bool returns flase if state is read only
+	 *
+	 * This method adds a SampleData strcture
+	 * to the buffer.
+	 */
+	bool addR( RData in );
+
+	/*!
+	 * \brief add method
+	 * \param in SampleData structure
+	 * \return bool returns flase if state is read only
+	 *
+	 * This method adds a SampleData strcture
+	 * to the buffer.
+	 */
+	bool addRR( RRSeries in );
+
+	/*!
 	 * \brief get method
 	 * \return SampleData buffer pointer
 	 *
@@ -82,5 +102,7 @@ private:
 	bool readState();
 	bool state;
 	std::vector<SampleData> buffer;
+	std::vector<RData> RBuffer;
+	std::vector<RRSeries> RRBuffer;
 	const int BufferSize = BINARY_BUFFER_SIZE;
 };

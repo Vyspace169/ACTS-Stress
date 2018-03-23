@@ -28,15 +28,24 @@ void DoubleBuffer::storeData(SampleData in){
 	//else { critical error }
 }
 
+void DoubleBuffer::storeRData(RData in){
+	if (!currentR->isFull()){
+		currentR->addR(in);
+	}
+	else if(!nextR->isFull()){
+		this->swapR();
+		xEventGroupSetBits(GlobalEventGroupHandle, RBufferReadyFlag);
+	}
+	//else { critical error }
+}
 
-
-void DoubleBuffer::storeRRData(){
+void DoubleBuffer::storeRRData(RRSeries in){
 	if (!currentRR->isFull()){
-		currentRR->add(in);
+		currentRR->addRR(in);
 	}
 	else if(!nextRR->isFull()){
-		this->swap();
-		xEventGroupSetBits(GlobalEventGroupHandle, SensorBufferSdReady);
+		this->swapRR();
+		xEventGroupSetBits(GlobalEventGroupHandle, RRBufferReadyFlag);
 	}
 	//else { critical error }
 }
@@ -47,13 +56,17 @@ void DoubleBuffer::swap(){
 	this->current->writeOnly();
 	this->next = tmp;
 	this->next->readOnly();
+}
 
+void DoubleBuffer::swapR(){
 	BinaryBuffer * tmp = this->currentR;
 	this->currentR = this->nextR;
 	this->currentR->writeOnly();
 	this->nextR = tmp;
 	this->nextR->readOnly();
+}
 
+void DoubleBuffer::swapRR(){
 	BinaryBuffer * tmp = this->currentRR;
 	this->currentRR = this->nextRR;
 	this->currentRR->writeOnly();

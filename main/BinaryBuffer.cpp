@@ -24,6 +24,25 @@ bool BinaryBuffer::add( SampleData in ){
 		return false;
 	}
 }
+
+bool BinaryBuffer::addR( RData in ){
+	if(state){
+		RBuffer.push_back(in);
+		return true;
+	}else{
+		return false;
+	}
+}
+
+bool BinaryBuffer::addRR( RRSeries in ){
+	if(state){
+		RRBuffer.push_back(in);
+		return true;
+	}else{
+		return false;
+	}
+}
+
 const std::vector<SampleData>& BinaryBuffer::get() {
 	return buffer;
 }
