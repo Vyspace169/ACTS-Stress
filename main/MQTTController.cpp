@@ -23,7 +23,7 @@ void MQTTController::publish(double value) {
     paramsQOS1.payloadLen = strlen(cPayload);
     rc = aws_iot_mqtt_publish(&client, TOPIC, TOPIC_LEN, &paramsQOS1);
     if (rc == MQTT_REQUEST_TIMEOUT_ERROR) {
-        ESP_LOGW(TAG, "QOS1 publish ack not received.");
+        ESP_LOGW(TAG, "QOS1 publish ack not received."); // @suppress("Symbol is not resolved")
         rc = SUCCESS;
     }
 }
@@ -31,7 +31,7 @@ void MQTTController::publish(double value) {
 void MQTTController::disconnect(){
     IoT_Error_t rc = aws_iot_mqtt_autoreconnect_set_status(&client, false);
     if(SUCCESS != rc) {
-        ESP_LOGE(TAG, "Unable to set Auto Reconnect to true - %d", rc);
+        ESP_LOGE(TAG, "Unable to set Auto Reconnect to true - %d", rc); // @suppress("Symbol is not resolved")
     }
     aws_iot_mqtt_disconnect(&client);
 }
@@ -39,13 +39,13 @@ void MQTTController::disconnect(){
 static void iot_subscribe_callback_handler(
     AWS_IoT_Client *pClient, char *topicName, uint16_t topicNameLen,IoT_Publish_Message_Params *params, void *pData) {
     char * TAG = "TEST";
-    ESP_LOGI(TAG, "Subscribe callback");
-    ESP_LOGI(TAG, "%.*s\t%.*s", topicNameLen, topicName, (int) params->payloadLen, (char *)params->payload);
+    ESP_LOGI(TAG, "Subscribe callback"); // @suppress("Symbol is not resolved")
+    ESP_LOGI(TAG, "%.*s\t%.*s", topicNameLen, topicName, (int) params->payloadLen, (char *)params->payload); // @suppress("Symbol is not resolved")
 }
 
 void disconnectCallbackHandler(AWS_IoT_Client *pClient, void *data) {
     char * TAG = "disconnect";
-    ESP_LOGW(TAG, "MQTT Disconnect");
+    ESP_LOGW(TAG, "MQTT Disconnect"); // @suppress("Symbol is not resolved")
     IoT_Error_t rc = FAILURE;
 
     if(NULL == pClient) {
@@ -53,14 +53,14 @@ void disconnectCallbackHandler(AWS_IoT_Client *pClient, void *data) {
     }
 
     if(aws_iot_is_autoreconnect_enabled(pClient)) {
-        ESP_LOGI(TAG, "Auto Reconnect is enabled, Reconnecting attempt will start now");
+        ESP_LOGI(TAG, "Auto Reconnect is enabled, Reconnecting attempt will start now"); // @suppress("Symbol is not resolved")
     } else {
-        ESP_LOGW(TAG, "Auto Reconnect not enabled. Starting manual reconnect...");
+        ESP_LOGW(TAG, "Auto Reconnect not enabled. Starting manual reconnect..."); // @suppress("Symbol is not resolved")
         rc = aws_iot_mqtt_attempt_reconnect(pClient);
         if(NETWORK_RECONNECTED == rc) {
-            ESP_LOGW(TAG, "Manual Reconnect Successful");
+            ESP_LOGW(TAG, "Manual Reconnect Successful"); // @suppress("Symbol is not resolved")
         } else {
-            ESP_LOGW(TAG, "Manual Reconnect Failed - %d", rc);
+            ESP_LOGW(TAG, "Manual Reconnect Failed - %d", rc); // @suppress("Symbol is not resolved")
         }
     }
 }
@@ -70,7 +70,7 @@ void MQTTController::connectMQTT() {
 
     IoT_Client_Init_Params mqttInitParams = iotClientInitParamsDefault;
     IoT_Client_Connect_Params connectParams = iotClientConnectParamsDefault;
-    ESP_LOGI(TAG, "AWS IoT SDK Version %d.%d.%d-%s", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_TAG);
+    ESP_LOGI(TAG, "AWS IoT SDK Version %d.%d.%d-%s", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_TAG); // @suppress("Symbol is not resolved")
 
     mqttInitParams.enableAutoReconnect = false; // We enable this later below
     mqttInitParams.pHostURL = host;
@@ -86,7 +86,7 @@ void MQTTController::connectMQTT() {
 
     rc = aws_iot_mqtt_init(&client, &mqttInitParams);
     if(SUCCESS != rc) {
-        ESP_LOGE(TAG, "aws_iot_mqtt_init returned error : %d ", rc);
+        ESP_LOGE(TAG, "aws_iot_mqtt_init returned error : %d ", rc); // @suppress("Symbol is not resolved")
     }
 
     connectParams.keepAliveIntervalInSec = 10;
@@ -99,8 +99,8 @@ void MQTTController::connectMQTT() {
     for(int j = 0; j < 10; j++) {
         rc = aws_iot_mqtt_connect(&client, &connectParams);
         if(SUCCESS != rc) {
-            ESP_LOGE(TAG, "Error(%d) connecting to %s:%d", rc, mqttInitParams.pHostURL, mqttInitParams.port);
-            vTaskDelay(1000 / portTICK_RATE_MS);
+            ESP_LOGE(TAG, "Error(%d) connecting to %s:%d", rc, mqttInitParams.pHostURL, mqttInitParams.port); // @suppress("Symbol is not resolved")
+            vTaskDelay(1000 / portTICK_RATE_MS); // @suppress("Invalid arguments") // @suppress("Symbol is not resolved")
         }else{
             break;
         }
@@ -108,7 +108,7 @@ void MQTTController::connectMQTT() {
     rc = aws_iot_mqtt_autoreconnect_set_status(&client, true);
 
     if(SUCCESS != rc) {
-        ESP_LOGE(TAG, "Unable to set Auto Reconnect to true - %d", rc);
+        ESP_LOGE(TAG, "Unable to set Auto Reconnect to true - %d", rc); // @suppress("Symbol is not resolved")
     }
 }
 

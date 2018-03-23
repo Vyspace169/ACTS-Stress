@@ -18,14 +18,14 @@ void standbycontroller_handle_task(void *args)  {
 	int ChargeDetectGPIOState = gpio_get_level(GPIO_CHARGE_DETECT);
 
 	while(true) {
-		vTaskDelay(STANDBYCONT_LOOP_DELAY / portTICK_PERIOD_MS);
+		vTaskDelay(STANDBYCONT_LOOP_DELAY / portTICK_PERIOD_MS); // @suppress("Invalid arguments") // @suppress("Symbol is not resolved")
 
 		uxBits = xEventGroupGetBits(GlobalEventGroupHandle);
 
 		// bits have been set and task is waiting for bits to reset
 		if(EventBitsSet == true) {
 			if((uxBits & (StandbySensorTaskUnhandled | StandbyWifiTaskUnhandled | StandbyWriterTaskUnhandled)) == 0) {
-				ESP_LOGI("SLEEP TASK", "Going to sleep");
+				ESP_LOGI("SLEEP TASK", "Going to sleep"); // @suppress("Symbol is not resolved")
 				gettimeofday(&SleepEnterTime, NULL);
 				if(FastReset == true) {
 					esp_sleep_enable_timer_wakeup(100000);
@@ -34,7 +34,7 @@ void standbycontroller_handle_task(void *args)  {
 					esp_sleep_enable_timer_wakeup(0xFFFFFFFFFFFFFFFF);
 				}
 				else if(PinInterruptReset == true) {
-					vTaskDelay(1000 / portTICK_PERIOD_MS);
+					vTaskDelay(1000 / portTICK_PERIOD_MS); // @suppress("Invalid arguments") // @suppress("Symbol is not resolved")
 					esp_sleep_enable_ext1_wakeup((1<<GPIO_SD_DETECT), ESP_EXT1_WAKEUP_ANY_HIGH);
 				}
 				else {
@@ -48,17 +48,17 @@ void standbycontroller_handle_task(void *args)  {
 			// Battery voltage measurement
 			float BatteryVoltage = adc1_get_raw(ADC_BATTERY) / ADC_TO_BAT_VOLTAGE;
 			if(gpio_get_level(GPIO_CHARGE_DETECT) == 0 && BatteryVoltage > 4.15) {
-				blink_set_led(GPIO_LED_GREEN, 10000, 0);
+				blink_set_led(GPIO_LED_GREEN, 10000, 0); // @suppress("Invalid arguments")
 			}
 			else if(gpio_get_level(GPIO_CHARGE_DETECT) == 0 && BatteryVoltage <= 4.15) {
-				blink_set_led(GPIO_LED_GREEN, 10, 1000);
+				blink_set_led(GPIO_LED_GREEN, 10, 1000); // @suppress("Invalid arguments")
 			}
 			else {
 				if(BatteryVoltage < BAT_LED_VALUE_VOLTAGE) {
-					blink_set_led(GPIO_LED_RED, 10, 1000);
+					blink_set_led(GPIO_LED_RED, 10, 1000); // @suppress("Invalid arguments")
 				}
 				else if(BatteryVoltage >= BAT_LED_VALUE_VOLTAGE) {
-					blink_set_led(GPIO_LED_GREEN, 10, 5000);
+					blink_set_led(GPIO_LED_GREEN, 10, 5000); // @suppress("Invalid arguments")
 				}
 			}
 			/*if(BatteryVoltage < TURN_OFF_VOLTAGE) {
@@ -70,9 +70,9 @@ void standbycontroller_handle_task(void *args)  {
 
 			// If the card is removed, this loop will be run
 			if(gpio_get_level(GPIO_SD_DETECT) == 0) {
-				vTaskDelay(SD_DET_DEBOUNCE_MS / portTICK_PERIOD_MS);
+				vTaskDelay(SD_DET_DEBOUNCE_MS / portTICK_PERIOD_MS); // @suppress("Invalid arguments") // @suppress("Symbol is not resolved")
 				if(gpio_get_level(GPIO_SD_DETECT) == 0) {
-					ESP_LOGI("SLEEP TASK", "Setting bits due to SD-card remove");
+					ESP_LOGI("SLEEP TASK", "Setting bits due to SD-card remove"); // @suppress("Symbol is not resolved")
 					xEventGroupSetBits(GlobalEventGroupHandle, (StandbySensorTaskUnhandled | StandbyWifiTaskUnhandled | StandbyWriterTaskUnhandled));
 					PinInterruptReset = true;
 					EventBitsSet = true;
@@ -82,7 +82,7 @@ void standbycontroller_handle_task(void *args)  {
 			// charge detect rising edge detector
 			ChargeDetectGPIOState = gpio_get_level(GPIO_CHARGE_DETECT);
 			if(ChargeDetectGPIOState == 1 && OldChargeDetectGPIOState == 0) {
-				ESP_LOGI("SLEEP TASK", "Setting bits due to charge released");
+				ESP_LOGI("SLEEP TASK", "Setting bits due to charge released"); // @suppress("Symbol is not resolved")
 				xEventGroupSetBits(GlobalEventGroupHandle, (StandbySensorTaskUnhandled | StandbyWifiTaskUnhandled | StandbyWriterTaskUnhandled));
 				FastReset = true;
 				EventBitsSet = true;
@@ -93,7 +93,7 @@ void standbycontroller_handle_task(void *args)  {
 
 			// movement timeout sleep
 			if(uxBits & MovementTimeoutReached) {
-				ESP_LOGI("SLEEP TASK", "Setting bits due to movement timeout");
+				ESP_LOGI("SLEEP TASK", "Setting bits due to movement timeout"); // @suppress("Symbol is not resolved")
 				xEventGroupSetBits(GlobalEventGroupHandle, (StandbySensorTaskUnhandled | StandbyWifiTaskUnhandled | StandbyWriterTaskUnhandled));
 				EventBitsSet = true;
 			}
@@ -103,7 +103,7 @@ void standbycontroller_handle_task(void *args)  {
 
 
 void StandbyController::main_task() {
-	ESP_LOGI("STANDBY CONTROLLER", "Task starting...");
+	ESP_LOGI("STANDBY CONTROLLER", "Task starting..."); // @suppress("Symbol is not resolved")
 
 	TaskHandle_t xHandle = NULL;
     BaseType_t xReturned = xTaskCreatePinnedToCore(standbycontroller_handle_task,
@@ -116,13 +116,13 @@ void StandbyController::main_task() {
 
     if(xHandle == NULL) {
     	// Handle assignment has failed
-    	ESP_LOGI("STANDBY CONTROLLER", "Handle creation failed");
+    	ESP_LOGI("STANDBY CONTROLLER", "Handle creation failed"); // @suppress("Symbol is not resolved")
     }
 
     if(xReturned != pdPASS) {
     	// xReturned false (something went wrong!)
-    	ESP_LOGI("STANDBY CONTROLLER", "Task creation failed");
+    	ESP_LOGI("STANDBY CONTROLLER", "Task creation failed"); // @suppress("Symbol is not resolved")
     }
 
-    ESP_LOGI("STANDBY CONTROLLER", "Task is running");
+    ESP_LOGI("STANDBY CONTROLLER", "Task is running"); // @suppress("Symbol is not resolved")
 }

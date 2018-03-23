@@ -8,7 +8,7 @@ esp_err_t i2c_sensor_read_array(unsigned char dev_address, unsigned char address
 	i2c_master_write_byte(cmd, dev_address << 1 | I2C_WRITE_BIT, ACK_CHECK_EN);
 	i2c_master_write_byte(cmd, address, ACK_CHECK_EN);
 	i2c_master_stop(cmd);
-	ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, I2C_TIMEOUT / portTICK_RATE_MS);
+	ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, I2C_TIMEOUT / portTICK_RATE_MS); // @suppress("Symbol is not resolved") // @suppress("Invalid arguments")
 	i2c_cmd_link_delete(cmd);
 	if (ret != ESP_OK) {
 	    return ret;
@@ -18,11 +18,11 @@ esp_err_t i2c_sensor_read_array(unsigned char dev_address, unsigned char address
 	i2c_master_start(cmd);
 	i2c_master_write_byte(cmd, dev_address << 1 | I2C_READ_BIT, ACK_CHECK_EN);
 	for(int i = 0; i < count - 1; i++) {
-		i2c_master_read_byte(cmd, read_data++, ACK_VAL);
+		i2c_master_read_byte(cmd, read_data++, (i2c_ack_type_t)ACK_VAL);
 	}
-	i2c_master_read_byte(cmd, read_data, NACK_VAL);
+	i2c_master_read_byte(cmd, read_data, (i2c_ack_type_t)NACK_VAL);
 	i2c_master_stop(cmd);
-	ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, I2C_TIMEOUT / portTICK_RATE_MS);
+	ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, I2C_TIMEOUT / portTICK_RATE_MS); // @suppress("Symbol is not resolved") // @suppress("Invalid arguments")
 	i2c_cmd_link_delete(cmd);
    
 	return ret;
@@ -36,7 +36,7 @@ esp_err_t i2c_sensor_read_byte(unsigned char dev_address, unsigned char address,
    i2c_master_write_byte(cmd, dev_address << 1 | I2C_WRITE_BIT, ACK_CHECK_EN);
    i2c_master_write_byte(cmd, address, ACK_CHECK_EN);
    i2c_master_stop(cmd);
-   ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, I2C_TIMEOUT / portTICK_RATE_MS);
+   ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, I2C_TIMEOUT / portTICK_RATE_MS); // @suppress("Symbol is not resolved") // @suppress("Invalid arguments")
    i2c_cmd_link_delete(cmd);
    if (ret != ESP_OK) {
      return ret;
@@ -45,9 +45,9 @@ esp_err_t i2c_sensor_read_byte(unsigned char dev_address, unsigned char address,
    cmd = i2c_cmd_link_create();
    i2c_master_start(cmd);
    i2c_master_write_byte(cmd, dev_address << 1 | I2C_READ_BIT, ACK_CHECK_EN);
-   i2c_master_read_byte(cmd, read_data, NACK_VAL);
+   i2c_master_read_byte(cmd, read_data, (i2c_ack_type_t)NACK_VAL);
    i2c_master_stop(cmd);
-   ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, I2C_TIMEOUT / portTICK_RATE_MS);
+   ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, I2C_TIMEOUT / portTICK_RATE_MS); // @suppress("Symbol is not resolved") // @suppress("Invalid arguments")
    i2c_cmd_link_delete(cmd);
 
    return ret;
@@ -62,7 +62,7 @@ esp_err_t i2c_sensor_write_byte(unsigned char dev_address, unsigned char address
     i2c_master_write_byte(cmd, address, ACK_CHECK_EN);
     i2c_master_write_byte(cmd, write_data, ACK_CHECK_EN);
     i2c_master_stop(cmd);
-    ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, I2C_TIMEOUT / portTICK_RATE_MS);
+    ret = i2c_master_cmd_begin(I2C_NUM_0, cmd, I2C_TIMEOUT / portTICK_RATE_MS); // @suppress("Symbol is not resolved") // @suppress("Invalid arguments")
     i2c_cmd_link_delete(cmd);
 
     return ret;
@@ -93,7 +93,7 @@ Mpu9250Implementation::Mpu9250Implementation(){
 	// reset the MPU9250
 	esp_err_t error = i2c_sensor_write_byte(MPU9250_I2C_ADDRESS, MPU9250_REG_PWR_MGMNT_1, MPU9250_SET_PWR_RESET);
 	if(error != ESP_OK) {
-		ESP_LOGI("I2C", "MPU9250 address gave an error: %d", error);
+		ESP_LOGI("I2C", "MPU9250 address gave an error: %d", error); // @suppress("Symbol is not resolved")
       //SystemErrorState |= MPU_ERROR;
 	}
 	else {
@@ -112,7 +112,7 @@ Mpu9250Implementation::Mpu9250Implementation(){
 	// reset the ak8936
 	error = i2c_sensor_write_byte(AK8936_ADDRESS, AK8963_REG_CNTL2, AK8963_SET_RESET);
 	if(error != ESP_OK) {
-		ESP_LOGI("I2C", "AK8963 address gave an error: %d", error);
+		ESP_LOGI("I2C", "AK8963 address gave an error: %d", error); // @suppress("Symbol is not resolved")
       //SystemErrorState |= AK_ERROR;
 	}
 	else {
@@ -136,7 +136,7 @@ Mpu9250Implementation::Mpu9250Implementation(){
 		i2c_sensor_write_byte(AK8936_ADDRESS, AK8936_REG_CNTL1, AK8936_SET_16BIT | AK8936_SET_SING_SAMP);
 	}
 
-	ESP_LOGI("I2C", "MPU9250 ID: %i    AK8936 ID: %i", MPU9250ID, AK8936ID);
+	ESP_LOGI("I2C", "MPU9250 ID: %i    AK8936 ID: %i", MPU9250ID, AK8936ID); // @suppress("Symbol is not resolved")
 }
 
 int Mpu9250Implementation::DataSize() {

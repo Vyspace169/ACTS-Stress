@@ -17,7 +17,7 @@ void run_sd_task(void *args) {
         uxBits = xEventGroupWaitBits(GlobalEventGroupHandle, (SensorBufferSdReady | StandbyWriterTaskUnhandled), pdTRUE, pdFALSE, portMAX_DELAY);
 
         if(uxBits & SensorBufferSdReady){
-        	ESP_LOGI("WRITER TASK", "Writing data");
+        	ESP_LOGI("WRITER TASK", "Writing data"); // @suppress("Symbol is not resolved")
         	if(sTask->SDWHandle.Open() == SD_WRITER_OK) {
         		sTask->DBHandle.writeToSd();
         		sTask->SDWHandle.Close();
@@ -25,10 +25,10 @@ void run_sd_task(void *args) {
         }
 
         if(uxBits & StandbyWriterTaskUnhandled) {
-        	ESP_LOGI("WRITER TASK", "Ready to sleep");
+        	ESP_LOGI("WRITER TASK", "Ready to sleep"); // @suppress("Symbol is not resolved")
 			xEventGroupClearBits(GlobalEventGroupHandle, StandbyWriterTaskUnhandled);
 			while(1) {
-				vTaskDelay(1000 / portTICK_PERIOD_MS);
+				vTaskDelay(1000 / portTICK_PERIOD_MS); // @suppress("Invalid arguments") // @suppress("Symbol is not resolved")
 			}
         }
     }
@@ -49,13 +49,13 @@ void SdWriterController::main_task() {
 
 	  if(xHandle == NULL) {
 		  // Handle assignment has failed
-		  ESP_LOGI("WRITER TASK", "Handle creation failed");
+		  ESP_LOGI("WRITER TASK", "Handle creation failed"); // @suppress("Symbol is not resolved")
 	  }
 
 	  if(xReturned != pdPASS) {
 		  // xReturned false (something went wrong!)
-		  ESP_LOGI("WRITER TASK", "Task creation failed");
+		  ESP_LOGI("WRITER TASK", "Task creation failed"); // @suppress("Symbol is not resolved")
 	  }
 
-	  ESP_LOGI("WRITER TASK", "Task is running");
+	  ESP_LOGI("WRITER TASK", "Task is running"); // @suppress("Symbol is not resolved")
 }

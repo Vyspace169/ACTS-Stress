@@ -14,7 +14,7 @@ s8 BMP280_I2C_bus_write(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
    i2c_master_write(cmd, reg_data, cnt, true);
    i2c_master_stop(cmd);
 
-   espRc = i2c_master_cmd_begin(I2C_NUM_0, cmd, 10/portTICK_PERIOD_MS);
+   espRc = i2c_master_cmd_begin(I2C_NUM_0, cmd, 10/portTICK_PERIOD_MS); // @suppress("Symbol is not resolved") // @suppress("Invalid arguments")
    if (espRc == ESP_OK) {
       iError = SUCCESS_ERR;
    } else {
@@ -40,12 +40,12 @@ s8 BMP280_I2C_bus_read(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
    i2c_master_write_byte(cmd, (dev_addr << 1) | I2C_MASTER_READ, true);
 
    if (cnt > 1) {
-      i2c_master_read(cmd, reg_data, cnt-1, I2C_MASTER_ACK);
+      i2c_master_read(cmd, reg_data, cnt-1,(i2c_ack_type_t) I2C_MASTER_ACK);
    }
-   i2c_master_read_byte(cmd, reg_data + cnt - 1, I2C_MASTER_NACK);
+   i2c_master_read_byte(cmd, reg_data + cnt - 1, (i2c_ack_type_t)I2C_MASTER_NACK);
    i2c_master_stop(cmd);
 
-   espRc = i2c_master_cmd_begin(I2C_NUM_0, cmd, 10/portTICK_PERIOD_MS);
+   espRc = i2c_master_cmd_begin(I2C_NUM_0, cmd, 10/portTICK_PERIOD_MS); // @suppress("Invalid arguments") // @suppress("Symbol is not resolved")
    if (espRc == ESP_OK) {
       iError = SUCCESS_ERR;
    } else {
@@ -59,7 +59,7 @@ s8 BMP280_I2C_bus_read(u8 dev_addr, u8 reg_addr, u8 *reg_data, u8 cnt)
 
 void BMP280_delay_msek(u32 msek)
 {
-   vTaskDelay(msek/portTICK_PERIOD_MS);
+   vTaskDelay(msek/portTICK_PERIOD_MS); // @suppress("Invalid arguments") // @suppress("Symbol is not resolved")
 }
 
 /*void Bmp280Implementation::HandleError()  {
@@ -168,7 +168,7 @@ Bmp280Implementation::Bmp280Implementation() {
 	   //Errorhandler::getInstance();
    }
    else  {
-	   ESP_LOGI("BMP280", "Init ok");
+	   ESP_LOGI("BMP280", "Init ok"); // @suppress("Symbol is not resolved")
 	   IsInitialized = true;
 	   //ESP_LOGI(TAG_BMP280, "BMP init ok");
    }
@@ -201,7 +201,7 @@ unsigned short* Bmp280Implementation::SensorRead() {
 		}
 		else {
 			memcpy(BMPData, BackupBMPData, sizeof(int) * 2);
-			ESP_LOGE(TAG_BMP280, "Measure error, code: %d", com_result);
+			ESP_LOGE(TAG_BMP280, "Measure error, code: %d", com_result); // @suppress("Symbol is not resolved")
 		}
 	}
 

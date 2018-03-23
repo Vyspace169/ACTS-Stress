@@ -83,6 +83,24 @@ public:
     void HandleData(SampleData NewData);
 
     /*!
+     * \brief HandleData method
+     * \param NewData Structure with measured data
+     *
+     * The ECG data is passed to this method.
+     * This method handles all R-peak thresholding
+     */
+    void HandleECGData(SampleData NewData);
+
+    /*!
+     * \brief CalculateRRInterval method
+     * \param RData structure with potential R-peaks
+     *
+     * Potential R-peaks are passed to this method.
+     * This method determines
+     */
+    void CalculateRRInterval(RData RPeaks);
+
+    /*!
      * \brief GetActivityData method
      * \return Current activity data value
      *
@@ -106,6 +124,8 @@ public:
      */
     ~DataProcessor();
 private:
+    DoubleBuffer &DBHandleDP;
+    DataProcessor &DataHandler;
     int TimeoutCounter;
     int TimeoutTrigger;
     bool LastTriggerOn;

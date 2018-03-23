@@ -31,7 +31,7 @@ void ErrorhandlerTask(void *args)  {
 
 void Errorhandler::main_task()   {
    EventBits_t uxBits;
-   const TickType_t xDelay = 1000 / portTICK_PERIOD_MS;
+   const TickType_t xDelay = 1000 / portTICK_PERIOD_MS; // @suppress("Symbol is not resolved")
    while(1) {
       // wait for flag to be set
       uxBits = xEventGroupWaitBits(GlobalEventGroupHandle, SystemErrorFlag, pdTRUE, pdFALSE, portMAX_DELAY);
@@ -58,7 +58,7 @@ void Errorhandler::main_task()   {
          // Write to flash
          vTaskDelay(xDelay);
          // Shutdown tasks if still running
-         ESP_LOGE(ERROR, "Error handling complete!");
+         ESP_LOGE(ERROR, "Error handling complete!"); // @suppress("Symbol is not resolved")
       }
    }
 }

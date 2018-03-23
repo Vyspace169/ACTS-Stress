@@ -7,15 +7,15 @@ void blink_task(void *pvParameter)
 {
     while(1) {
     	gpio_set_level(UsedLEDPin, 1);
-    	vTaskDelay(UsedLEDTimeOff / portTICK_PERIOD_MS);
+    	vTaskDelay(UsedLEDTimeOff / portTICK_PERIOD_MS); // @suppress("Invalid arguments") // @suppress("Symbol is not resolved")
     	gpio_set_level(UsedLEDPin, 0);
-    	vTaskDelay(UsedLEDTimeOn / portTICK_PERIOD_MS);
+    	vTaskDelay(UsedLEDTimeOn / portTICK_PERIOD_MS); // @suppress("Invalid arguments") // @suppress("Symbol is not resolved")
     }
 }
 
 void sntp_task(void* param) {
 
-	ESP_LOGI("SNTP TASK", "Initializing wifi and reading time");
+	ESP_LOGI("SNTP TASK", "Initializing wifi and reading time"); // @suppress("Symbol is not resolved")
     WiFiInitialize(WIFI_SSID, WIFI_PASSWORD);
 
     int WakeUpCause = esp_sleep_get_wakeup_cause();
@@ -25,7 +25,7 @@ void sntp_task(void* param) {
     case ESP_SLEEP_WAKEUP_EXT0:
     	xEventGroupSetBits(GlobalEventGroupHandle, SNTPTaskDoneFlag);
     	while(1) {
-    	   	vTaskDelay(5000 / portTICK_PERIOD_MS);
+    	   	vTaskDelay(5000 / portTICK_PERIOD_MS); // @suppress("Symbol is not resolved") // @suppress("Invalid arguments")
     	}
     	break;
     }
@@ -45,7 +45,7 @@ void sntp_task(void* param) {
 	xEventGroupSetBits(GlobalEventGroupHandle, SNTPTaskDoneFlag);
 
 	while(1) {
-	   	vTaskDelay(5000 / portTICK_PERIOD_MS);
+	   	vTaskDelay(5000 / portTICK_PERIOD_MS); // @suppress("Symbol is not resolved") // @suppress("Invalid arguments")
 	}
 }
 
@@ -88,6 +88,10 @@ void gpio_init_all() {
 	gpio_set_level(GPIO_LED_RED, 1);
 	gpio_set_level(GPIO_LED_GREEN, 1);
 	gpio_set_level(GPIO_LED_BLUE, 1);
+
+	// init ecg adc pin
+	adc1_config_width(ADC_WIDTH_12Bit);
+	adc1_config_channel_atten(ADC_ECG, ADC_ATTEN_11db);
 }
 
 void blink_set_led(gpio_num_t led, int time_on, int time_off) {
@@ -119,11 +123,11 @@ void i2c_master_init() {
     conf.master.clk_speed = I2C_SPEED;
 
 	if(i2c_param_config(I2C_NUM_0, &conf) != ESP_OK)  {
-		ESP_LOGE("INIT_ERROR", "Error code:%i , message: i2c param config failed!", ERROR_I2C_PARAM_CONFIG);
+		ESP_LOGE("INIT_ERROR", "Error code:%i , message: i2c param config failed!", ERROR_I2C_PARAM_CONFIG); // @suppress("Symbol is not resolved")
 	}
 
 	if(i2c_driver_install(I2C_NUM_0, conf.mode, 0, 0, 0) != ESP_OK) {
-		ESP_LOGE("INIT_ERROR", "Error code:%i , message: i2c driver install failed!", ERROR_I2C_DRIVER_INSTALL);
+		ESP_LOGE("INIT_ERROR", "Error code:%i , message: i2c driver install failed!", ERROR_I2C_DRIVER_INSTALL); // @suppress("Symbol is not resolved")
     }
 }
 
@@ -145,14 +149,14 @@ void error_flash_init() {
     bool failed = false;
     switch (err) {
         case ESP_OK:
-        	ESP_LOGI("INIT", "Done");
-        	ESP_LOGI("INIT", "Restart counter = %d", error_value);
+        	ESP_LOGI("INIT", "Done"); // @suppress("Symbol is not resolved")
+        	ESP_LOGI("INIT", "Restart counter = %d", error_value); // @suppress("Symbol is not resolved")
             break;
         case ESP_ERR_NVS_NOT_FOUND:
             failed = true;
             break;
         default :
-        	ESP_LOGI("INIT", "Error (%d) reading!", err);
+        	ESP_LOGI("INIT", "Error (%d) reading!", err); // @suppress("Symbol is not resolved")
     }
 
     if(failed)  {
@@ -166,10 +170,10 @@ void error_flash_init() {
     }
 
     if(error_value != (int32_t) ErrorCode::NO_ERROR) {
-        ESP_LOGI("INIT", "Last ran ended with error code: %i\n", error_value);
+        ESP_LOGI("INIT", "Last ran ended with error code: %i\n", error_value); // @suppress("Symbol is not resolved")
     }
     else    {
-        ESP_LOGI("INIT", "NO EXCEPTION FOUND IN LAST RUN");
+        ESP_LOGI("INIT", "NO EXCEPTION FOUND IN LAST RUN"); // @suppress("Symbol is not resolved")
     }
 }
 
@@ -184,11 +188,11 @@ void BuildFileName(char *TimeStringBuffer, int str_len) {
 		err = nvs_get_str(file_name_handle, "Fname", TimeStringBuffer, (size_t *)&str_len);
 		if(err != ESP_OK) {
 			strcpy(TimeStringBuffer, "GenericName");
-			ESP_LOGI("MAIN", "Error (%d) reading!", err);
+			ESP_LOGI("MAIN", "Error (%d) reading!", err); // @suppress("Symbol is not resolved")
 		}
 		nvs_close(file_name_handle);
 
-		ESP_LOGI("MAIN", "Filename from flash: %s", TimeStringBuffer);
+		ESP_LOGI("MAIN", "Filename from flash: %s", TimeStringBuffer); // @suppress("Symbol is not resolved")
 	}
 	else {
 		// If time was received from wifi, build strings
@@ -203,17 +207,17 @@ void BuildFileName(char *TimeStringBuffer, int str_len) {
 		nvs_commit(file_name_handle);
 		nvs_close(file_name_handle);
 
-		ESP_LOGI("MAIN", "Filename from wifi: %s", TimeStringBuffer);
+		ESP_LOGI("MAIN", "Filename from wifi: %s", TimeStringBuffer); // @suppress("Symbol is not resolved")
 	}
 }
 
 void CheckForSdcard() {
 	// init sd detect pin and variables
-	ESP_LOGI("MAIN", "Checking if SD-Card is in socket");
+	ESP_LOGI("MAIN", "Checking if SD-Card is in socket"); // @suppress("Symbol is not resolved")
 	gpio_pad_select_gpio(GPIO_SD_DETECT);
 	gpio_set_direction(GPIO_SD_DETECT, GPIO_MODE_INPUT);
 	if(gpio_get_level(GPIO_SD_DETECT) == 0) {
-		ESP_LOGI("MAIN", "No SD-Card found, going to sleep");
+		ESP_LOGI("MAIN", "No SD-Card found, going to sleep"); // @suppress("Symbol is not resolved")
 		esp_sleep_enable_ext1_wakeup((1<<GPIO_SD_DETECT), ESP_EXT1_WAKEUP_ANY_HIGH);
 		esp_deep_sleep_start();
 	}

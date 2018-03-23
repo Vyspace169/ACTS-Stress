@@ -55,15 +55,15 @@ time_t GlobalStartTime;
 
 extern "C" void app_main(void)
 {
-	ESP_LOGI("MAIN", "Booting completed");
+	ESP_LOGI("MAIN", "Booting completed"); // @suppress("Symbol is not resolved")
 	
 	// Print wakeup cause
 	int WakeUpCause = esp_sleep_get_wakeup_cause();
 	switch(WakeUpCause) {
-	case ESP_SLEEP_WAKEUP_TIMER: ESP_LOGI("MAIN", "Woke up from a timer reset"); break;
-	case ESP_SLEEP_WAKEUP_EXT1: ESP_LOGI("MAIN", "Woke up from SD Card"); break;
-	case ESP_SLEEP_WAKEUP_EXT0: ESP_LOGI("MAIN", "Woke up from Motion Interrupt"); break;
-	default: ESP_LOGI("MAIN", "Woke up from normal reset"); break;
+	case ESP_SLEEP_WAKEUP_TIMER: ESP_LOGI("MAIN", "Woke up from a timer reset"); break; // @suppress("Symbol is not resolved")
+	case ESP_SLEEP_WAKEUP_EXT1: ESP_LOGI("MAIN", "Woke up from SD Card"); break; // @suppress("Symbol is not resolved")
+	case ESP_SLEEP_WAKEUP_EXT0: ESP_LOGI("MAIN", "Woke up from Motion Interrupt"); break; // @suppress("Symbol is not resolved")
+	default: ESP_LOGI("MAIN", "Woke up from normal reset"); break; // @suppress("Symbol is not resolved")
 	}
 
 	// Initialize GPIO
@@ -81,9 +81,9 @@ extern "C" void app_main(void)
 
 	// Check if BOD was enabled, if so go to sleep again
 	int ResetCause = rtc_get_reset_reason(0);
-	ESP_LOGI("MAIN", "Reset reason: %d", ResetCause);
+	ESP_LOGI("MAIN", "Reset reason: %d", ResetCause); // @suppress("Symbol is not resolved")
 	if(ResetCause == 15 && gpio_get_level(GPIO_CHARGE_DETECT) == 0) {
-		ESP_LOGI("MAIN", "Reset reason was BOD and no charger detecte, going to sleep");
+		ESP_LOGI("MAIN", "Reset reason was BOD and no charger detecte, going to sleep"); // @suppress("Symbol is not resolved")
 		esp_sleep_enable_timer_wakeup(600 * 1000000);
 		esp_deep_sleep_start();
 	}
@@ -94,7 +94,7 @@ extern "C" void app_main(void)
 	xTaskCreatePinnedToCore(&blink_task, "blink_task", BLINKTASK_STACK_SIZE, NULL, BLINKTASK_PRIORITY, NULL, BLINKTASK_CORE_NUM);
 
 	// Feedback
-    ESP_LOGI("MAIN", "Creating SNTP task");
+    ESP_LOGI("MAIN", "Creating SNTP task"); // @suppress("Symbol is not resolved")
     // Taskhandle for sntp task
     TaskHandle_t SNTPTaskHandle;
     // Start SNTP task. Wifi is also initialized here
@@ -106,7 +106,7 @@ extern "C" void app_main(void)
 
     // Calculate and print sleep time
     int sleep_time_ms = (GlobalTimeValNow.tv_sec - SleepEnterTime.tv_sec) * 1000 + (GlobalTimeValNow.tv_usec - SleepEnterTime.tv_usec) / 1000;
-    ESP_LOGI("MAIN", "Time spent in deep sleep: %d ms", sleep_time_ms);
+    ESP_LOGI("MAIN", "Time spent in deep sleep: %d ms", sleep_time_ms); // @suppress("Symbol is not resolved")
 
     // Build filename
     char name[64];
@@ -141,5 +141,5 @@ extern "C" void app_main(void)
     WifiController *wt = new WifiController(WIFITASK_PRIORITY, *GlobalDataHandler);
 
     // Initialization done
-    ESP_LOGI("MAIN", "Init done");
+    ESP_LOGI("MAIN", "Init done"); // @suppress("Symbol is not resolved")
 }

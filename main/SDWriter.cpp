@@ -25,7 +25,7 @@ bool SDWriter::WaitForCard(int timeout) {
 		else {
 			counter += 100;
 		}
-		vTaskDelay(100 / portTICK_PERIOD_MS);
+		vTaskDelay(100 / portTICK_PERIOD_MS); // @suppress("Symbol is not resolved") // @suppress("Invalid arguments")
 	}
 
 	if(counter >= timeout) {
@@ -37,9 +37,20 @@ bool SDWriter::WaitForCard(int timeout) {
 }
 
 SDWriterErrorCodes SDWriter::InitSDMMC(int retries) {
-	ESP_LOGI("SD WRITER", "Initializing SD card using SPI peripheral");
+	ESP_LOGI("SD WRITER", "Initializing SD card using SPI peripheral"); // @suppress("Symbol is not resolved")
 
 	sdmmc_host_t host = SDSPI_HOST_DEFAULT();
+
+	host.flags = SDMMC_HOST_FLAG_SPI;
+	host.slot = HSPI_HOST;
+	host.max_freq_khz = SDMMC_FREQ_DEFAULT;
+	host.io_voltage = 3.3f;
+	host.set_bus_width = NULL;
+	host.command_timeout_ms = 0;
+	host.init = &sdspi_host_init;
+	host.set_card_clk = &sdspi_host_set_card_clk;
+	host.do_transaction = &sdspi_host_do_transaction;
+	host.deinit = &sdspi_host_deinit;
 	host.max_freq_khz = SD_CARD_SPI_SPEED_KHZ;
 
 	sdspi_slot_config_t slot_config = SDSPI_SLOT_CONFIG_DEFAULT();
@@ -67,10 +78,10 @@ SDWriterErrorCodes SDWriter::InitSDMMC(int retries) {
 		}
 		else {
 			if (ret == ESP_FAIL) {
-				ESP_LOGI("SD WRITER", "Failed to mount filesystem. ");
+				ESP_LOGI("SD WRITER", "Failed to mount filesystem. "); // @suppress("Symbol is not resolved")
 			}
 			else {
-				ESP_LOGI("SD WRITER", "Failed to initialize the card, code: %d", ret);
+				ESP_LOGI("SD WRITER", "Failed to initialize the card, code: %d", ret); // @suppress("Symbol is not resolved")
 			}
 			CardIsInitialized = false;
 		}
@@ -79,7 +90,7 @@ SDWriterErrorCodes SDWriter::InitSDMMC(int retries) {
 	//sdmmc_card_print_info(stdout, card);
 
 	if(CardIsInitialized == false) {
-		ESP_LOGI("SD WRITER", "Card init failed. Retries: %d", i + 1);
+		ESP_LOGI("SD WRITER", "Card init failed. Retries: %d", i + 1); // @suppress("Symbol is not resolved")
 		return CARD_NOT_INITIALIZED;
 	}
 	else {
@@ -91,17 +102,17 @@ SDWriterErrorCodes SDWriter::InitSDMMC(int retries) {
 		strcat(DirStr, DIRECTORY_NAME);
 		if(stat(DirStr, &st) == -1) {
 		    if(mkdir(DirStr, ACCESSPERMS) == -1){
-		    	ESP_LOGI("SD WRITTER", "Creating directory %s failed", DirStr);
+		    	ESP_LOGI("SD WRITTER", "Creating directory %s failed", DirStr); // @suppress("Symbol is not resolved")
 		    	perror("mkdri: ");
 		    }
 		    else {
-		    	ESP_LOGI("SD WRITTER", "Creating directory succeded");
+		    	ESP_LOGI("SD WRITTER", "Creating directory succeded"); // @suppress("Symbol is not resolved")
 		    }
 		}
 		delete(DirStr);
 
 
-		ESP_LOGI("SD WRITER", "Card init OK. Retries: %d", i + 1);
+		ESP_LOGI("SD WRITER", "Card init OK. Retries: %d", i + 1); // @suppress("Symbol is not resolved")
 		return SD_WRITER_OK;
 	}
 }
@@ -116,7 +127,7 @@ void SDWriter::SetFileName(const char* name) {
 	strcat(FileNameCharArray, "/");
 	strcat(FileNameCharArray, name);
 
-	ESP_LOGI("SD WRITER", "File name set: %s", FileNameCharArray);
+	ESP_LOGI("SD WRITER", "File name set: %s", FileNameCharArray); // @suppress("Symbol is not resolved")
 
 	FileNameIsSet = true;
 }
@@ -144,7 +155,7 @@ SDWriterErrorCodes SDWriter::Open() {
 	// check if file open succeeded
 	if (FileForData == NULL) {
 		// feedback
-		ESP_LOGE("SD WRITER", "Failed to open file for writing");
+		ESP_LOGE("SD WRITER", "Failed to open file for writing"); // @suppress("Symbol is not resolved")
 		return FILE_NOT_OPEN;
 	}
 
@@ -183,6 +194,8 @@ SDWriterErrorCodes SDWriter::Write(SampleData in) {
 	BytesWritten += fwrite(&in.magnetoZ, sizeof(short), 1, FileForData);
 	BytesWritten += fwrite(&in.temp, sizeof(int), 1, FileForData);
 	BytesWritten += fwrite(&in.pressure, sizeof(int), 1, FileForData);
+	BytesWritten += fwrite(&in.ECGSampleValue, sizeof(short), 1, FileForData);
+
 
 	CardIsWriting = false;
 
@@ -214,7 +227,7 @@ SDWriterErrorCodes SDWriter::Write(const SampleData *in, int size) {
 	CardIsWriting = false;
 
 	if(BytesWritten != 1) {
-		ESP_LOGI("SD WRITER", "Write failed");
+		ESP_LOGI("SD WRITER", "Write failed"); // @suppress("Symbol is not resolved")
 		return WRITE_ERROR;
 	}
 

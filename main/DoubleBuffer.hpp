@@ -38,6 +38,24 @@ public:
 	void storeData(SampleData in);
 
 	/*!
+	 * \brief storeData method
+	 * \param in SampleData structure
+	 *
+	 * This method stores potential R-peaks in the
+	 * currently used Rbuffer.
+	 */
+	void storeRData(RData in);
+
+	/*!
+	 * \brief storeData method
+	 * \param in SampleData structure
+	 *
+	 * This method stores RR-intervals in the
+	 * currently used buffer.
+	 */
+	void storeRRData(SampleData in);
+
+	/*!
 	 * \brief swap method
 	 *
 	 * This method swaps the ping pong buffer to the
@@ -75,4 +93,13 @@ private:
 	BinaryBuffer * secondBuffer;
 	BinaryBuffer * current;
 	BinaryBuffer * next;
+	BinaryBuffer * firstRBuffer;
+	BinaryBuffer * secondRBuffer;
+	BinaryBuffer * currentR;
+	BinaryBuffer * nextR;
+	BinaryBuffer * firstRRBuffer;
+	BinaryBuffer * secondRRBuffer;
+	BinaryBuffer * currentRR;
+	BinaryBuffer * nextRR;
+
 };

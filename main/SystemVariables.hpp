@@ -44,7 +44,14 @@ typedef struct {
 	short magnetoZ;			/**< Magnetometer Z axis */
 	int temp;				/**< Temperature */
 	int pressure;			/**< Air pressure */
+	int ECGSampleValue;		/**< ECG sample value */
+	int ECGSampleNr;		/**< ECG sample number */
 } SampleData;
+
+typedef struct {
+	int potentialRPeak;		/**< ECG sample values greater then set threshold */
+	int sampleNr;			/**< sample number of ECG sample mentioned above */
+} RData;
 
 /*! Flag for SensorTask to act upon */
 #define SensorMeasurementFlag 		( 1 << 0 )
@@ -68,6 +75,8 @@ typedef struct {
 #define SystemErrorBit       		( 1 << 10 )
 /*! Flag to signal that he SNTP task is done receiving time */
 #define SNTPTaskDoneFlag			( 1 << 11 )
+/*! Flag to signal that one of the R-buffers is full */
+#define RBufferReady				( 1 << 12 )
 
 /*! Blue LED GPIO define */
 #define GPIO_LED_BLUE			GPIO_NUM_13
@@ -87,11 +96,13 @@ typedef struct {
 #define GPIO_MPU_INT			GPIO_NUM_35
 /*! Battery ADC channel */
 #define ADC_BATTERY				ADC1_CHANNEL_6
+/*! Ecg ADC channel */
+#define ADC_ECG					ADC1_CHANNEL_0
 
 /*! Sample rate in hz define */
-#define SAMPLE_RATE_H			100
+#define SAMPLE_RATE_H			125
 /*! Sample rate in ms define */
-#define SAMPE_TIME_MS			10
+#define SAMPE_TIME_MS			8
 /*! Binary buffer size, the system initializes two of these on startup */
 #define BINARY_BUFFER_SIZE		1000
 
@@ -144,7 +155,7 @@ typedef struct {
 #define SD_DET_DEBOUNCE_MS		50
 
 /*! Wifi ssid to connect to */
-#define WIFI_SSID				"ACTS"
+#define WIFI_SSID				"espconnect"
 
 /*! Wifi password associated with the ssid */
 #define WIFI_PASSWORD			"12345678"
@@ -169,7 +180,7 @@ typedef struct {
 #define SNTP_READ_TIME_RETRY	50
 
 /*! User key, change to patient key as stored in MySql Database*/
-#define MQTT_USER_KEY_CODE		"4a6bcefb6217984f477b27c8226200fe3c2a414d"
+#define MQTT_USER_KEY_CODE		"4a6bcefb6217984f477b27c8226200fe3c2a4149"
 
 /*!
  * Blob size for NVS library
@@ -208,6 +219,13 @@ typedef struct {
  * go to sleep.
  */
 #define TIMEOUT_TIME_SEC		60
+
+/*! R-peak threshold in binary value.
+ * This define tells the ECGImplementation which
+ * Values should be written to a separate buffer
+ * for R-peak detection.
+ */
+#define R_PEAK_THRESHOLD		0 //TODO determine threshold value
 
 /*! Sensortask core num define */
 #define SENSORTASK_CORE_NUM 	1
@@ -252,6 +270,13 @@ typedef struct {
 #define BLINKTASK_PRIORITY 		5
 /*! SNTPtask stack size define */
 #define BLINKTASK_STACK_SIZE 	2048
+
+/*! HRVTask core num define */
+#define HRVTASK_CORE_NUM 		0
+/*! HRVTask priority define */
+#define HRVTASK_PRIORITY 		6
+/*! HRVTask stack size define */
+#define HRVTASK_STACK_SIZE 	2048
 
 /*! Wifi event bit used in WiFiC.c file */
 #define WIFI_EVENT_BIT			1

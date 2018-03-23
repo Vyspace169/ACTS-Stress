@@ -13,6 +13,8 @@
 #include "BaseTask.hpp"
 #include "SystemVariables.hpp"
 
+#include "FreeRTOS/task.h"
+
 #include "nvs_flash.h"
 #include "esp_spi_flash.h"
 #include "nvs.h"

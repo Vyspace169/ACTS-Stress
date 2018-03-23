@@ -61,6 +61,18 @@ void DataProcessor::HandleData(SampleData NewData) {
 	OldAcceleroZValue = NewData.accelZ;
 }
 
+void DataProcessor::HandleECGData(SampleData NewData) {
+	DataProcessor *sTask = static_cast<DataProcessor*>(NewData);
+
+	if(NewData.ECGPotentialR == 1){
+		sTask->DBHandleDP.storeRData(RData);
+	}
+}
+
+void DataProcessor::CalculateRRInterval(RData RPeak){
+
+}
+
 movement_type_t DataProcessor::GetActivityData() {
 	return ActivityData;
 }
