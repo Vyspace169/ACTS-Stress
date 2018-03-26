@@ -26,7 +26,7 @@ public:
 	 * needs an SDWritter class as argument, needed
 	 * for writing.
 	 */
-	DoubleBuffer(SDWriter&);
+	DoubleBuffer(SDWriter &wr);
 
 	/*!
 	 * \brief storeData method
@@ -123,6 +123,17 @@ public:
 	 * Warning: file must be opened before calling
 	 * this method.
 	 */
+	void writeRToSd();
+
+	/*!
+	 * \brief writeToSd method
+	 *
+	 * This method writes the current RR buffer to the
+	 * sd card using the SDWriter class.
+	 *
+	 * Warning: file must be opened before calling
+	 * this method.
+	 */
 	void writeRRToSd();
 
 	/*!
@@ -143,6 +154,9 @@ public:
 	 */
 	~DoubleBuffer();
 
+	BinaryBuffer * firstRBuffer;
+	BinaryBuffer * secondRBuffer;
+	BinaryBuffer * currentR;
 	BinaryBuffer * nextR;
 	BinaryBuffer * nextRR;
 private:
@@ -152,9 +166,7 @@ private:
 	BinaryBuffer * current;
 	BinaryBuffer * next;
 
-	BinaryBuffer * firstRBuffer;
-	BinaryBuffer * secondRBuffer;
-	BinaryBuffer * currentR;
+
 	//nextR is public
 
 	BinaryBuffer * firstRRBuffer;

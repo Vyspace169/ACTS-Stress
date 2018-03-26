@@ -117,7 +117,28 @@ public:
 	 * \return SDWriterErrorCodes
 	 * \param in A single SampleData structure
 	 *
-	 * This method writes a single SampleData structure
+	 * This method writes a single RRSeries structure
+	 * to the chosen and opened file.
+	 */
+	SDWriterErrorCodes Write(RData in);
+
+	/*!
+	 * \brief Write method
+	 * \return SDWriterErrorCodes
+	 * \param in A pointer to a SampleData array
+	 * \param The size of the given array
+	 *
+	 * This method writes an array of RRSeries
+	 * to the chosen and opened file.
+	 */
+	SDWriterErrorCodes Write(const RData *in, int size);
+
+	/*!
+	 * \brief Write method
+	 * \return SDWriterErrorCodes
+	 * \param in A single SampleData structure
+	 *
+	 * This method writes a single RRSeries structure
 	 * to the chosen and opened file.
 	 */
 	SDWriterErrorCodes Write(RRSeries in);
@@ -128,7 +149,7 @@ public:
 	 * \param in A pointer to a SampleData array
 	 * \param The size of the given array
 	 *
-	 * This method writes an array of SampleData
+	 * This method writes an array of RRSeries
 	 * to the chosen and opened file.
 	 */
 	SDWriterErrorCodes Write(const RRSeries *in, int size);
@@ -138,7 +159,7 @@ public:
 	 * \return SDWriterErrorCodes
 	 * \param in A single SampleData structure
 	 *
-	 * This method writes a single SampleData structure
+	 * This method writes a single HRVData structure
 	 * to the chosen and opened file.
 	 */
 	SDWriterErrorCodes Write(HRVData in);
@@ -149,7 +170,7 @@ public:
 	 * \param in A pointer to a SampleData array
 	 * \param The size of the given array
 	 *
-	 * This method writes an array of SampleData
+	 * This method writes an array of HRVData
 	 * to the chosen and opened file.
 	 */
 	SDWriterErrorCodes Write(const HRVData *in, int size);

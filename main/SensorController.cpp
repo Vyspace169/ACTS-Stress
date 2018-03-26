@@ -50,7 +50,9 @@ void sensor_handle_task(void *args)  {
         		Potential_R.potentialRPeak = 	SensorData.ECGSampleValue;
         		Potential_R.sampleNr = 			SensorData.ECGSampleNumber;
         		sTask->DBHandle.storeRData(Potential_R);
-        		ESP_LOGW("SENSOR TASK", "ECG VALUE ABOVE THRESHOLD"); // @suppress("Symbol is not resolved")
+        		//ESP_LOGI("SensorController", "Value: %d", SensorData.ECGSampleValue); // @suppress("Symbol is not resolved")
+        		//ESP_LOGI("SensorController", "Value above threshold."); // @suppress("Symbol is not resolved")
+
         	}
         }
 
@@ -94,7 +96,7 @@ void SensorController::main_task() {
 
 	TimerHandle_t sample_poll_timer = NULL;
 	sample_poll_timer = xTimerCreate("sensor_poll_clock",
-			SAMPE_TIME_MS,
+			1,
 			pdTRUE,
 			SENSORTASK_TIMER_ID,
 			set_sensor_measurement_bit);

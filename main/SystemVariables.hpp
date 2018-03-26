@@ -118,7 +118,7 @@ typedef struct {
 /*! Sample rate in hz define */
 #define SAMPLE_RATE_H			125
 /*! Sample rate in ms define */
-#define SAMPE_TIME_MS			8
+#define SAMPE_TIME_MS			10
 /*! Binary buffer size, the system initializes two of these on startup */
 #define BINARY_BUFFER_SIZE		1000
 
@@ -241,14 +241,14 @@ typedef struct {
  * Values should be written to a separate buffer
  * for R-peak detection.
  */
-#define R_PEAK_THRESHOLD		0 //TODO determine threshold value
+#define R_PEAK_THRESHOLD		2000 //TODO determine threshold value
 
 /*! Sensortask core num define */
 #define SENSORTASK_CORE_NUM 	1
 /*! Sensortask priority define */
 #define SENSORTASK_PRIORITY 	2
 /*! Sensortask stack size define */
-#define SENSORTASK_STACK_SIZE 	2048
+#define SENSORTASK_STACK_SIZE 	4096
 
 /*! Writertask core num define */
 #define WRITERTASK_CORE_NUM 	0

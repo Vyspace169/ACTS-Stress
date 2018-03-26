@@ -128,7 +128,7 @@ extern "C" void app_main(void)
     BinaryBuffer *GlobalBinaryBuffer = new BinaryBuffer();
 
     // Create DataProcessor object
-    DataProcessor *GlobalDataHandler = new DataProcessor(*GlobalDoubleBuffer, *GlobalBinaryBuffer);
+    DataProcessor *GlobalDataHandler = new DataProcessor(*GlobalDoubleBuffer);
     // Set timeout value for DataProcessor
     GlobalDataHandler->SetTimeoutValue(TIMEOUT_TIME_SEC * 1000);
     // Set triggers for data DataProcessor

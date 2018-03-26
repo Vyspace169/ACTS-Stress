@@ -46,6 +46,27 @@ public:
 	void clear();
 
 	/*!
+	 * \brief clear method
+	 *
+	 * This method clears the BinaryBuffer.
+	 */
+	void clearR();
+
+	/*!
+	 * \brief clear method
+	 *
+	 * This method clears the BinaryBuffer.
+	 */
+	void clearRR();
+
+	/*!
+	 * \brief clear method
+	 *
+	 * This method clears the BinaryBuffer.
+	 */
+	void clearHRV();
+
+	/*!
 	 * \brief add method
 	 * \param in SampleData structure
 	 * \return bool returns flase if state is read only
@@ -57,20 +78,20 @@ public:
 
 	/*!
 	 * \brief add method
-	 * \param in SampleData structure
-	 * \return bool returns flase if state is read only
+	 * \param in RData structure
+	 * \return bool returns false if state is read only
 	 *
-	 * This method adds a SampleData strcture
+	 * This method adds an RData strcture
 	 * to the buffer.
 	 */
 	bool addR( RData in );
 
 	/*!
 	 * \brief add method
-	 * \param in SampleData structure
-	 * \return bool returns flase if state is read only
+	 * \param in RRSeries structure
+	 * \return bool returns false if state is read only
 	 *
-	 * This method adds a SampleData strcture
+	 * This method adds an RRSeries strcture
 	 * to the buffer.
 	 */
 	bool addRR( RRSeries in );
@@ -96,7 +117,7 @@ public:
 
 	/*!
 	 * \brief get method
-	 * \return SampleData buffer pointer
+	 * \return RData buffer pointer
 	 *
 	 * This method returns a pointer to the
 	 * first sample of the buffer.
@@ -105,7 +126,7 @@ public:
 
 	/*!
 	 * \brief get method
-	 * \return SampleData buffer pointer
+	 * \return RData buffer pointer
 	 *
 	 * This method returns a pointer to the
 	 * first sample of the buffer.
@@ -128,6 +149,30 @@ public:
 	 * Returns true if the buffer is full
 	 */
 	bool isFull();
+
+	/*!
+	 * \brief isFull method
+	 * \return bool (true) if the buffer is full
+	 *
+	 * Returns true if the buffer is full
+	 */
+	bool isFullR();
+
+	/*!
+	 * \brief isFull method
+	 * \return bool (true) if the buffer is full
+	 *
+	 * Returns true if the buffer is full
+	 */
+	bool isFullRR();
+
+	/*!
+	 * \brief isFull method
+	 * \return bool (true) if the buffer is full
+	 *
+	 * Returns true if the buffer is full
+	 */
+	bool isFullHRV();
 
 	/*!
 	 * \brief BinaryBuffer deconstructor

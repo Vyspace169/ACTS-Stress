@@ -1,8 +1,7 @@
 #include "DataProcessor.hpp"
 
-DataProcessor::DataProcessor(DoubleBuffer &db, BinaryBuffer &bb):
-DBHandle{db},
-BBHandle{bb}
+DataProcessor::DataProcessor(DoubleBuffer &db) :
+DBHandler{db}
 {
 	OldAcceleroXValue = 0;
 	OldAcceleroYValue = 0;
@@ -76,12 +75,13 @@ void DataProcessor::ResetActivityData() {
 	ActivityData = 0;
 }
 
-void DataProcessor::CalculateRRInterval(void *args)
+void DataProcessor::CalculateRRInterval()
 
 {
-	DataProcessor *sTask = static_cast<DataProcessor*>(args);
-	it = this->DBHandle.nextR->getR().begin();
-	end = this->DBHandle.nextR->getR().end();
+	ESP_LOGW("DataProcessor"," Calculate RR Interval")
+	//DataProcessor *sTask = static_cast<DataProcessor*>(args);
+	it = this->DBHandler.nextR->getR().begin();
+	end = this->DBHandler.nextR->getR().end();
 
 	while(it != end){
 
@@ -106,7 +106,7 @@ void DataProcessor::CalculateRRInterval(void *args)
 				RRInterval = (SecondRPeak - FirstRPeak) * 1000 / SAMPLE_RATE_H; //calculate RR-interval is milliseconds
 				RRData.RRInterval = RRInterval;
 				RRData.RRTotal += RRInterval;
-				sTask->DBHandle.storeRRData(RRData);
+				this->DBHandler.storeRRData(RRData);
 				FirstRPeak = SecondRPeak;
 				SecondRPeak = 0;
 				it++;
@@ -115,6 +115,7 @@ void DataProcessor::CalculateRRInterval(void *args)
 		}
 
 	}
+	this->DBHandler.nextR->clearR();
 }
 
 void DataProcessor::CalculateHRV(void *args){
@@ -188,5 +189,4 @@ void LombScargle(Vec_I_DP &x, Vec_I_DP &y, const DP ofac, const DP hifac,
 DataProcessor::~DataProcessor(){
 
 }
-
 

@@ -17,7 +17,7 @@ void run_sd_task(void *args) {
         uxBits = xEventGroupWaitBits(GlobalEventGroupHandle, (SensorBufferSdReady | StandbyWriterTaskUnhandled | RRBufferReadyFlag | HRVBufferReadyFlag), pdTRUE, pdFALSE, portMAX_DELAY);
 
         if(uxBits & SensorBufferSdReady){
-        	ESP_LOGI("WRITER TASK", "Writing data"); // @suppress("Symbol is not resolved")
+        	ESP_LOGI("WRITER TASK", "Writing sensor data"); // @suppress("Symbol is not resolved")
         	if(sTask->SDWHandle.Open() == SD_WRITER_OK) {
         		sTask->DBHandle.writeToSd();
         		sTask->SDWHandle.Close();
@@ -33,7 +33,7 @@ void run_sd_task(void *args) {
         }
 
         if(uxBits & RRBufferReadyFlag){
-        	ESP_LOGI("WRITER TASK", "Writing data"); // @suppress("Symbol is not resolved")
+        	ESP_LOGI("WRITER TASK", "Writing RR data"); // @suppress("Symbol is not resolved")
         	if(sTask->SDWHandle.Open() == SD_WRITER_OK) {
         		sTask->DBHandle.writeRRToSd();
         		sTask->SDWHandle.Close();
@@ -41,7 +41,7 @@ void run_sd_task(void *args) {
         }
 
         if(uxBits & HRVBufferReadyFlag){
-        	ESP_LOGI("WRITER TASK", "Writing data"); // @suppress("Symbol is not resolved")
+        	ESP_LOGI("WRITER TASK", "Writing HRV data"); // @suppress("Symbol is not resolved")
         	if(sTask->SDWHandle.Open() == SD_WRITER_OK) {
         		sTask->DBHandle.writeHRVToSd();
         		sTask->SDWHandle.Close();

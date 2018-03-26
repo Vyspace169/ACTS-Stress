@@ -1,6 +1,8 @@
 #include "DoubleBuffer.hpp"
 
-DoubleBuffer::DoubleBuffer(SDWriter& wr) : writer{wr} {
+DoubleBuffer::DoubleBuffer(SDWriter &wr) :
+writer{wr}
+{
 	this->firstBuffer = new BinaryBuffer();
 	this->secondBuffer = new BinaryBuffer();
 	this->current = this->firstBuffer;
@@ -8,13 +10,18 @@ DoubleBuffer::DoubleBuffer(SDWriter& wr) : writer{wr} {
 
 	this->firstRBuffer = new BinaryBuffer();
 	this->secondRBuffer = new BinaryBuffer();
-	this->currentR = this->firstBuffer;
-	this->nextR = this->secondBuffer;
+	this->currentR = this->firstRBuffer;
+	this->nextR = this->secondRBuffer;
 
 	this->firstRRBuffer = new BinaryBuffer();
 	this->secondRRBuffer = new BinaryBuffer();
-	this->currentRR = this->firstBuffer;
-	this->nextRR = this->secondBuffer;
+	this->currentRR = this->firstRRBuffer;
+	this->nextRR = this->secondRRBuffer;
+
+	this->firstHRVBuffer = new BinaryBuffer();
+	this->secondHRVBuffer = new BinaryBuffer();
+	this->currentHRV = this->firstHRVBuffer;
+	this->nextHRV = this->secondHRVBuffer;
 }
 
 void DoubleBuffer::storeData(SampleData in){
@@ -29,21 +36,22 @@ void DoubleBuffer::storeData(SampleData in){
 }
 
 void DoubleBuffer::storeRData(RData in){
-	if (!currentR->isFull()){
+	if (!currentR->isFullR()){
 		currentR->addR(in);
 	}
-	else if(!nextR->isFull()){
+	else if(!nextR->isFullR()){
 		this->swapR();
-		xEventGroupSetBits(GlobalEventGroupHandle, RBufferReadyFlag);  //is deze nodig?
+		xEventGroupSetBits(GlobalEventGroupHandle, RBufferReadyFlag);
+		ESP_LOGW("DoubleBuffer", "RBufferReadyFlag set");
 	}
 	//else { critical error }
 }
 
 void DoubleBuffer::storeRRData(RRSeries in){
-	if (!currentRR->isFull()){
+	if (!currentRR->isFullRR()){
 		currentRR->addRR(in);
 	}
-	else if(!nextRR->isFull()){
+	else if(!nextRR->isFullRR()){
 		this->swapRR();
 		xEventGroupSetBits(GlobalEventGroupHandle, RRBufferReadyFlag);
 	}
@@ -51,10 +59,10 @@ void DoubleBuffer::storeRRData(RRSeries in){
 }
 
 void DoubleBuffer::storeHRVData(HRVData in){
-	if (!currentHRV->isFull()){
+	if (!currentHRV->isFullHRV()){
 		currentHRV->addHRV(in);
 	}
-	else if(!nextHRV->isFull()){
+	else if(!nextHRV->isFullHRV()){
 		this->swapHRV();
 		xEventGroupSetBits(GlobalEventGroupHandle, HRVBufferReadyFlag);
 	}
@@ -70,25 +78,27 @@ void DoubleBuffer::swap(){
 }
 
 void DoubleBuffer::swapR(){
-	BinaryBuffer * tmp = this->currentR;
+	ESP_LOGI("DoubleBuffer", "Swap R buffer"); // @suppress("Symbol is not resolved")
+	BinaryBuffer * tmpR = this->currentR;
 	this->currentR = this->nextR;
 	this->currentR->writeOnly();
-	this->nextR = tmp;
+	this->nextR = tmpR;
 	this->nextR->readOnly();
 }
 
 void DoubleBuffer::swapRR(){
-	BinaryBuffer * tmp = this->currentRR;
+	ESP_LOGI("DoubleBuffer", "Swap R buffer"); // @suppress("Symbol is not resolved")
+	BinaryBuffer * tmpRR = this->currentRR;
 	this->currentRR = this->nextRR;
 	this->currentRR->writeOnly();
-	this->nextRR = tmp;
+	this->nextRR = tmpRR;
 	this->nextRR->readOnly();
 }
 void DoubleBuffer::swapHRV(){
-	BinaryBuffer * tmp = this->currentHRV;
+	BinaryBuffer * tmpHRV = this->currentHRV;
 	this->currentHRV = this->nextHRV;
 	this->currentRR->writeOnly();
-	this->nextHRV = tmp;
+	this->nextHRV = tmpHRV;
 	this->nextHRV->readOnly();
 }
 
@@ -106,7 +116,7 @@ void DoubleBuffer::writeRRToSd(){
 	writer.Write(this->nextRR->getRR().data(), this->nextRR->getRR().size() * sizeof(RRSeries));
 
 	// Clear the buffer for the next swap
-	this->nextRR->clear();
+	this->nextRR->clearRR();
 
 }
 
@@ -115,7 +125,7 @@ void DoubleBuffer::writeHRVToSd(){
 	writer.Write(this->nextHRV->getHRV().data(), this->nextHRV->getHRV().size() * sizeof(HRVData));
 
 	// Clear the buffer for the next swap
-	this->nextHRV->clear();
+	this->nextHRV->clearHRV();
 
 }
 

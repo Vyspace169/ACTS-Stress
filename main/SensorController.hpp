@@ -41,7 +41,6 @@ class SensorController : BaseTask {
 public:
 	SensorController(unsigned int task_priority, DoubleBuffer &db, DataProcessor &dp);
     friend void sensor_handle_task(void *args);
-    friend void hrv_task();
 private:
     DoubleBuffer &DBHandle;
     DataProcessor &DataHandler;
@@ -68,6 +67,7 @@ private:
    Sensor *Sensor_MPU;
    Sensor *Sensor_BMP;
    Sensor *Sensor_ECG;
+
 protected:
     void main_task();
 };

@@ -35,25 +35,26 @@
 
 #include "esp_log.h"
 
-
 #include "MovementStack.hpp"
 #include "DoubleBuffer.hpp"
-#include "BinaryBuffer.hpp"
 #include "SystemVariables.hpp"
 
 //#include "nrtypes_nr.h"
 
 
+
+
 class  DataProcessor{
 public:
-
+	DataProcessor(DoubleBuffer & db);
 	/*!
 	 * \brief DataProcessor constructor
 	 *
 	 * This method initializes all states and
 	 * variables used in this class.
 	 */
-    DataProcessor(DoubleBuffer &db, BinaryBuffer &bb);
+
+
 
     /*!
      * \brief SetTimeoutValue method
@@ -113,7 +114,7 @@ public:
      * Potential R-peaks are passed to this method.
      * This method determines
      */
-    void CalculateRRInterval(void *args);
+    void CalculateRRInterval();
 
     /*!
      * \brief CalculateHRV method
@@ -140,10 +141,10 @@ public:
      * Empty, not implemented.
      */
     ~DataProcessor();
-private:
-    DoubleBuffer &DBHandle;
-    BinaryBuffer &BBHandle;
 
+
+private:
+    DoubleBuffer & DBHandler;
     int TimeoutCounter;
     int TimeoutTrigger;
     bool LastTriggerOn;
