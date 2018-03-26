@@ -121,15 +121,20 @@ extern "C" void app_main(void)
     GlobalSDWriter->SetFileName("RR_intervals");
 
 
+    // Create DoubleBuffer object
+    DoubleBuffer *GlobalDoubleBuffer = new DoubleBuffer(*GlobalSDWriter);
+
+    // Create DoubleBuffer object
+    BinaryBuffer *GlobalBinaryBuffer = new BinaryBuffer();
+
     // Create DataProcessor object
-    DataProcessor *GlobalDataHandler = new DataProcessor;
+    DataProcessor *GlobalDataHandler = new DataProcessor(*GlobalDoubleBuffer, *GlobalBinaryBuffer);
     // Set timeout value for DataProcessor
     GlobalDataHandler->SetTimeoutValue(TIMEOUT_TIME_SEC * 1000);
     // Set triggers for data DataProcessor
     GlobalDataHandler->SetTrigger(DP_SLEEP_THRESHOLD, DP_SLEEP_THRESHOLD, DP_SLEEP_THRESHOLD);
 
-    // Create DoubleBuffer object
-    DoubleBuffer *GlobalDoubleBuffer = new DoubleBuffer(*GlobalSDWriter);
+
 
     // Create and run Standby task
     StandbyController *sbc = new StandbyController(STANDBYCONT_PRIORITY);

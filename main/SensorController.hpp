@@ -26,7 +26,7 @@
 *
 * \brief Task that handles all sensor communication
 *
-* This task will sample at a frequency of SAMPLE_RATE_H data
+* This task will sample at a frequency of SAMPE_RATE_H data
 * from all sensors (in this case BMP280 and MPU9250). A xTimer
 * will run at that frequency and set a bit. The task will then
 * read data from the sensors (which are connected through I2C)

@@ -50,6 +50,7 @@ void sensor_handle_task(void *args)  {
         		Potential_R.potentialRPeak = 	SensorData.ECGSampleValue;
         		Potential_R.sampleNr = 			SensorData.ECGSampleNumber;
         		sTask->DBHandle.storeRData(Potential_R);
+        		ESP_LOGW("SENSOR TASK", "ECG VALUE ABOVE THRESHOLD"); // @suppress("Symbol is not resolved")
         	}
         }
 

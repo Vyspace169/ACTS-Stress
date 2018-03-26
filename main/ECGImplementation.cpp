@@ -34,7 +34,7 @@ unsigned short* ECGImplementation::SensorRead() {
 
 	memcpy(ECGData, &sample_value_filtered, sizeof(int));
 	memcpy(&ECGData[2], &sample_number, sizeof(int));
-	ESP_LOGI("ECGImplementation", "ecg value: %d", sample_value_filtered);
+	ESP_LOGI("ECGImplementation", "ecg value: %d", sample_value_filtered); // @suppress("Symbol is not resolved")
 	return &ECGData[0];
 
 }

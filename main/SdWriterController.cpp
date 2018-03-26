@@ -14,7 +14,7 @@ void run_sd_task(void *args) {
 	EventBits_t uxBits;
 
     while(1)  {
-        uxBits = xEventGroupWaitBits(GlobalEventGroupHandle, (SensorBufferSdReady | StandbyWriterTaskUnhandled), pdTRUE, pdFALSE, portMAX_DELAY);
+        uxBits = xEventGroupWaitBits(GlobalEventGroupHandle, (SensorBufferSdReady | StandbyWriterTaskUnhandled | RRBufferReadyFlag | HRVBufferReadyFlag), pdTRUE, pdFALSE, portMAX_DELAY);
 
         if(uxBits & SensorBufferSdReady){
         	ESP_LOGI("WRITER TASK", "Writing data"); // @suppress("Symbol is not resolved")
@@ -31,6 +31,24 @@ void run_sd_task(void *args) {
 				vTaskDelay(1000 / portTICK_PERIOD_MS); // @suppress("Invalid arguments") // @suppress("Symbol is not resolved")
 			}
         }
+
+        if(uxBits & RRBufferReadyFlag){
+        	ESP_LOGI("WRITER TASK", "Writing data"); // @suppress("Symbol is not resolved")
+        	if(sTask->SDWHandle.Open() == SD_WRITER_OK) {
+        		sTask->DBHandle.writeRRToSd();
+        		sTask->SDWHandle.Close();
+        	}
+        }
+
+        if(uxBits & HRVBufferReadyFlag){
+        	ESP_LOGI("WRITER TASK", "Writing data"); // @suppress("Symbol is not resolved")
+        	if(sTask->SDWHandle.Open() == SD_WRITER_OK) {
+        		sTask->DBHandle.writeHRVToSd();
+        		sTask->SDWHandle.Close();
+        	}
+        }
+
+
     }
 }
 

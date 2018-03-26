@@ -113,6 +113,48 @@ public:
 	SDWriterErrorCodes Write(const SampleData *in, int size);
 
 	/*!
+	 * \brief Write method
+	 * \return SDWriterErrorCodes
+	 * \param in A single SampleData structure
+	 *
+	 * This method writes a single SampleData structure
+	 * to the chosen and opened file.
+	 */
+	SDWriterErrorCodes Write(RRSeries in);
+
+	/*!
+	 * \brief Write method
+	 * \return SDWriterErrorCodes
+	 * \param in A pointer to a SampleData array
+	 * \param The size of the given array
+	 *
+	 * This method writes an array of SampleData
+	 * to the chosen and opened file.
+	 */
+	SDWriterErrorCodes Write(const RRSeries *in, int size);
+
+	/*!
+	 * \brief Write method
+	 * \return SDWriterErrorCodes
+	 * \param in A single SampleData structure
+	 *
+	 * This method writes a single SampleData structure
+	 * to the chosen and opened file.
+	 */
+	SDWriterErrorCodes Write(HRVData in);
+
+	/*!
+	 * \brief Write method
+	 * \return SDWriterErrorCodes
+	 * \param in A pointer to a SampleData array
+	 * \param The size of the given array
+	 *
+	 * This method writes an array of SampleData
+	 * to the chosen and opened file.
+	 */
+	SDWriterErrorCodes Write(const HRVData *in, int size);
+
+	/*!
 	 * \brief Write methode
 	 * \return SDWriterErrorCodes
 	 * \param data A char array

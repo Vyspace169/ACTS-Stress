@@ -12,7 +12,13 @@ environment/project/cdt.managedbuild.toolchain.gnu.cygwin.base.1115492083/BATCH_
 environment/project/cdt.managedbuild.toolchain.gnu.cygwin.base.1115492083/BATCH_BUILD/value=1
 environment/project/cdt.managedbuild.toolchain.gnu.cygwin.base.1115492083/IDF_PATH/delimiter=;
 environment/project/cdt.managedbuild.toolchain.gnu.cygwin.base.1115492083/IDF_PATH/operation=replace
-environment/project/cdt.managedbuild.toolchain.gnu.cygwin.base.1115492083/IDF_PATH/value=C\:\\msys32\\home\\casper.rebholz\\esp\\esp-idf
+environment/project/cdt.managedbuild.toolchain.gnu.cygwin.base.1115492083/IDF_PATH/value=C\:\\msys32\\home\\caspe\\esp\\esp-idf
+environment/project/cdt.managedbuild.toolchain.gnu.cygwin.base.1115492083/LANG/delimiter=;
+environment/project/cdt.managedbuild.toolchain.gnu.cygwin.base.1115492083/LANG/operation=append
+environment/project/cdt.managedbuild.toolchain.gnu.cygwin.base.1115492083/LANG/value=en_US
+environment/project/cdt.managedbuild.toolchain.gnu.cygwin.base.1115492083/LC_ALL/delimiter=;
+environment/project/cdt.managedbuild.toolchain.gnu.cygwin.base.1115492083/LC_ALL/operation=append
+environment/project/cdt.managedbuild.toolchain.gnu.cygwin.base.1115492083/LC_ALL/value=en_US
 environment/project/cdt.managedbuild.toolchain.gnu.cygwin.base.1115492083/PATH/delimiter=;
 environment/project/cdt.managedbuild.toolchain.gnu.cygwin.base.1115492083/PATH/operation=replace
 environment/project/cdt.managedbuild.toolchain.gnu.cygwin.base.1115492083/PATH/value=C\:\\msys32\\usr\\bin;C\:\\msys32\\mingw32\\bin;C\:\\msys32\\opt\\xtensa-esp32-elf\\bin

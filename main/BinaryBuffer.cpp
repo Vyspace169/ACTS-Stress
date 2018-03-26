@@ -43,8 +43,29 @@ bool BinaryBuffer::addRR( RRSeries in ){
 	}
 }
 
-const std::vector<SampleData>& BinaryBuffer::get() {
+bool BinaryBuffer::addHRV( HRVData in ){
+	if(state){
+		HRVBuffer.push_back(in);
+		return true;
+	}else{
+		return false;
+	}
+}
+
+const std::vector<SampleData>& BinaryBuffer::getSD() {
 	return buffer;
+}
+
+std::vector<RData>& BinaryBuffer::getR() {
+	return RBuffer;
+}
+
+std::vector<RRSeries>& BinaryBuffer::getRR() {
+	return RRBuffer;
+}
+
+std::vector<HRVData>& BinaryBuffer::getHRV() {
+	return HRVBuffer;
 }
 
 bool BinaryBuffer::isFull(){

@@ -30,12 +30,19 @@
 #include <stdlib.h>
 #include <string.h>
 #include <queue>
+#include <vector>
+#include <cmath>
 
 #include "esp_log.h"
 
+
 #include "MovementStack.hpp"
 #include "DoubleBuffer.hpp"
+#include "BinaryBuffer.hpp"
 #include "SystemVariables.hpp"
+
+//#include "nrtypes_nr.h"
+
 
 class  DataProcessor{
 public:
@@ -46,7 +53,7 @@ public:
 	 * This method initializes all states and
 	 * variables used in this class.
 	 */
-    DataProcessor();
+    DataProcessor(DoubleBuffer &db, BinaryBuffer &bb);
 
     /*!
      * \brief SetTimeoutValue method
@@ -83,24 +90,6 @@ public:
     void HandleData(SampleData NewData);
 
     /*!
-     * \brief HandleData method
-     * \param NewData Structure with measured data
-     *
-     * The ECG data is passed to this method.
-     * This method handles all R-peak thresholding
-     */
-    void HandleECGData(SampleData NewData);
-
-    /*!
-     * \brief CalculateRRInterval method
-     * \param RData structure with potential R-peaks
-     *
-     * Potential R-peaks are passed to this method.
-     * This method determines
-     */
-    void CalculateRRInterval(RData RPeaks);
-
-    /*!
      * \brief GetActivityData method
      * \return Current activity data value
      *
@@ -118,12 +107,43 @@ public:
     void ResetActivityData();
 
     /*!
+     * \brief CalculateRRInterval method
+     * \param RData structure with potential R-peaks
+     *
+     * Potential R-peaks are passed to this method.
+     * This method determines
+     */
+    void CalculateRRInterval(void *args);
+
+    /*!
+     * \brief CalculateHRV method
+     * \param RData structure with potential R-peaks
+     *
+     * Potential R-peaks are passed to this method.
+     * This method determines
+     */
+    void CalculateHRV(void *args);
+
+    /*!
+     * \brief CalculateHRV method
+     * \param RData structure with potential R-peaks
+     *
+     * Potential R-peaks are passed to this method.
+     * This method determines
+     */
+    //void LombScargle(Vec_I_DP &x, Vec_I_DP &y, const DP ofac, const DP hifac,
+    //	Vec_O_DP &wk1, Vec_O_DP &wk2, int &nout, int &jmax, DP &prob);
+
+    /*!
      * \brief DataProcessor deconstructor
      *
      * Empty, not implemented.
      */
     ~DataProcessor();
 private:
+    DoubleBuffer &DBHandle;
+    BinaryBuffer &BBHandle;
+
     int TimeoutCounter;
     int TimeoutTrigger;
     bool LastTriggerOn;
@@ -134,4 +154,15 @@ private:
     int TriggerValueX;
     int TriggerValueY;
     int TriggerValueZ;
+
+    int CurrentRValue = 0;
+    int FirstRPeak;
+    int SecondRPeak;
+    bool PeakHasBeenFound = false;
+
+    RRSeries RRData;
+    int RRInterval;
+
+	std::vector<RData>::iterator it;
+	std::vector<RData>::iterator end;
 };

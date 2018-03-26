@@ -34,7 +34,7 @@ void DoubleBuffer::storeRData(RData in){
 	}
 	else if(!nextR->isFull()){
 		this->swapR();
-		xEventGroupSetBits(GlobalEventGroupHandle, RBufferReadyFlag);
+		xEventGroupSetBits(GlobalEventGroupHandle, RBufferReadyFlag);  //is deze nodig?
 	}
 	//else { critical error }
 }
@@ -46,6 +46,17 @@ void DoubleBuffer::storeRRData(RRSeries in){
 	else if(!nextRR->isFull()){
 		this->swapRR();
 		xEventGroupSetBits(GlobalEventGroupHandle, RRBufferReadyFlag);
+	}
+	//else { critical error }
+}
+
+void DoubleBuffer::storeHRVData(HRVData in){
+	if (!currentHRV->isFull()){
+		currentHRV->addHRV(in);
+	}
+	else if(!nextHRV->isFull()){
+		this->swapHRV();
+		xEventGroupSetBits(GlobalEventGroupHandle, HRVBufferReadyFlag);
 	}
 	//else { critical error }
 }
@@ -73,28 +84,45 @@ void DoubleBuffer::swapRR(){
 	this->nextRR = tmp;
 	this->nextRR->readOnly();
 }
+void DoubleBuffer::swapHRV(){
+	BinaryBuffer * tmp = this->currentHRV;
+	this->currentHRV = this->nextHRV;
+	this->currentRR->writeOnly();
+	this->nextHRV = tmp;
+	this->nextHRV->readOnly();
+}
 
 void DoubleBuffer::writeToSd(){
 	// write all elements to the file using the SdWriter
-	writer.Write(this->next->get().data(), this->next->get().size() * sizeof(SampleData));
+	writer.Write(this->next->getSD().data(), this->next->getSD().size() * sizeof(SampleData));
 
 	// Clear the buffer for the next swap
 	this->next->clear();
 
+}
+
+void DoubleBuffer::writeRRToSd(){
 	// write all elements to the file using the SdWriter
-	writer.Write(this->nextRR->get().data(), this->nextRR->get().size() * sizeof(SampleData));
+	writer.Write(this->nextRR->getRR().data(), this->nextRR->getRR().size() * sizeof(RRSeries));
 
 	// Clear the buffer for the next swap
 	this->nextRR->clear();
 
+}
 
+void DoubleBuffer::writeHRVToSd(){
+	// write all elements to the file using the SdWriter
+	writer.Write(this->nextHRV->getHRV().data(), this->nextHRV->getHRV().size() * sizeof(HRVData));
+
+	// Clear the buffer for the next swap
+	this->nextHRV->clear();
 
 }
 
 void DoubleBuffer::emptyBuffer(){
-	next->get();
-	nextR->get();
-	nextRR->get();
+	next->getSD();
+	nextR->getR();
+	nextRR->getRR();
 }
 
 DoubleBuffer::~DoubleBuffer(){

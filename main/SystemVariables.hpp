@@ -58,6 +58,13 @@ typedef struct {
 	int RRTotal;			/**< Cumulative RR-intervals */
 } RRSeries;
 
+typedef struct {
+	int LFPower;			/**< Power in 0.04-xx Hz band in m/s^2 */
+	int HFPower;			/**< Power in 0.4-xx Hz band in m/s^2 */
+	float LFHFRatio;		/**< Ratio of Power in LF-band divided by power in HF-band */
+	int StressIndex;		/**< Normalized stress index */
+} HRVData;
+
 /*! Flag for SensorTask to act upon */
 #define SensorMeasurementFlag 		( 1 << 0 )
 /*! Flags for WifiTask to act upon */
@@ -84,6 +91,8 @@ typedef struct {
 #define RBufferReadyFlag			( 1 << 12 )
 /*! Flag to signal that one of the RR-interval buffers is full */
 #define RRBufferReadyFlag			( 1 << 13 )
+/*! Flag to signal that one of the RR-interval buffers is full */
+#define HRVBufferReadyFlag			( 1 << 14 )
 
 /*! Blue LED GPIO define */
 #define GPIO_LED_BLUE			GPIO_NUM_13

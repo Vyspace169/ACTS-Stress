@@ -45,13 +45,17 @@ SDWriterErrorCodes SDWriter::InitSDMMC(int retries) {
 	host.slot = HSPI_HOST;
 	host.max_freq_khz = SDMMC_FREQ_DEFAULT;
 	host.io_voltage = 3.3f;
-	host.set_bus_width = NULL;
-	host.command_timeout_ms = 0;
 	host.init = &sdspi_host_init;
+	host.set_bus_width = NULL;
 	host.set_card_clk = &sdspi_host_set_card_clk;
 	host.do_transaction = &sdspi_host_do_transaction;
 	host.deinit = &sdspi_host_deinit;
-	host.max_freq_khz = SD_CARD_SPI_SPEED_KHZ;
+	host.command_timeout_ms = 0;
+
+
+
+
+	//host.max_freq_khz = SD_CARD_SPI_SPEED_KHZ;
 
 	sdspi_slot_config_t slot_config = SDSPI_SLOT_CONFIG_DEFAULT();
 	slot_config.gpio_miso = PIN_NUM_MISO;
@@ -255,6 +259,34 @@ SDWriterErrorCodes SDWriter::Write(char *data) {
 	CardIsWriting = false;
 
 	if(BytesWritten != sizeof(data)) {
+		return WRITE_ERROR;
+	}
+
+	return SD_WRITER_OK;
+}
+
+SDWriterErrorCodes SDWriter::Write(const RRSeries *in, int size) {
+	if(CardIsInitialized == false) {
+		return CARD_NOT_INITIALIZED;
+	}
+
+	if(gpio_get_level(GPIO_SD_DETECT) == 0) {
+		return CARD_NOT_IN_SLOT;
+	}
+
+	if(FileIsOpen == false) {
+		return FILE_NOT_OPEN;
+	}
+
+	CardIsWriting = true;
+
+	// write the data to the file
+	int BytesWritten = fwrite(in, size, 1, FileForData);
+
+	CardIsWriting = false;
+
+	if(BytesWritten != 1) {
+		ESP_LOGI("SD WRITER", "Write failed"); // @suppress("Symbol is not resolved")
 		return WRITE_ERROR;
 	}
 

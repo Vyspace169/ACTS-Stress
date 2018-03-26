@@ -56,6 +56,15 @@ public:
 	void storeRRData(RRSeries in);
 
 	/*!
+	 * \brief storeData method
+	 * \param in SampleData structure
+	 *
+	 * This method stores RR-intervals in the
+	 * currently used buffer.
+	 */
+	void storeHRVData(HRVData in);
+
+	/*!
 	 * \brief swap method
 	 *
 	 * This method swaps the ping pong buffer to the
@@ -80,6 +89,14 @@ public:
 	void swapRR();
 
 	/*!
+	 * \brief swap method
+	 *
+	 * This method swaps the ping pong buffer to the
+	 * next one.
+	 */
+	void swapHRV();
+
+	/*!
 	 * \brief emptyBuffer method
 	 *
 	 * This method empties the current buffer.
@@ -98,24 +115,55 @@ public:
 	void writeToSd();
 
 	/*!
+	 * \brief writeToSd method
+	 *
+	 * This method writes the current RR buffer to the
+	 * sd card using the SDWriter class.
+	 *
+	 * Warning: file must be opened before calling
+	 * this method.
+	 */
+	void writeRRToSd();
+
+	/*!
+	 * \brief writeToSd method
+	 *
+	 * This method writes the current HRV buffer to the
+	 * sd card using the SDWriter class.
+	 *
+	 * Warning: file must be opened before calling
+	 * this method.
+	 */
+	void writeHRVToSd();
+
+	/*!
 	 * \brief DoubleBuffer deconstructor
 	 *
-	 * This method delets all buffers.
+	 * This method deletes all buffers.
 	 */
 	~DoubleBuffer();
+
+	BinaryBuffer * nextR;
+	BinaryBuffer * nextRR;
 private:
 	SDWriter &writer;
 	BinaryBuffer * firstBuffer;
 	BinaryBuffer * secondBuffer;
 	BinaryBuffer * current;
 	BinaryBuffer * next;
+
 	BinaryBuffer * firstRBuffer;
 	BinaryBuffer * secondRBuffer;
 	BinaryBuffer * currentR;
-	BinaryBuffer * nextR;
+	//nextR is public
+
 	BinaryBuffer * firstRRBuffer;
 	BinaryBuffer * secondRRBuffer;
 	BinaryBuffer * currentRR;
-	BinaryBuffer * nextRR;
+	//nextRR is public
 
+	BinaryBuffer * firstHRVBuffer;
+	BinaryBuffer * secondHRVBuffer;
+	BinaryBuffer * currentHRV;
+	BinaryBuffer * nextHRV;
 };

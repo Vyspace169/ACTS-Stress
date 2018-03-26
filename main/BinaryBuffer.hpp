@@ -76,13 +76,50 @@ public:
 	bool addRR( RRSeries in );
 
 	/*!
+	 * \brief add method
+	 * \param in SampleData structure
+	 * \return bool returns flase if state is read only
+	 *
+	 * This method adds a SampleData strcture
+	 * to the buffer.
+	 */
+	bool addHRV( HRVData in );
+
+	/*!
 	 * \brief get method
 	 * \return SampleData buffer pointer
 	 *
 	 * This method returns a pointer to the
 	 * first sample of the buffer.
 	 */
-	const std::vector<SampleData>& get(); // should perhaps be a pointer, copy could be too slow on large scale operations?
+	const std::vector<SampleData>& getSD(); // should perhaps be a pointer, copy could be too slow on large scale operations?
+
+	/*!
+	 * \brief get method
+	 * \return SampleData buffer pointer
+	 *
+	 * This method returns a pointer to the
+	 * first sample of the buffer.
+	 */
+	std::vector<RData>& getR(); // should perhaps be a pointer, copy could be too slow on large scale operations?
+
+	/*!
+	 * \brief get method
+	 * \return SampleData buffer pointer
+	 *
+	 * This method returns a pointer to the
+	 * first sample of the buffer.
+	 */
+	std::vector<RRSeries>& getRR(); // should perhaps be a pointer, copy could be too slow on large scale operations?
+
+	/*!
+	 * \brief get method
+	 * \return SampleData buffer pointer
+	 *
+	 * This method returns a pointer to the
+	 * first sample of the buffer.
+	 */
+	std::vector<HRVData>& getHRV(); // should perhaps be a pointer, copy could be too slow on large scale operations?
 
 	/*!
 	 * \brief isFull method
@@ -98,11 +135,13 @@ public:
 	 * Empty, not implemented.
 	 */
 	~BinaryBuffer();
+
 private:
 	bool readState();
 	bool state;
 	std::vector<SampleData> buffer;
 	std::vector<RData> RBuffer;
 	std::vector<RRSeries> RRBuffer;
+	std::vector<HRVData> HRVBuffer;
 	const int BufferSize = BINARY_BUFFER_SIZE;
 };
