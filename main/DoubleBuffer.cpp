@@ -41,8 +41,9 @@ void DoubleBuffer::storeRData(RData in){
 	}
 	else if(!nextR->isFullR()){
 		this->swapR();
-		xEventGroupSetBits(GlobalEventGroupHandle, RBufferReadyFlag);
 		ESP_LOGW("DoubleBuffer", "RBufferReadyFlag set");
+		xEventGroupSetBits(GlobalEventGroupHandle, RBufferReadyFlag);
+
 	}
 	//else { critical error }
 }
@@ -87,7 +88,7 @@ void DoubleBuffer::swapR(){
 }
 
 void DoubleBuffer::swapRR(){
-	ESP_LOGI("DoubleBuffer", "Swap R buffer"); // @suppress("Symbol is not resolved")
+	ESP_LOGI("DoubleBuffer", "Swap RR buffer"); // @suppress("Symbol is not resolved")
 	BinaryBuffer * tmpRR = this->currentRR;
 	this->currentRR = this->nextRR;
 	this->currentRR->writeOnly();

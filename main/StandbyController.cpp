@@ -91,12 +91,14 @@ void standbycontroller_handle_task(void *args)  {
 				OldChargeDetectGPIOState = ChargeDetectGPIOState;
 			}
 
+			/*
 			// movement timeout sleep
 			if(uxBits & MovementTimeoutReached) {
 				ESP_LOGI("SLEEP TASK", "Setting bits due to movement timeout"); // @suppress("Symbol is not resolved")
 				xEventGroupSetBits(GlobalEventGroupHandle, (StandbySensorTaskUnhandled | StandbyWifiTaskUnhandled | StandbyWriterTaskUnhandled));
 				EventBitsSet = true;
 			}
+			*/
 		}
 	}
 }

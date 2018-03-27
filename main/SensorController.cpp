@@ -41,7 +41,7 @@ void sensor_handle_task(void *args)  {
         	SensorData.pressure = 			BMPData[sTask->DATA_OFFSET_PRESSURE];
         	SensorData.microTime =  		xTaskGetTickCount();
         	SensorData.ECGSampleValue = 	ECGData[sTask->DATA_OFFSET_SAMPLE_VALUE];
-        	SensorData.ECGSampleNumber = 	ECGData[sTask->DATA_OFFSET_SAMPLE_VALUE];
+        	SensorData.ECGSampleNumber = 	ECGData[sTask->DATA_OFFSET_SAMPLE_NR];
 
         	sTask->DataHandler.HandleData(SensorData);
         	sTask->DBHandle.storeData(SensorData);
@@ -50,9 +50,6 @@ void sensor_handle_task(void *args)  {
         		Potential_R.potentialRPeak = 	SensorData.ECGSampleValue;
         		Potential_R.sampleNr = 			SensorData.ECGSampleNumber;
         		sTask->DBHandle.storeRData(Potential_R);
-        		//ESP_LOGI("SensorController", "Value: %d", SensorData.ECGSampleValue); // @suppress("Symbol is not resolved")
-        		//ESP_LOGI("SensorController", "Value above threshold."); // @suppress("Symbol is not resolved")
-
         	}
         }
 
@@ -93,6 +90,8 @@ void set_sensor_measurement_bit( TimerHandle_t xTimer )  {
 
 void SensorController::main_task() {
 	ESP_LOGI("SENSOR TASK", "Task starting..."); // @suppress("Symbol is not resolved")
+
+
 
 	TimerHandle_t sample_poll_timer = NULL;
 	sample_poll_timer = xTimerCreate("sensor_poll_clock",

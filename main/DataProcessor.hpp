@@ -123,7 +123,7 @@ public:
      * Potential R-peaks are passed to this method.
      * This method determines
      */
-    void CalculateHRV(void *args);
+    void CalculateHRV();
 
     /*!
      * \brief CalculateHRV method

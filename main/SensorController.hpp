@@ -59,10 +59,9 @@ private:
     const int DATA_SIZE_BMP = 2;
     const int DATA_OFFSET_TEMPERATURE = 0;
     const int DATA_OFFSET_PRESSURE = 1;
-    const int DATA_SIZE_ECG = 3;
+    const int DATA_SIZE_ECG = 2;
     const int DATA_OFFSET_SAMPLE_VALUE = 0;
     const int DATA_OFFSET_SAMPLE_NR = 1;
-    const int DATA_OFFSET_POTENTIAL_R = 2;
 
    Sensor *Sensor_MPU;
    Sensor *Sensor_BMP;

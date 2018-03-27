@@ -58,7 +58,7 @@ private:
    int i = 0;
    int j = 0;
    int sample_number = 0;
-   int sample_value[5];
+   int sample_value[5] = {0};
    int sample_value_filtered = 0; //evt float van maken
    unsigned short ECGData[4];
 };

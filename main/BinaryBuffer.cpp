@@ -49,8 +49,6 @@ bool BinaryBuffer::addR( RData in ){
 bool BinaryBuffer::addRR( RRSeries in ){
 	if(state){
 		RRBuffer.push_back(in);
-
-		ESP_LOGW("DoubleBuffer", "RR buffer size %d", RRBuffer.size());
 		return true;
 	}else{
 		return false;

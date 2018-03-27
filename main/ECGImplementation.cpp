@@ -19,11 +19,14 @@ int ECGImplementation::DataSize() {
 unsigned short* ECGImplementation::SensorRead() {
 	sample_value[i] = adc1_get_raw(ADC_ECG);
 	sample_number++;
+	i++;
 
-	if(i < kernel_size){
-		i++;
-	}else {
+	if(i == kernel_size){
 		i = 0;
+	}
+
+	if(sample_number > BINARY_BUFFER_SIZE){
+		sample_number = 0;
 	}
 
 	for(int j = 0; j < kernel_size; j++){
@@ -33,10 +36,10 @@ unsigned short* ECGImplementation::SensorRead() {
 	j = 0;
 
 	memcpy(ECGData, &sample_value_filtered, sizeof(int));
-	memcpy(&ECGData[2], &sample_number, sizeof(int));
-	//ESP_LOGI("ECGImplementation", "ecg value: %d", ECGData[0]); // @suppress("Symbol is not resolved")
-	//ESP_LOGI("ECGImplementation", "sample_number: %d", ECGData[2]); // @suppress("Symbol is not resolved")
+	memcpy(&ECGData[1], &sample_number, sizeof(int));
+	//ESP_LOGW("ECG"," sample_value_filtered %d", sample_value_filtered);
 	sample_value_filtered = 0;
+
 	return &ECGData[0];
 
 }

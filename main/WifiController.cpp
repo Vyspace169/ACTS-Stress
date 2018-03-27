@@ -33,11 +33,12 @@ void run_wifi_task(void *args)  {
 
 				ESP_LOGI("WIFI TASK", "Wifi connected"); // @suppress("Symbol is not resolved")
 
-				sTask->mqtt->connectMQTT();
+				/*sTask->mqtt->connectMQTT();
 				while(MovementSaver.DataCount() != 0) { // @suppress("Method cannot be resolved")
 					sTask->mqtt->publish(MovementSaver.GetActivityData()); // @suppress("Invalid arguments") // @suppress("Method cannot be resolved")
 				}
-				sTask->mqtt->disconnect();
+				sTask->mqtt->disconnect();*/
+				MovementSaver.GetActivityData();
 
 				ESP_LOGI("WIFI TASK", "Wifi done"); // @suppress("Symbol is not resolved")
 
@@ -50,9 +51,13 @@ void run_wifi_task(void *args)  {
 
         if(uxBits & RBufferReadyFlag) {
 			sTask->DPHandle.CalculateRRInterval();
-			xEventGroupClearBits(GlobalEventGroupHandle, RBufferReadyFlag);
-			ESP_LOGW("WIFI TASK", "RBufferReadyFlag cleared");
         }
+
+        if(uxBits & RRBufferReadyFlag) {
+			sTask->DPHandle.CalculateHRV();
+        }
+
+
 
         if(uxBits & WifiReadyFlag) {
 			//pass

@@ -79,47 +79,81 @@ void DataProcessor::CalculateRRInterval()
 
 {
 	ESP_LOGW("DataProcessor"," Calculate RR Interval")
-	//DataProcessor *sTask = static_cast<DataProcessor*>(args);
 	it = this->DBHandler.nextR->getR().begin();
 	end = this->DBHandler.nextR->getR().end();
 
 	while(it != end){
-
-		while(PeakHasBeenFound == false){
+		while(PeakHasBeenFound == false && it != end){
 			if(it->potentialRPeak > CurrentRValue){ 		//loop through buffer until first local max is found
+				//ESP_LOGW("DataProcessor"," CurrentRValue %d", CurrentRValue);
+				//ESP_LOGW("DataProcessor"," it->potentialRPeak %d", it->potentialRPeak);
 				CurrentRValue = it->potentialRPeak;
 				it++;
 			}else{											//found peak
 				PeakHasBeenFound = true;
-				FirstRPeak = it->sampleNr;
-				it++;
+				FirstRPeak = (it->sampleNr-1);
+				//ESP_LOGW("DataProcessor"," CurrentRValue %d", CurrentRValue);
+				//ESP_LOGW("DataProcessor"," it->potentialRPeak %d", it->potentialRPeak);
+				//ESP_LOGW("DataProcessor"," First Peak found, peak is: %d at sample %d", CurrentRValue, FirstRPeak);
 				CurrentRValue = it->potentialRPeak;		//
+				it++;
 			}
 		}
 
-		while(PeakHasBeenFound == true){
+		while(PeakHasBeenFound == true && it != end){
 			if(it->potentialRPeak > CurrentRValue){
+				//ESP_LOGI("DataProcessor"," CurrentRValue %d", CurrentRValue);
+				//ESP_LOGI("DataProcessor"," it->potentialRPeak %d at sample %d", it->potentialRPeak, it->sampleNr);
 				CurrentRValue = it->potentialRPeak;
 				it++;
 			}else{
-				SecondRPeak = it->potentialRPeak;
-				RRInterval = (SecondRPeak - FirstRPeak) * 1000 / SAMPLE_RATE_H; //calculate RR-interval is milliseconds
+				SecondRPeak = (it->sampleNr-1);
+				//ESP_LOGI("DataProcessor"," CurrentRValue %d", CurrentRValue);
+				//ESP_LOGI("DataProcessor"," it->potentialRPeak %d at sample %d", it->potentialRPeak, it->sampleNr);
+				//ESP_LOGW("DataProcessor"," Second Peak found, peak is: %d at sample %d", CurrentRValue, SecondRPeak);
+
+				if(SecondRPeak > FirstRPeak){
+					RRInterval = ((SecondRPeak - FirstRPeak) * 1000) / SAMPLE_RATE_H; //calculate RR-interval is milliseconds
+					//ESP_LOGI("DataProcessor"," FirstRPeak %d < SecondRPeak %d, ", FirstRPeak, SecondRPeak);
+				}else{
+					RRInterval = ((BINARY_BUFFER_SIZE - FirstRPeak + SecondRPeak) * 1000) / SAMPLE_RATE_H;
+					//ESP_LOGI("DataProcessor"," FirstRPeak %d > SecondRPeak %d, ", FirstRPeak, SecondRPeak);
+				}
+
+				//ESP_LOGW("DataProcessor"," RR-interval found, RR-interval is: %d", RRInterval);
 				RRData.RRInterval = RRInterval;
 				RRData.RRTotal += RRInterval;
 				this->DBHandler.storeRRData(RRData);
 				FirstRPeak = SecondRPeak;
-				SecondRPeak = 0;
-				it++;
-				CurrentRValue = it->potentialRPeak;
+				while(it->potentialRPeak <= CurrentRValue && it != end){
+					CurrentRValue = it->potentialRPeak;
+					it++;
+					//ESP_LOGI("DataProcessor"," CurrentRValue %d", CurrentRValue);
+					//ESP_LOGI("DataProcessor"," it->potentialRPeak %d at sample %d", it->potentialRPeak, it->sampleNr);
+				}
+
+				if(RRData.RRTotal > 3000){
+					xEventGroupSetBits(GlobalEventGroupHandle, RRBufferReadyFlag);
+					ESP_LOGI("DataProcessor","RRBufferReadyFlag set");
+				}
+
+				if(it != end){
+					CurrentRValue = it->potentialRPeak;
+					it++;
+				}
 			}
 		}
-
 	}
 	this->DBHandler.nextR->clearR();
+	PeakHasBeenFound = false;
+	xEventGroupClearBits(GlobalEventGroupHandle, RBufferReadyFlag);
+	ESP_LOGI("DataProcessor","RBufferReadyFlag cleared");
 }
 
-void DataProcessor::CalculateHRV(void *args){
-	DataProcessor *sTask = static_cast<DataProcessor*>(args);
+void DataProcessor::CalculateHRV(){
+	ESP_LOGI("DataProcessor","CalculateHRV");
+	xEventGroupClearBits(GlobalEventGroupHandle, RRBufferReadyFlag);
+	ESP_LOGI("DataProcessor","RRBufferReadyFlag cleared");
 
 
 }
