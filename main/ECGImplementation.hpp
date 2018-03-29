@@ -55,6 +55,7 @@ public:
 
 private:
    int kernel_size = 5;
+   int sum = 0;
    int i = 0;
    int j = 0;
    int sample_number = 0;

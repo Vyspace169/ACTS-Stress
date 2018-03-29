@@ -91,7 +91,7 @@ void set_sensor_measurement_bit( TimerHandle_t xTimer )  {
 void SensorController::main_task() {
 	ESP_LOGI("SENSOR TASK", "Task starting..."); // @suppress("Symbol is not resolved")
 
-
+	pdMS_TO_TICKS()
 
 	TimerHandle_t sample_poll_timer = NULL;
 	sample_poll_timer = xTimerCreate("sensor_poll_clock",

@@ -17,7 +17,7 @@ int ECGImplementation::DataSize() {
 }
 
 unsigned short* ECGImplementation::SensorRead() {
-	sample_value[i] = adc1_get_raw(ADC_ECG);
+	sample_value[i] = adc1_get_voltage(ADC_ECG);
 	sample_number++;
 	i++;
 
@@ -30,14 +30,15 @@ unsigned short* ECGImplementation::SensorRead() {
 	}
 
 	for(int j = 0; j < kernel_size; j++){
-		sample_value_filtered += sample_value[j];
+		sum += sample_value[j];
 	}
-	sample_value_filtered = sample_value_filtered / kernel_size;
+	sample_value_filtered = (sum/kernel_size);
 	j = 0;
+	sum = 0;
 
 	memcpy(ECGData, &sample_value_filtered, sizeof(int));
 	memcpy(&ECGData[1], &sample_number, sizeof(int));
-	//ESP_LOGW("ECG"," sample_value_filtered %d", sample_value_filtered);
+	ESP_LOGW("ECG","%d", sample_value_filtered);
 	sample_value_filtered = 0;
 
 	return &ECGData[0];

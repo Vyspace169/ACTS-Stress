@@ -113,7 +113,7 @@ typedef struct {
 /*! Battery ADC channel */
 #define ADC_BATTERY				ADC1_CHANNEL_6
 /*! Ecg ADC channel */
-#define ADC_ECG					ADC1_CHANNEL_7
+#define ADC_ECG					ADC1_CHANNEL_0
 
 /*! Sample rate in hz define */
 #define SAMPLE_RATE_H			125
