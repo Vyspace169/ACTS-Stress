@@ -26,6 +26,9 @@
 
 #pragma once
 
+
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -33,16 +36,14 @@
 #include <vector>
 #include <cmath>
 
+#include "math.h"
+#include "nrtypes_nr.h"
+
 #include "esp_log.h"
 
 #include "MovementStack.hpp"
 #include "DoubleBuffer.hpp"
 #include "SystemVariables.hpp"
-
-//#include "nrtypes_nr.h"
-
-
-
 
 class  DataProcessor{
 public:
@@ -117,23 +118,32 @@ public:
     void CalculateRRInterval();
 
     /*!
-     * \brief CalculateHRV method
-     * \param RData structure with potential R-peaks
+     * \brief Extirpolate data
+     * \param y value
+     * \param yy destination
+     * \param x vector element
+     * \param m actual vector elements
      *
-     * Potential R-peaks are passed to this method.
-     * This method determines
+     * Used by fasper() to extirpolate RR-intervals
      */
-    void CalculateHRV();
+    void spread(double y, std::vector<double> &yy, double x, int m);
+
+
+    void four1(std::vector<double> &workspace, const int isign);
+
+    void realft(std::vector<double> &workspace, const int isign);
 
     /*!
-     * \brief CalculateHRV method
-     * \param RData structure with potential R-peaks
+     * \brief FASt computation of lomb PERiodogram
+     * \param RRData RRSeries structure with RR-intervals
+     * \param pLomb iterator of Lomb data type
      *
      * Potential R-peaks are passed to this method.
      * This method determines
      */
-    //void LombScargle(Vec_I_DP &x, Vec_I_DP &y, const DP ofac, const DP hifac,
-    //	Vec_O_DP &wk1, Vec_O_DP &wk2, int &nout, int &jmax, DP &prob);
+    void fasper();
+
+    void CalculateHRV();
 
     /*!
      * \brief DataProcessor deconstructor
@@ -163,7 +173,24 @@ private:
 
     RRSeries RRData;
     int RRInterval;
+    int RRTotal;
+	std::vector<RData>::iterator CurrentR, EndR;
 
-	std::vector<RData>::iterator it;
-	std::vector<RData>::iterator end;
+	//spread
+	double y, x;
+	int m;
+	std::vector<double> yy;
+
+	//realft
+	std::vector<double> workspace;
+
+	//fasper
+	std::vector<Lomb>::iterator pLomb, CurrentLomb, EndLomb;
+	std::vector<RRSeries>::iterator CurrentRR, EndRR , NextHRVMarker, CurrentRRHRVMarker;
+	std::vector<double> Workspace1, Workspace2;
+	std::vector<double>::iterator pWorkspace1 = Workspace1.begin(), pWorkspace2 = Workspace2.begin()+2;
+
+	//HRV
+
+
 };

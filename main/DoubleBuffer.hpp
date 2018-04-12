@@ -57,6 +57,15 @@ public:
 
 	/*!
 	 * \brief storeData method
+	 * \param in Lomb structure
+	 *
+	 * This method stores Lomb data in the
+	 * currently used buffer
+	 */
+	void storeLombData(Lomb in);
+
+	/*!
+	 * \brief storeData method
 	 * \param in SampleData structure
 	 *
 	 * This method stores RR-intervals in the
@@ -87,6 +96,14 @@ public:
 	 * next one.
 	 */
 	void swapRR();
+
+	/*!
+	 * \brief swap method
+	 *
+	 * This method swaps the ping pong buffer to the
+	 * next one.
+	 */
+	void swapLomb();
 
 	/*!
 	 * \brief swap method
@@ -139,6 +156,17 @@ public:
 	/*!
 	 * \brief writeToSd method
 	 *
+	 * This method writes the current Lomb buffer to the
+	 * sd cartd using the SDWriter class.
+	 *
+	 * Warning: file must be opened before calling
+	 * this method.
+	 */
+	void writeLombToSd();
+
+	/*!
+	 * \brief writeToSd method
+	 *
 	 * This method writes the current HRV buffer to the
 	 * sd card using the SDWriter class.
 	 *
@@ -173,6 +201,11 @@ private:
 	BinaryBuffer * secondRRBuffer;
 	BinaryBuffer * currentRR;
 	//nextRR is public
+
+	BinaryBuffer * firstLombBuffer;
+	BinaryBuffer * secondLombBuffer;
+	BinaryBuffer * currentLomb;
+	BinaryBuffer * nextLomb;
 
 	BinaryBuffer * firstHRVBuffer;
 	BinaryBuffer * secondHRVBuffer;

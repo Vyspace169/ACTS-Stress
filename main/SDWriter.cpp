@@ -321,6 +321,34 @@ SDWriterErrorCodes SDWriter::Write(const RRSeries *in, int size) {
 	return SD_WRITER_OK;
 }
 
+SDWriterErrorCodes SDWriter::Write(const Lomb *in, int size) {
+	if(CardIsInitialized == false) {
+		return CARD_NOT_INITIALIZED;
+	}
+
+	if(gpio_get_level(GPIO_SD_DETECT) == 0) {
+		return CARD_NOT_IN_SLOT;
+	}
+
+	if(FileIsOpen == false) {
+		return FILE_NOT_OPEN;
+	}
+
+	CardIsWriting = true;
+
+	// write the data to the file
+	int BytesWritten = fwrite(in, size, 1, FileForData);
+
+	CardIsWriting = false;
+
+	if(BytesWritten != 1) {
+		ESP_LOGI("SD WRITER", "Write failed"); // @suppress("Symbol is not resolved")
+		return WRITE_ERROR;
+	}
+
+	return SD_WRITER_OK;
+}
+
 SDWriterErrorCodes SDWriter::Write(const HRVData *in, int size) {
 	if(CardIsInitialized == false) {
 		return CARD_NOT_INITIALIZED;

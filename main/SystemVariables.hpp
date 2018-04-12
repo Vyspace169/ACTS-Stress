@@ -58,9 +58,14 @@ typedef struct {
 	int RRTotal;			/**< Cumulative RR-intervals */
 } RRSeries;
 
+typedef struct{
+	double Frequency;		/**< Evaluated frequency by Lomb Periodogram */
+	double LombValue;		/**< Value of Lomb Periodogram at corresponding frequency */
+} Lomb;
+
 typedef struct {
-	int LFPower;			/**< Power in 0.04-xx Hz band in m/s^2 */
-	int HFPower;			/**< Power in 0.4-xx Hz band in m/s^2 */
+	int LFPower;			/**< Power in 0.04-0.15 Hz band in m/s^2 */
+	int HFPower;			/**< Power in 0.15-0.4 Hz band in m/s^2 */
 	float LFHFRatio;		/**< Ratio of Power in LF-band divided by power in HF-band */
 	int StressIndex;		/**< Normalized stress index */
 } HRVData;
@@ -91,8 +96,10 @@ typedef struct {
 #define RBufferReadyFlag			( 1 << 12 )
 /*! Flag to signal that one of the RR-interval buffers is full */
 #define RRBufferReadyFlag			( 1 << 13 )
+/*! Flag to signal that one of the Lomb buffers is full */
+#define LombBufferReadyFlag			( 1 << 14 )
 /*! Flag to signal that one of the RR-interval buffers is full */
-#define HRVBufferReadyFlag			( 1 << 14 )
+#define HRVBufferReadyFlag			( 1 << 15 )
 
 /*! Blue LED GPIO define */
 #define GPIO_LED_BLUE			GPIO_NUM_13
@@ -242,6 +249,25 @@ typedef struct {
  * for R-peak detection.
  */
 #define R_PEAK_THRESHOLD		1000 //TODO determine threshold value
+
+#define OneMinute				60000
+#define FiveMinutes				300000
+
+/*! Oversampling factor for calculating
+ * Lomb Periodogram
+ */
+#define OversamplingFactor		4
+
+/*! Highest Frequency to be evaluated for the
+ * Lomb Periodogram
+ */
+#define HighestFrequency		0.4
+
+/*!Lomb defines
+ *
+ */
+#define PI						3,141592653589793238
+#define TAU 					6.283185307179586476
 
 /*! Sensortask core num define */
 #define SENSORTASK_CORE_NUM 	1

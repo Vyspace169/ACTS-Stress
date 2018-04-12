@@ -54,6 +54,10 @@ void run_wifi_task(void *args)  {
         }
 
         if(uxBits & RRBufferReadyFlag) {
+			sTask->DPHandle.fasper();
+        }
+
+        if(uxBits & HRVBufferReadyFlag) {
 			sTask->DPHandle.CalculateHRV();
         }
 

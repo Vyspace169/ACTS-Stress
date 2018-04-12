@@ -24,6 +24,10 @@ void BinaryBuffer::clearRR(){
 	RRBuffer.clear();
 }
 
+void BinaryBuffer::clearLomb(){
+	LombBuffer.clear();
+}
+
 void BinaryBuffer::clearHRV(){
 	HRVBuffer.clear();
 }
@@ -55,6 +59,15 @@ bool BinaryBuffer::addRR( RRSeries in ){
 	}
 }
 
+bool BinaryBuffer::addLomb( Lomb in ){
+	if(state){
+		LombBuffer.push_back(in);
+		return true;
+	}else{
+		return false;
+	}
+}
+
 bool BinaryBuffer::addHRV( HRVData in ){
 	if(state){
 		HRVBuffer.push_back(in);
@@ -76,6 +89,10 @@ std::vector<RRSeries>& BinaryBuffer::getRR() {
 	return RRBuffer;
 }
 
+std::vector<Lomb>& BinaryBuffer::getLomb() {
+	return LombBuffer;
+}
+
 std::vector<HRVData>& BinaryBuffer::getHRV() {
 	return HRVBuffer;
 }
@@ -91,6 +108,11 @@ bool BinaryBuffer::isFullR(){
 bool BinaryBuffer::isFullRR(){
 	return RRBuffer.size() >= BufferSize;
 }
+
+bool BinaryBuffer::isFullLomb(){
+	return LombBuffer.size() >= BufferSize;
+}
+
 
 bool BinaryBuffer::isFullHRV(){
 	return HRVBuffer.size() >= BufferSize;

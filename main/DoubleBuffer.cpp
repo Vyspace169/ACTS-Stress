@@ -18,6 +18,11 @@ writer{wr}
 	this->currentRR = this->firstRRBuffer;
 	this->nextRR = this->secondRRBuffer;
 
+	this->firstLombBuffer = new BinaryBuffer();
+	this->secondLombBuffer = new BinaryBuffer();
+	this->currentLomb = this->firstLombBuffer;
+	this->nextLomb = this->secondLombBuffer;
+
 	this->firstHRVBuffer = new BinaryBuffer();
 	this->secondHRVBuffer = new BinaryBuffer();
 	this->currentHRV = this->firstHRVBuffer;
@@ -59,6 +64,17 @@ void DoubleBuffer::storeRRData(RRSeries in){
 	//else { critical error }
 }
 
+void DoubleBuffer::storeLombData(Lomb in){
+	if (!currentRR->isFullLomb()){
+		currentRR->addLomb(in);
+	}
+	else if(!nextRR->isFullLomb()){
+		this->swapLomb();
+		xEventGroupSetBits(GlobalEventGroupHandle, LombBufferReadyFlag);
+	}
+	//else { critical error }
+}
+
 void DoubleBuffer::storeHRVData(HRVData in){
 	if (!currentHRV->isFullHRV()){
 		currentHRV->addHRV(in);
@@ -95,6 +111,16 @@ void DoubleBuffer::swapRR(){
 	this->nextRR = tmpRR;
 	this->nextRR->readOnly();
 }
+
+void DoubleBuffer::swapLomb(){
+	ESP_LOGI("DoubleBuffer", "Swap Lomb buffer"); // @suppress("Symbol is not resolved")
+	BinaryBuffer * tmpRR = this->currentLomb;
+	this->currentLomb = this->nextLomb;
+	this->currentLomb->writeOnly();
+	this->nextLomb = tmpLomb;
+	this->nextLomb->readOnly();
+}
+
 void DoubleBuffer::swapHRV(){
 	BinaryBuffer * tmpHRV = this->currentHRV;
 	this->currentHRV = this->nextHRV;
@@ -118,6 +144,15 @@ void DoubleBuffer::writeRRToSd(){
 
 	// Clear the buffer for the next swap
 	this->nextRR->clearRR();
+
+}
+
+void DoubleBuffer::writeLombToSd(){
+	// write all elements to the file using the SdWriter
+	writer.Write(this->nextLomb->getLomb().data(), this->nextLomb->getLomb().size() * sizeof(Lomb));
+
+	// Clear the buffer for the next swap
+	this->nextRR->clearLomb();
 
 }
 

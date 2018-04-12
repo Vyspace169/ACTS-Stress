@@ -159,6 +159,27 @@ public:
 	 * \return SDWriterErrorCodes
 	 * \param in A single SampleData structure
 	 *
+	 * This method writes a single RRSeries structure
+	 * to the chosen and opened file.
+	 */
+	SDWriterErrorCodes Write(Lomb in);
+
+	/*!
+	 * \brief Write method
+	 * \return SDWriterErrorCodes
+	 * \param in A pointer to a SampleData array
+	 * \param The size of the given array
+	 *
+	 * This method writes an array of RRSeries
+	 * to the chosen and opened file.
+	 */
+	SDWriterErrorCodes Write(const Lomb *in, int size);
+
+	/*!
+	 * \brief Write method
+	 * \return SDWriterErrorCodes
+	 * \param in A single SampleData structure
+	 *
 	 * This method writes a single HRVData structure
 	 * to the chosen and opened file.
 	 */
