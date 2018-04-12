@@ -191,6 +191,6 @@ private:
 	std::vector<double>::iterator pWorkspace1 = Workspace1.begin(), pWorkspace2 = Workspace2.begin()+2;
 
 	//HRV
-
+	HRVData HRVData;
 
 };

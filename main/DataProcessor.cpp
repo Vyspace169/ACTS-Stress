@@ -152,7 +152,7 @@ void DataProcessor::CalculateRRInterval()
 }
 
 void DataProcessor::fasper(){
-	ESP_LOGI("DataProcessor", "Calculate Lomd Periodogram");
+	ESP_LOGI("DataProcessor", "Calculating Lomb periodogram...");
 
 	pLomb = this->DBHandler.currentLomb;
 
@@ -193,6 +193,7 @@ void DataProcessor::fasper(){
 	CurrentRR = this->DBHandler.nextRR->getRR().begin();
 
 	AverageRR = this->DBHandler.nextRR->getRR().back() / NrOfRR;
+	ESP_LOGI("DataProcessor", "Average RR %f", AverageRR);
 
 	//Calculate variance
 	while(CurrentRR != EndRR){
@@ -201,6 +202,8 @@ void DataProcessor::fasper(){
 	}
 	CurrentRR = this->DBHandler.nextRR->getRR().begin();
 	VarianceRR = VarianceTMP/NrOfRR;
+
+	ESP_LOGI("DataProcessor", "Variance RR %f", VarianceRR);
 
 	if (VarianceRR == 0.0){
 		ESP_LOGE("DataProcessor::fasper", "zero variance in fasper");
@@ -376,15 +379,22 @@ void DataProcessor::four1(std::vector<double> &workspace, const int isign)
 }
 
 void DataProcessor::CalculateHRV(){
-	ESP_LOGI("DataProcessor","CalculateHRV");
+	ESP_LOGI("DataProcessor","Calculating HRV..");
 	CurrentLomb = this->DBHandler.nextLomb->getLomb().begin();
 	EndLomb = this->DBHandler.nextLomb->getLomb().end();
 
-	for(*CurrentLomb ){
-
+	for(CurrentLomb; CurrentLomb < EndLomb; CurrentLomb++ ){
+		if(CurrentLomb->Frequency >= 0.04 && CurrentLomb->Frequency < 0.15){
+			ESP_LOGI("DataProcessor::CalculateHRV"," Power is %f at frequency %f", CurrentLomb->Frequency, CurrentLomb->LombValue);
+			HRVData.LFPower += CurrentLomb->LombValue;
+		}else if(CurrentLomb->Frequency >= 0.15 && CurrentLomb->Frequency =< 0.4 ){
+			ESP_LOGI("DataProcessor::CalculateHRV"," Power is %f at frequency %f", CurrentLomb->Frequency, CurrentLomb->LombValue);
+			HRVData.HFPower += CurrentLomb->LombValue;
+		}
 	}
 
-
+	HRVData.LFHFRatio = HRVData.LFPower/HRVData.HFPower;
+	ESP_LOGI("DataProcessor","LF/HF-ratio = %f", HRVData.LFHFRatio)
 }
 
 
