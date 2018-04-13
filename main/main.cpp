@@ -143,7 +143,7 @@ extern "C" void app_main(void)
     SensorController *st = new SensorController(SENSORTASK_PRIORITY, *GlobalDoubleBuffer, *GlobalDataHandler);
 
     // Create and run SDWriter task
-    SdWriterController *sdw = new SdWriterController(WRITERTASK_PRIORITY, *GlobalDoubleBuffer, *GlobalSDWriter);
+    SdWriterController *sdw = new SdWriterController(WRITERTASK_PRIORITY, *GlobalDoubleBuffer, *GlobalSDWriter, *GlobalDataHandler);
 
     // Create and run Wifi task
     WifiController *wt = new WifiController(WIFITASK_PRIORITY, *GlobalDataHandler);

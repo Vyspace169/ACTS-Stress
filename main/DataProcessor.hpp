@@ -27,7 +27,7 @@
 #pragma once
 
 
-
+#include "nrtypes_nr.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -37,7 +37,6 @@
 #include <cmath>
 
 #include "math.h"
-#include "nrtypes_nr.h"
 
 #include "esp_log.h"
 
@@ -173,7 +172,7 @@ private:
 
     RRSeries RRData;
     int RRInterval;
-    int RRTotal;
+    int RRTotal = 0;
 	std::vector<RData>::iterator CurrentR, EndR;
 
 	//spread
@@ -189,8 +188,8 @@ private:
 	std::vector<RRSeries>::iterator CurrentRR, EndRR , NextHRVMarker, CurrentRRHRVMarker;
 	std::vector<double> Workspace1, Workspace2;
 	std::vector<double>::iterator pWorkspace1 = Workspace1.begin(), pWorkspace2 = Workspace2.begin()+2;
-
+	std::vector<RRSeries>::iterator FirstRRi, LastRRi, FirstRRt, LastRRt;
 	//HRV
-	HRVData HRVData;
+	HRVData HRVSeries;
 
 };

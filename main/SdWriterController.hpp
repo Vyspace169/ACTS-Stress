@@ -27,6 +27,7 @@
 
 #include "BaseTask.hpp"
 #include "DoubleBuffer.hpp"
+#include "DataProcessor.hpp"
 
 #include "SystemVariables.hpp"
 
@@ -34,12 +35,13 @@
 
 class SdWriterController : BaseTask  {
 public:
-  SdWriterController(unsigned int task_priority, DoubleBuffer &db, SDWriter &sdw);
+  SdWriterController(unsigned int task_priority, DoubleBuffer &db, SDWriter &sdw, DataProcessor &dp);
   ~SdWriterController() = delete; //Should be deleted?
   friend void run_sd_task(void *args);
 private:
   DoubleBuffer &DBHandle;
   SDWriter &SDWHandle;
+  DataProcessor &DPHandle;
 protected:
   void main_task();
 };

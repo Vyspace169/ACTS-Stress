@@ -38,7 +38,7 @@ unsigned short* ECGImplementation::SensorRead() {
 
 	memcpy(ECGData, &sample_value_filtered, sizeof(int));
 	memcpy(&ECGData[1], &sample_number, sizeof(int));
-	ESP_LOGW("ECG","%d", sample_value_filtered);
+	//ESP_LOGW("ECG","%d", sample_value_filtered);
 	sample_value_filtered = 0;
 
 	return &ECGData[0];

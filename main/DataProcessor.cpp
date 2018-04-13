@@ -132,10 +132,14 @@ void DataProcessor::CalculateRRInterval()
 					//ESP_LOGI("DataProcessor"," it->potentialRPeak %d at sample %d", it->potentialRPeak, it->sampleNr);
 				}
 
-				if(RRTotal > FiveMinutes){
+				ESP_LOGI("DataProcessor","RRTotal %d", RRTotal);
+
+				if(RRTotal > 30000){
 					this->DBHandler.swapRR();
 					xEventGroupSetBits(GlobalEventGroupHandle, RRBufferReadyFlag);
 					ESP_LOGI("DataProcessor","RRBufferReadyFlag set");
+					RRTotal = 0;
+					//fasper();
 				}
 
 				if(CurrentR != EndR){
@@ -154,7 +158,7 @@ void DataProcessor::CalculateRRInterval()
 void DataProcessor::fasper(){
 	ESP_LOGI("DataProcessor", "Calculating Lomb periodogram...");
 
-	pLomb = this->DBHandler.currentLomb;
+	pLomb = this->DBHandler.currentLomb->getLomb().begin();
 
 	const int MACC=4;
 	int NrOfRR 	= this->DBHandler.nextRR->getRR().size();
@@ -163,11 +167,20 @@ void DataProcessor::fasper(){
 	int nfreqt 	= int(OversamplingFactor * HighestFrequency * NrOfRR * MACC);
 	int nfreq	= 64;
 	int j, k, nwk;
-	double AverageRR,ck,ckk,cterm,cwt,den,df,effm,expy,fac,fndim,hc2wt,hs2wt,
-		hypo,pmax,sterm,swt,VarianceTMP,VarianceRR,RRRange,LastRR,FirstRR;
+	double ck,ckk,cterm,cwt,den,df,effm,expy,fac,fndim,hc2wt,hs2wt,
+		hypo,pmax,sterm,swt,VarianceTMP = 0,VarianceRR = 0,RRRange, AverageRR = 0;
 
+
+	//iterators
 	CurrentRR = this->DBHandler.nextRR->getRR().begin();
 	EndRR = this->DBHandler.nextRR->getRR().end();
+
+	//pointers
+	FirstRRi = this->DBHandler.nextRR->getRR().begin();
+	LastRRi = this->DBHandler.nextRR->getRR().end();
+	FirstRRt = this->DBHandler.nextRR->getRR().begin();
+	LastRRt = this->DBHandler.nextRR->getRR().end()-1;
+	RRRange = this->DBHandler.nextRR->getRR().size();
 
 	while (nfreq < nfreqt){
 		nfreq <<= 1;
@@ -192,12 +205,12 @@ void DataProcessor::fasper(){
 	}
 	CurrentRR = this->DBHandler.nextRR->getRR().begin();
 
-	AverageRR = this->DBHandler.nextRR->getRR().back() / NrOfRR;
+	AverageRR = LastRRt->RRTotal/NrOfRR;
 	ESP_LOGI("DataProcessor", "Average RR %f", AverageRR);
 
 	//Calculate variance
 	while(CurrentRR != EndRR){
-		VarianceTMP += (CurrentRR->RRInterval-AverageRR)^2;
+		VarianceTMP += pow((CurrentRR->RRInterval-AverageRR),2);
 		CurrentRR++;
 	}
 	CurrentRR = this->DBHandler.nextRR->getRR().begin();
@@ -209,10 +222,6 @@ void DataProcessor::fasper(){
 		ESP_LOGE("DataProcessor::fasper", "zero variance in fasper");
 	}
 
-	FirstRR = *this->DBHandler.nextRR->getRR().begin();
-	LastRR = this->DBHandler.nextRR->getRR().back();
-	RRRange = this->DBHandler.nextRR->getRR().size();
-
 	Workspace1.clear();
 	Workspace2.clear();
 
@@ -220,7 +229,7 @@ void DataProcessor::fasper(){
 	fndim=nwk;
 
 	while(CurrentRR != EndRR){
-		ck=fmod((CurrentRR->RRTotal-FirstRR)*fac,fndim);
+		ck=fmod((CurrentRR->RRTotal-FirstRRt->RRTotal)*fac,fndim);
 		ckk=2.0*(ck++);
 		ckk=fmod(ckk,fndim);
 		++ckk;
@@ -235,7 +244,7 @@ void DataProcessor::fasper(){
 	df=1.0/(RRRange*OversamplingFactor);
 	pmax =-1.0;
 
-	for (pWorkspace1, pWorkspace2, j=0; j<nout; j++, pLomb++, pWorkspace1 += 2, pWorkspace2 += 2) {
+	for(j=0; j<nout; j++, pLomb++, pWorkspace1 += 2, pWorkspace2 += 2) {
 		hypo=sqrt((*pWorkspace2*(*pWorkspace2))+(*pWorkspace2+1)*(*pWorkspace2+1));
 		hc2wt=0.5*(*pWorkspace2/hypo);
 		hs2wt=0.5*(*pWorkspace2+1)/hypo;
@@ -342,8 +351,8 @@ void DataProcessor::four1(std::vector<double> &workspace, const int isign)
 	j=1;
 	for (i=1;i<n;i+=2) {
 		if (j > i) {
-			SWAP(&workspace.at(j-1), &workspace.at(i-1));
-			SWAP(&workspace.at(j), &workspace.at(i));
+			SWAP(workspace.at(j-1), workspace.at(i-1));
+			SWAP(workspace.at(j), workspace.at(i));
 		}
 		m=nn;
 		while (m >= 2 && j > m) {
@@ -380,25 +389,24 @@ void DataProcessor::four1(std::vector<double> &workspace, const int isign)
 
 void DataProcessor::CalculateHRV(){
 	ESP_LOGI("DataProcessor","Calculating HRV..");
-	CurrentLomb = this->DBHandler.nextLomb->getLomb().begin();
+	//CurrentLomb = this->DBHandler.nextLomb->getLomb().begin();
 	EndLomb = this->DBHandler.nextLomb->getLomb().end();
 
-	for(CurrentLomb; CurrentLomb < EndLomb; CurrentLomb++ ){
+	for(CurrentLomb = this->DBHandler.nextLomb->getLomb().begin(); CurrentLomb < EndLomb; CurrentLomb++ ){
 		if(CurrentLomb->Frequency >= 0.04 && CurrentLomb->Frequency < 0.15){
 			ESP_LOGI("DataProcessor::CalculateHRV"," Power is %f at frequency %f", CurrentLomb->Frequency, CurrentLomb->LombValue);
-			HRVData.LFPower += CurrentLomb->LombValue;
-		}else if(CurrentLomb->Frequency >= 0.15 && CurrentLomb->Frequency =< 0.4 ){
+			HRVSeries.LFPower += CurrentLomb->LombValue;
+		}else if(CurrentLomb->Frequency >= 0.15 && CurrentLomb->Frequency <= 0.4 ){
 			ESP_LOGI("DataProcessor::CalculateHRV"," Power is %f at frequency %f", CurrentLomb->Frequency, CurrentLomb->LombValue);
-			HRVData.HFPower += CurrentLomb->LombValue;
+			HRVSeries.HFPower += CurrentLomb->LombValue;
 		}
 	}
 
-	HRVData.LFHFRatio = HRVData.LFPower/HRVData.HFPower;
-	ESP_LOGI("DataProcessor","LF/HF-ratio = %f", HRVData.LFHFRatio)
+	HRVSeries.LFHFRatio = HRVSeries.LFPower/HRVSeries.HFPower;
+	ESP_LOGI("DataProcessor","LF/HF-ratio = %f", HRVSeries.LFHFRatio)
 }
 
 
 DataProcessor::~DataProcessor(){
 
 }
-

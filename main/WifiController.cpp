@@ -21,7 +21,7 @@ void run_wifi_task(void *args)  {
 
     while(1)  {
         EventBits_t uxBits;
-        uxBits = xEventGroupWaitBits(GlobalEventGroupHandle, (WifiActivateFlag | WifiReadyFlag | StandbyWifiTaskUnhandled | RBufferReadyFlag), pdTRUE, pdFALSE, portMAX_DELAY);
+        uxBits = xEventGroupWaitBits(GlobalEventGroupHandle, (WifiActivateFlag | WifiReadyFlag | StandbyWifiTaskUnhandled | RBufferReadyFlag | RRBufferReadyFlag), pdTRUE, pdFALSE, portMAX_DELAY);
 
         if((uxBits & WifiActivateFlag)) {
 			ESP_LOGI("WIFI TASK", "Connecting to wifi"); // @suppress("Symbol is not resolved")
@@ -51,10 +51,6 @@ void run_wifi_task(void *args)  {
 
         if(uxBits & RBufferReadyFlag) {
 			sTask->DPHandle.CalculateRRInterval();
-        }
-
-        if(uxBits & RRBufferReadyFlag) {
-			sTask->DPHandle.fasper();
         }
 
         if(uxBits & HRVBufferReadyFlag) {

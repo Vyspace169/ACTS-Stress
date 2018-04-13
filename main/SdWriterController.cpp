@@ -1,9 +1,10 @@
 #include "SdWriterController.hpp"
 
-SdWriterController::SdWriterController(unsigned int TaskPriority, DoubleBuffer &db, SDWriter &sdw) :
+SdWriterController::SdWriterController(unsigned int TaskPriority, DoubleBuffer &db, SDWriter &sdw, DataProcessor &dp) :
 	BaseTask(TaskPriority),
 	DBHandle(db),
-	SDWHandle(sdw)
+	SDWHandle(sdw),
+	DPHandle(dp)
 	{
 		main_task();
 	}
@@ -34,9 +35,11 @@ void run_sd_task(void *args) {
 
         if(uxBits & RRBufferReadyFlag){
         	ESP_LOGI("WRITER TASK", "Writing RR data"); // @suppress("Symbol is not resolved")
+        	sTask->DPHandle.fasper();
         	if(sTask->SDWHandle.Open() == SD_WRITER_OK) {
         		sTask->DBHandle.writeRRToSd();
         		sTask->SDWHandle.Close();
+
         	}
         }
 

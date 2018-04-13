@@ -59,7 +59,6 @@ void DoubleBuffer::storeRRData(RRSeries in){
 	}
 	else if(!nextRR->isFullRR()){
 		this->swapRR();
-		xEventGroupSetBits(GlobalEventGroupHandle, RRBufferReadyFlag);
 	}
 	//else { critical error }
 }
@@ -114,7 +113,7 @@ void DoubleBuffer::swapRR(){
 
 void DoubleBuffer::swapLomb(){
 	ESP_LOGI("DoubleBuffer", "Swap Lomb buffer"); // @suppress("Symbol is not resolved")
-	BinaryBuffer * tmpRR = this->currentLomb;
+	BinaryBuffer * tmpLomb = this->currentLomb;
 	this->currentLomb = this->nextLomb;
 	this->currentLomb->writeOnly();
 	this->nextLomb = tmpLomb;

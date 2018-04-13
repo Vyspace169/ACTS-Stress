@@ -54,8 +54,8 @@ typedef struct {
 } RData;
 
 typedef struct {
-	int RRInterval;			/**< RR-interval is milliseconds */
-	int RRTotal;			/**< Cumulative RR-intervals */
+	double RRInterval;			/**< RR-interval is milliseconds */
+	double RRTotal;			/**< Cumulative RR-intervals */
 } RRSeries;
 
 typedef struct{
@@ -120,7 +120,7 @@ typedef struct {
 /*! Battery ADC channel */
 #define ADC_BATTERY				ADC1_CHANNEL_6
 /*! Ecg ADC channel */
-#define ADC_ECG					ADC1_CHANNEL_0
+#define ADC_ECG					ADC1_CHANNEL_7
 
 /*! Sample rate in hz define */
 #define SAMPLE_RATE_H			125

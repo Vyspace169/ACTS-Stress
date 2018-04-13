@@ -187,6 +187,9 @@ public:
 	BinaryBuffer * currentR;
 	BinaryBuffer * nextR;
 	BinaryBuffer * nextRR;
+	BinaryBuffer * currentRR;
+	BinaryBuffer * currentLomb;
+	BinaryBuffer * nextLomb;
 private:
 	SDWriter &writer;
 	BinaryBuffer * firstBuffer;
@@ -199,13 +202,12 @@ private:
 
 	BinaryBuffer * firstRRBuffer;
 	BinaryBuffer * secondRRBuffer;
-	BinaryBuffer * currentRR;
+
 	//nextRR is public
 
 	BinaryBuffer * firstLombBuffer;
 	BinaryBuffer * secondLombBuffer;
-	BinaryBuffer * currentLomb;
-	BinaryBuffer * nextLomb;
+
 
 	BinaryBuffer * firstHRVBuffer;
 	BinaryBuffer * secondHRVBuffer;

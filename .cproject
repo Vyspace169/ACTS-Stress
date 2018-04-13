@@ -61,13 +61,6 @@
 									<listOptionValue builtIn="false" value="&quot;C:\msys32\home\caspe\esp\esp-idf\components\freertos&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:\msys32\home\caspe\esp\esp-idf\components\lwip&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:\Users\caspe\Git\ACTS-Stress&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;C:\msys32\home\caspe\esp\esp-idf\components\lomb&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;C:\msys32\home\caspe\esp\esp-idf\components\lomb\include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;C:\msys32\home\caspe\esp\esp-idf\components\lomb2\include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;C:\msys32\home\caspe\esp\esp-idf\components\lomb2&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;C:\msys32\home\caspe\esp\esp-idf\components\nr&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;C:\msys32\home\caspe\esp\esp-idf\components\nr\include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;C:\msys32\home\caspe\esp\esp-idf\components\numerical_recipes\include&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1653131367" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
 							</tool>
@@ -119,6 +112,7 @@
 									<listOptionValue builtIn="false" value="&quot;C:\msys32\home\caspe\esp\esp-idf\components\lwip&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:\Users\caspe\Git\ACTS-Stress&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:\msys32\home\caspe\esp\esp-idf\components\numerical_recipes\include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\msys32\home\caspe\esp\esp-idf\components\numerial_recipes&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.cygwin.1132389960" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input.cygwin"/>
 							</tool>
@@ -176,6 +170,7 @@
 									<listOptionValue builtIn="false" value="&quot;C:\msys32\home\caspe\esp\esp-idf\components\nr&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:\msys32\home\caspe\esp\esp-idf\components\nr\include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:\msys32\home\caspe\esp\esp-idf\components\numerical_recipes\include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\msys32\home\caspe\esp\esp-idf\components\numerial_recipes&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.cygwin.1049642149" superClass="cdt.managedbuild.tool.gnu.c.compiler.input.cygwin"/>
 							</tool>
