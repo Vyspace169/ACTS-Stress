@@ -43,6 +43,7 @@
 
 #include "Setup.hpp"
 
+#include "HRVController.hpp"
 #include "SdWriterController.hpp"
 #include "SensorController.hpp"
 #include "StandbyController.hpp"
@@ -144,6 +145,9 @@ extern "C" void app_main(void)
 
     // Create and run SDWriter task
     SdWriterController *sdw = new SdWriterController(WRITERTASK_PRIORITY, *GlobalDoubleBuffer, *GlobalSDWriter, *GlobalDataHandler);
+
+    // Create and run HRVTask
+   // HRVController *hrv = new HRVController(HRVTASK_PRIORITY, *GlobalDoubleBuffer, *GlobalSDWriter, *GlobalDataHandler);
 
     // Create and run Wifi task
     WifiController *wt = new WifiController(WIFITASK_PRIORITY, *GlobalDataHandler);

@@ -39,8 +39,8 @@ void run_sd_task(void *args) {
         	if(sTask->SDWHandle.Open() == SD_WRITER_OK) {
         		sTask->DBHandle.writeRRToSd();
         		sTask->SDWHandle.Close();
-
         	}
+        	xEventGroupSetBits(GlobalEventGroupHandle, RRBufferSDReadyFlag);
         }
 
         if(uxBits & HRVBufferReadyFlag){

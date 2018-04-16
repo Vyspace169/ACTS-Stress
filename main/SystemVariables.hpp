@@ -97,9 +97,11 @@ typedef struct {
 /*! Flag to signal that one of the RR-interval buffers is full */
 #define RRBufferReadyFlag			( 1 << 13 )
 /*! Flag to signal that one of the Lomb buffers is full */
-#define LombBufferReadyFlag			( 1 << 14 )
+#define RRBufferSDReadyFlag			( 1 << 13 )
+/*! Flag to signal that one of the Lomb buffers is full */
+#define LombBufferReadyFlag			( 1 << 15 )
 /*! Flag to signal that one of the RR-interval buffers is full */
-#define HRVBufferReadyFlag			( 1 << 15 )
+#define HRVBufferReadyFlag			( 1 << 16 )
 
 /*! Blue LED GPIO define */
 #define GPIO_LED_BLUE			GPIO_NUM_13
@@ -248,7 +250,7 @@ typedef struct {
  * Values should be written to a separate buffer
  * for R-peak detection.
  */
-#define R_PEAK_THRESHOLD		1000 //TODO determine threshold value
+#define R_PEAK_THRESHOLD		600 //TODO determine threshold value
 
 #define OneMinute				60000
 #define FiveMinutes				300000
@@ -314,11 +316,11 @@ typedef struct {
 #define BLINKTASK_STACK_SIZE 	2048
 
 /*! HRVTask core num define */
-#define HRVTASK_CORE_NUM 		0
+#define HRVTASK_CORE_NUM 		1
 /*! HRVTask priority define */
 #define HRVTASK_PRIORITY 		6
 /*! HRVTask stack size define */
-#define HRVTASK_STACK_SIZE 	2048
+#define HRVTASK_STACK_SIZE 		8192
 
 /*! Wifi event bit used in WiFiC.c file */
 #define WIFI_EVENT_BIT			1

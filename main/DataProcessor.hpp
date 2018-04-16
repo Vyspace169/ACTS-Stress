@@ -125,7 +125,7 @@ public:
      *
      * Used by fasper() to extirpolate RR-intervals
      */
-    void spread(double y, std::vector<double> &yy, double x, int m);
+    void spread(double y, std::vector<double> yy, double x, int m);
 
 
     void four1(std::vector<double> &workspace, const int isign);

@@ -122,6 +122,7 @@ void DataProcessor::CalculateRRInterval()
 
 				//ESP_LOGW("DataProcessor"," RR-interval found, RR-interval is: %d", RRInterval);
 				RRData.RRInterval = RRInterval;
+				ESP_LOGI("DataProcessor","RRInterval %d", RRInterval);
 				RRTotal += RRInterval;
 				this->DBHandler.storeRRData(RRData);
 				FirstRPeak = SecondRPeak;
@@ -160,7 +161,7 @@ void DataProcessor::fasper(){
 
 	pLomb = this->DBHandler.currentLomb->getLomb().begin();
 
-	const int MACC=4;
+	int MACC=4;
 	int NrOfRR 	= this->DBHandler.nextRR->getRR().size();
 	int np 		= this->DBHandler.currentLomb->getLomb().size();
 	int nout 	= int(0.5 * OversamplingFactor * HighestFrequency * NrOfRR);
@@ -196,7 +197,7 @@ void DataProcessor::fasper(){
 
 	//Calculate ordinates and place marker before 1 minuten mark
 	while(CurrentRR != EndRR){
-		CurrentRR->RRTotal += CurrentRR->RRInterval;
+		CurrentRR->RRTotal = CurrentRR->RRInterval + (CurrentRR-1)->RRTotal;
 		if(CurrentRR->RRTotal >= OneMinute){
 			NextHRVMarker = CurrentRR-1;
 			this->DBHandler.currentRR->getRR().insert(CurrentRRHRVMarker, NextHRVMarker, EndRR);
@@ -206,6 +207,9 @@ void DataProcessor::fasper(){
 	CurrentRR = this->DBHandler.nextRR->getRR().begin();
 
 	AverageRR = LastRRt->RRTotal/NrOfRR;
+	ESP_LOGI("DataProcessor", "Total RR %f", LastRRt->RRTotal);
+	ESP_LOGI("DataProcessor", "NRofRR RR %d", NrOfRR);
+
 	ESP_LOGI("DataProcessor", "Average RR %f", AverageRR);
 
 	//Calculate variance
@@ -233,7 +237,7 @@ void DataProcessor::fasper(){
 		ckk=2.0*(ck++);
 		ckk=fmod(ckk,fndim);
 		++ckk;
-		spread(CurrentRR->RRInterval-AverageRR, Workspace1, ck, MACC);
+		//spread(CurrentRR->RRInterval-AverageRR, Workspace1, ck, MACC);
 		spread(1.0, Workspace2, ckk, MACC);
 		CurrentRR++;
 	}
@@ -266,7 +270,8 @@ void DataProcessor::fasper(){
 	ESP_LOGI("DataProcessor","LombBufferReadyFlag Ready");
 }
 
-void DataProcessor::spread(double y, std::vector<double> &yy, double x, int m) {
+void DataProcessor::spread(double y, std::vector<double> yy, double x, int m) {
+	ESP_LOGI("DataProcessor","Spreading data");
 	static int nfac[11]={0,1,1,2,6,24,120,720,5040,40320,362880};
 	int ihi, ilo, ix, j, nden, n=yy.size();
 	double fac;
