@@ -35,7 +35,7 @@ void run_sd_task(void *args) {
 
         if(uxBits & RRBufferReadyFlag){
         	ESP_LOGI("WRITER TASK", "Writing RR data"); // @suppress("Symbol is not resolved")
-        	sTask->DPHandle.fasper();
+        	//sTask->DPHandle.fasper();
         	if(sTask->SDWHandle.Open() == SD_WRITER_OK) {
         		sTask->DBHandle.writeRRToSd();
         		sTask->SDWHandle.Close();

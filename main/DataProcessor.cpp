@@ -95,8 +95,8 @@ void DataProcessor::CalculateRRInterval()
 				//ESP_LOGW("DataProcessor"," CurrentRValue %d", CurrentRValue);
 				//ESP_LOGW("DataProcessor"," it->potentialRPeak %d", it->potentialRPeak);
 				ESP_LOGW("DataProcessor"," First Peak found, peak is: %d at sample %d", CurrentRValue, FirstRPeak);
-				CurrentRValue = CurrentR->potentialRPeak;		//
 				CurrentR++;
+				CurrentRValue = CurrentR->potentialRPeak;		//
 			}
 		}
 
@@ -152,10 +152,15 @@ void DataProcessor::CalculateRRInterval()
 	}
 	this->DBHandler.nextR->clearR();
 	PeakHasBeenFound = false;
-	xEventGroupClearBits(GlobalEventGroupHandle, RBufferReadyFlag);
+	//xEventGroupClearBits(GlobalEventGroupHandle, RBufferReadyFlag);
 	ESP_LOGI("DataProcessor","RBufferReadyFlag cleared");
 }
 
+
+void DataProcessor::fasper(){
+
+}
+/*
 void DataProcessor::fasper(){
 	ESP_LOGI("DataProcessor", "Calculating Lomb periodogram...");
 
@@ -168,7 +173,7 @@ void DataProcessor::fasper(){
 	int nfreqt 	= int(OversamplingFactor * HighestFrequency * NrOfRR * MACC);
 	int nfreq	= 64;
 	int j, k, nwk;
-	double ck,ckk,cterm,cwt,den,df,effm,expy,fac,fndim,hc2wt,hs2wt,
+	double ck,ckk = 0,cterm,cwt,den,df,effm,expy,fac,fndim,hc2wt,hs2wt,
 		hypo,pmax,sterm,swt,VarianceTMP = 0,VarianceRR = 0,RRRange, AverageRR = 0;
 
 
@@ -225,9 +230,9 @@ void DataProcessor::fasper(){
 	if (VarianceRR == 0.0){
 		ESP_LOGE("DataProcessor::fasper", "zero variance in fasper");
 	}
-
-	Workspace1.clear();
-	Workspace2.clear();
+	std::vector<double> Workspace1 (nwk, 0);
+	std::vector<double> Workspace2 (nwk, 0);
+	std::vector<double>::iterator pWorkspace1 = Workspace1.begin(), pWorkspace2 = Workspace2.begin()+2;
 
 	fac=nwk/(NrOfRR*OversamplingFactor);
 	fndim=nwk;
@@ -237,7 +242,7 @@ void DataProcessor::fasper(){
 		ckk=2.0*(ck++);
 		ckk=fmod(ckk,fndim);
 		++ckk;
-		//spread(CurrentRR->RRInterval-AverageRR, Workspace1, ck, MACC);
+		spread(CurrentRR->RRInterval-AverageRR, Workspace1, ck, MACC);
 		spread(1.0, Workspace2, ckk, MACC);
 		CurrentRR++;
 	}
@@ -258,8 +263,10 @@ void DataProcessor::fasper(){
 
 		cterm=SQR(cwt*(*pWorkspace1)+swt*(*pWorkspace2+1))/den;
 		sterm=SQR(cwt**pWorkspace2+1)-swt*(*pWorkspace1)/(NrOfRR-den);
-		pLomb->Frequency = (j+1)*df;
-		pLomb->LombValue = (cterm+sterm)/(2.0*VarianceRR);
+		LombData.Frequency = (j+1)*df;
+		LombData.LombValue = (cterm+sterm)/(2.0*VarianceRR);
+		this->DBHandler.storeLombData(LombData);
+		ESP_LOGI("DataProcessorfasper","Frequency/Lomb : %f : %f", LombData.Frequency, LombData.LombValue);
 	}
 
 	this->DBHandler.swapLomb();
@@ -268,38 +275,153 @@ void DataProcessor::fasper(){
 	ESP_LOGI("DataProcessor","RRBufferReadyFlag cleared");
 	xEventGroupSetBits(GlobalEventGroupHandle, LombBufferReadyFlag);
 	ESP_LOGI("DataProcessor","LombBufferReadyFlag Ready");
+	CalculateHRV();
+}
+*/
+
+void DataProcessor::fasper2(){
+	ESP_LOGI("DataProcessor", "Calculating Lomb periodogram...");
+
+	pLomb = this->DBHandler.currentLomb->getLomb().begin();
+
+	int MACC=4;
+	int NrOfRR 	= this->DBHandler.nextR->getR().size();
+	int np 		= this->DBHandler.currentLomb->getLomb().size();
+	int nout 	= int(0.5 * OversamplingFactor * HighestFrequency * NrOfRR);
+	int nfreqt 	= int(OversamplingFactor * HighestFrequency * NrOfRR * MACC);
+	int nfreq	= 64;
+	int j, k, nwk;
+	double ck,ckk = 0,cterm,cwt,den,df,effm,expy,fac,fndim,hc2wt,hs2wt,
+		hypo,pmax,sterm,swt,VarianceTMP = 0,VarianceRR = 0,RRRange, AverageRR = 0;
+
+
+	//iterators
+	CurrentRR = this->DBHandler.nextR->getR().begin();
+	EndRR = this->DBHandler.nextR->getR().end();
+
+	//pointers
+	FirstRRi = this->DBHandler.nextR->getR().begin();
+	LastRRi = this->DBHandler.nextR->getR().end();
+	FirstRRt = this->DBHandler.nextR->getR().begin();
+	LastRRt = this->DBHandler.nextR->getR().end()-1;
+	RRRange = this->DBHandler.nextR->getR().size();
+
+	while (nfreq < nfreqt){
+		nfreq <<= 1;
+	}
+
+	nwk = nfreq << 1;
+
+	/*if (np < nout) {
+		this->DBHandler.currentLomb->getLomb().resize(nout);
+	}
+*/
+	CurrentRRHRVMarker = this->DBHandler.currentR->getR().begin();
+
+	//Calculate ordinates and place marker before 1 minuten mark
+	while(CurrentRR != EndRR){
+		CurrentRR->potentialRPeak = CurrentRR->sampleNr + (CurrentRR-1)->sampleNr;
+		if(CurrentRR->sampleNr >= OneMinute){
+			NextHRVMarker = CurrentRR-1;
+			this->DBHandler.currentR->getR().insert(CurrentRRHRVMarker, NextHRVMarker, EndRR);
+		}
+		CurrentRR++;
+	}
+	CurrentRR = this->DBHandler.nextR->getR().begin();
+
+	AverageRR = LastRRt->sampleNr/NrOfRR;
+
+	//Calculate variance
+	while(CurrentRR != EndRR){
+		VarianceTMP += pow((CurrentRR->potentialRPeak-AverageRR),2);
+		CurrentRR++;
+	}
+	CurrentRR = this->DBHandler.nextR->getR().begin();
+	VarianceRR = VarianceTMP/NrOfRR;
+
+	ESP_LOGI("DataProcessor", "Variance RR %f", VarianceRR);
+
+	if (VarianceRR == 0.0){
+		ESP_LOGE("DataProcessor::fasper", "zero variance in fasper");
+	}
+	std::vector<double> Workspace1 (nwk, 0);
+	std::vector<double> Workspace2 (nwk, 0);
+	std::vector<double>::iterator pWorkspace1 = Workspace1.begin(), pWorkspace2 = Workspace2.begin()+2;
+
+	fac=nwk/(NrOfRR*OversamplingFactor);
+	fndim=nwk;
+
+	while(CurrentRR != EndRR){
+		ck=fmod((CurrentRR->potentialRPeak-FirstRRt->sampleNr)*fac,fndim);
+		ckk=2.0*(ck++);
+		ckk=fmod(ckk,fndim);
+		++ckk;
+		spread(CurrentRR->potentialRPeak-AverageRR, Workspace1, ck, MACC);
+		spread(1.0, Workspace2, ckk, MACC);
+		CurrentRR++;
+	}
+
+	realft(Workspace1, 1);
+	realft(Workspace2, 1);
+
+	df=1.0/(RRRange*OversamplingFactor);
+	pmax =-1.0;
+
+	for(j=0; j<nout; j++, pLomb++, pWorkspace1 += 2, pWorkspace2 += 2) {
+		hypo=sqrt((*pWorkspace2*(*pWorkspace2))+(*pWorkspace2+1)*(*pWorkspace2+1));
+		hc2wt=0.5*(*pWorkspace2/hypo);
+		hs2wt=0.5*(*pWorkspace2+1)/hypo;
+		cwt=sqrt(0.5+hc2wt);
+		swt=SIGN(sqrt(0.5-hc2wt),hs2wt);
+		den=0.5*NrOfRR+hc2wt*(*pWorkspace2)+hs2wt*(*pWorkspace2+1);
+
+		cterm=SQR(cwt*(*pWorkspace1)+swt*(*pWorkspace2+1))/den;
+		sterm=SQR(cwt**pWorkspace2+1)-swt*(*pWorkspace1)/(NrOfRR-den);
+		LombData.Frequency = (j+1)*df;
+		LombData.LombValue = (cterm+sterm)/(2.0*VarianceRR);
+		this->DBHandler.storeLombData(LombData);
+		ESP_LOGI("DataProcessorfasper","Frequency/Lomb : %f : %f", LombData.Frequency, LombData.LombValue);
+	}
+
+	this->DBHandler.swapLomb();
+
+	xEventGroupClearBits(GlobalEventGroupHandle, RRBufferReadyFlag);
+	ESP_LOGI("DataProcessor","RRBufferReadyFlag cleared");
+	xEventGroupSetBits(GlobalEventGroupHandle, LombBufferReadyFlag);
+	ESP_LOGI("DataProcessor","LombBufferReadyFlag Ready");
+	CalculateHRV();
 }
 
-void DataProcessor::spread(double y, std::vector<double> yy, double x, int m) {
+void DataProcessor::spread(double y, std::vector<double> &yy, double x, int m) {
 	ESP_LOGI("DataProcessor","Spreading data");
 	static int nfac[11]={0,1,1,2,6,24,120,720,5040,40320,362880};
 	int ihi, ilo, ix, j, nden, n=yy.size();
 	double fac;
 
-		if (m > 10){
+	//ESP_LOGI("DataProcessor:spread","yy.size %d", n);
+
+	if (m > 10){
 			ESP_LOGE("DataProccesor::Spread", "factorial table too small in spread"); // @suppress("Symbol is not resolved")
 		}
 
-		ix=int(x);
+		ix=static_cast<int>(x);
 
-		if (x == double(ix)){
-			yy[ix-1] += y;
+		if (x == static_cast<double>(ix)){
+			yy.at(ix-1) += y;
 		}
 		else {
 			ilo=MIN(MAX(int(x-0.5*m),0),int(n-m));
 			ihi=ilo+m;
 			nden=nfac[m];
 			fac=x-ilo-1;
-
 		for (j=ilo+1;j<ihi;j++){
 			fac *= (x-j-1);
 		}
 
-		yy[ihi-1] += y*fac/(nden*(x-ihi));
-
+		yy.at(ihi-1) += y*fac/(nden*(x-ihi));
 		for (j=ihi-1;j>ilo;j--) {
 			nden=(nden/(j-ilo))*(j-ihi);
-			yy[j-1] += y*fac/(nden*(x-j));
+			yy.at(j-1) += y*fac/(nden*(x-j));
 		}
 	}
 }
@@ -398,6 +520,7 @@ void DataProcessor::CalculateHRV(){
 	EndLomb = this->DBHandler.nextLomb->getLomb().end();
 
 	for(CurrentLomb = this->DBHandler.nextLomb->getLomb().begin(); CurrentLomb < EndLomb; CurrentLomb++ ){
+		ESP_LOGI("DataProcessor","entered for loop");
 		if(CurrentLomb->Frequency >= 0.04 && CurrentLomb->Frequency < 0.15){
 			ESP_LOGI("DataProcessor::CalculateHRV"," Power is %f at frequency %f", CurrentLomb->Frequency, CurrentLomb->LombValue);
 			HRVSeries.LFPower += CurrentLomb->LombValue;

@@ -125,7 +125,7 @@ public:
      *
      * Used by fasper() to extirpolate RR-intervals
      */
-    void spread(double y, std::vector<double> yy, double x, int m);
+    void spread(double y, std::vector<double> &yy, double x, int m);
 
 
     void four1(std::vector<double> &workspace, const int isign);
@@ -141,6 +141,7 @@ public:
      * This method determines
      */
     void fasper();
+    void fasper2();
 
     void CalculateHRV();
 
@@ -185,10 +186,10 @@ private:
 
 	//fasper
 	std::vector<Lomb>::iterator pLomb, CurrentLomb, EndLomb;
-	std::vector<RRSeries>::iterator CurrentRR, EndRR , NextHRVMarker, CurrentRRHRVMarker;
+	std::vector<RData>::iterator CurrentRR, EndRR , NextHRVMarker, CurrentRRHRVMarker;
 	std::vector<double> Workspace1, Workspace2;
-	std::vector<double>::iterator pWorkspace1 = Workspace1.begin(), pWorkspace2 = Workspace2.begin()+2;
-	std::vector<RRSeries>::iterator FirstRRi, LastRRi, FirstRRt, LastRRt;
+	std::vector<RData>::iterator FirstRRi, LastRRi, FirstRRt, LastRRt;
+	Lomb LombData;
 	//HRV
 	HRVData HRVSeries;
 

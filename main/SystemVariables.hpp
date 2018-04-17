@@ -250,7 +250,7 @@ typedef struct {
  * Values should be written to a separate buffer
  * for R-peak detection.
  */
-#define R_PEAK_THRESHOLD		600 //TODO determine threshold value
+#define R_PEAK_THRESHOLD		0 //TODO determine threshold value
 
 #define OneMinute				60000
 #define FiveMinutes				300000
@@ -263,13 +263,7 @@ typedef struct {
 /*! Highest Frequency to be evaluated for the
  * Lomb Periodogram
  */
-#define HighestFrequency		0.4
-
-/*!Lomb defines
- *
- */
-#define PI						3,141592653589793238
-#define TAU 					6.283185307179586476
+#define HighestFrequency		5
 
 /*! Sensortask core num define */
 #define SENSORTASK_CORE_NUM 	1
