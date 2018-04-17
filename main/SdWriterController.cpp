@@ -40,7 +40,7 @@ void run_sd_task(void *args) {
         		sTask->DBHandle.writeRRToSd();
         		sTask->SDWHandle.Close();
         	}
-        	xEventGroupSetBits(GlobalEventGroupHandle, RRBufferSDReadyFlag);
+        	//xEventGroupSetBits(GlobalEventGroupHandle, RRBufferSDReadyFlag);
         }
 
         if(uxBits & HRVBufferReadyFlag){

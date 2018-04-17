@@ -94,7 +94,7 @@ void DataProcessor::CalculateRRInterval()
 				FirstRPeak = (CurrentR->sampleNr-1);
 				//ESP_LOGW("DataProcessor"," CurrentRValue %d", CurrentRValue);
 				//ESP_LOGW("DataProcessor"," it->potentialRPeak %d", it->potentialRPeak);
-				//ESP_LOGW("DataProcessor"," First Peak found, peak is: %d at sample %d", CurrentRValue, FirstRPeak);
+				ESP_LOGW("DataProcessor"," First Peak found, peak is: %d at sample %d", CurrentRValue, FirstRPeak);
 				CurrentRValue = CurrentR->potentialRPeak;		//
 				CurrentR++;
 			}
@@ -110,7 +110,7 @@ void DataProcessor::CalculateRRInterval()
 				SecondRPeak = (CurrentR->sampleNr-1);
 				//ESP_LOGI("DataProcessor"," CurrentRValue %d", CurrentRValue);
 				//ESP_LOGI("DataProcessor"," it->potentialRPeak %d at sample %d", it->potentialRPeak, it->sampleNr);
-				//ESP_LOGW("DataProcessor"," Second Peak found, peak is: %d at sample %d", CurrentRValue, SecondRPeak);
+				ESP_LOGW("DataProcessor"," Second Peak found, peak is: %d at sample %d", CurrentRValue, SecondRPeak);
 
 				if(SecondRPeak > FirstRPeak){
 					RRInterval = ((SecondRPeak - FirstRPeak) * 1000) / SAMPLE_RATE_H; //calculate RR-interval is milliseconds
@@ -120,7 +120,7 @@ void DataProcessor::CalculateRRInterval()
 					//ESP_LOGI("DataProcessor"," FirstRPeak %d > SecondRPeak %d, ", FirstRPeak, SecondRPeak);
 				}
 
-				//ESP_LOGW("DataProcessor"," RR-interval found, RR-interval is: %d", RRInterval);
+				ESP_LOGW("DataProcessor"," RR-interval found, RR-interval is: %d", RRInterval);
 				RRData.RRInterval = RRInterval;
 				ESP_LOGI("DataProcessor","RRInterval %d", RRInterval);
 				RRTotal += RRInterval;
