@@ -50,7 +50,7 @@ void run_wifi_task(void *args)  {
         }
 
         if(uxBits & RBufferReadyFlag) {
-			sTask->DPHandle.fasper2();
+			sTask->DPHandle.CalculateRRInterval();
         }
 
        /* if(uxBits & RRBufferSDReadyFlag){

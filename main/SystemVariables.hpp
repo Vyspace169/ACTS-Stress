@@ -250,7 +250,7 @@ typedef struct {
  * Values should be written to a separate buffer
  * for R-peak detection.
  */
-#define R_PEAK_THRESHOLD		0 //TODO determine threshold value
+#define R_PEAK_THRESHOLD		700 //TODO determine threshold value
 
 #define OneMinute				60000
 #define FiveMinutes				300000
