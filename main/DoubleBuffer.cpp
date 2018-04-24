@@ -6,10 +6,6 @@
 DoubleBuffer::DoubleBuffer(SDWriter &wr) :
 writer{wr}
 {
-
-	Workspace1.reserve(16384);
-	Workspace2.reserve(16384);
-
 	this->firstBuffer = new BinaryBuffer();
 	this->secondBuffer = new BinaryBuffer();
 	this->current = this->firstBuffer;

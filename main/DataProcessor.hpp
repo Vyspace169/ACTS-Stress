@@ -125,6 +125,8 @@ public:
      */
     void CalculateRRInterval();
 
+    void period();
+
     /*!
      * \brief Extirpolate data
      * \param y value
@@ -193,6 +195,11 @@ private:
 	std::vector<RData>::iterator CurrentR, EndR;
 	bool LastBeatWasEctopic = false;
 
+	//periode.h
+	std::vector<double> wi, wpi, wpr, wr;
+	std::vector<RRSeries>::iterator RRBegin, RREnd;
+	Lomb LombData;
+
 	//spread
 	float y, x;
 	int m;
@@ -210,7 +217,7 @@ private:
 	std::vector<float>::iterator pWorkspace1, pWorkspace2;
 	//std::vector<double>::iterator pWorkspace1, pWorkspace2;
 	bool OverlapCreated = false;
-	Lomb LombData;
+	//Lomb LombData;
 	//HRV
 	HRVData HRVSeries;
 
