@@ -35,7 +35,7 @@ void run_sd_task(void *args) {
 
         if(uxBits & RRBufferReadyFlag){
         	ESP_LOGI("WRITER TASK", "Writing RR data"); // @suppress("Symbol is not resolved")
-        	//sTask->DPHandle.fasper();
+        	sTask->DPHandle.fasper();
         	if(sTask->SDWHandle.Open() == SD_WRITER_OK) {
         		sTask->DBHandle.writeRRToSd();
         		sTask->SDWHandle.Close();
@@ -53,6 +53,10 @@ void run_sd_task(void *args) {
 
 
     }
+}
+
+void set_HRV_calculation_bit( TimerHandle_t xTimer )  {
+    xEventGroupSetBits(GlobalEventGroupHandle, HRVCalculationFlag);
 }
 
 void SdWriterController::main_task() {
@@ -79,4 +83,21 @@ void SdWriterController::main_task() {
 	  }
 
 	  ESP_LOGI("WRITER TASK", "Task is running"); // @suppress("Symbol is not resolved")
+
+	  /*
+		TimerHandle_t HRVTimer_1 = NULL;
+		HRVTimer_1 = xTimerCreate("HRVClock_1",
+				OneMinute,
+				pdTRUE,
+				HRV_1_TIMER_ID,
+				set_HRV_calculation_bit);
+
+		if(HRVTimer_1 == NULL) {
+			// Something has failed creating the timer
+			ESP_LOGI("SENSOR TASK", "HRV 1 Timer creation failed"); // @suppress("Symbol is not resolved")
+		} else {
+			ESP_LOGI("SENSOR TASK", "HRV 1 Timer created"); // @suppress("Symbol is not resolved")
+		}
+		*/
+
 }

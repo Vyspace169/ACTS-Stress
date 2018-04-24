@@ -38,6 +38,7 @@ public:
   SdWriterController(unsigned int task_priority, DoubleBuffer &db, SDWriter &sdw, DataProcessor &dp);
   ~SdWriterController() = delete; //Should be deleted?
   friend void run_sd_task(void *args);
+  void *HRV_1_TIMER_ID = 0;
 private:
   DoubleBuffer &DBHandle;
   SDWriter &SDWHandle;

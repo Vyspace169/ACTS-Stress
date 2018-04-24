@@ -114,6 +114,15 @@ public:
      * Potential R-peaks are passed to this method.
      * This method determines
      */
+    int DigitalFilter();
+
+    /*!
+     * \brief CalculateRRInterval method
+     * \param RData structure with potential R-peaks
+     *
+     * Potential R-peaks are passed to this method.
+     * This method determines
+     */
     void CalculateRRInterval();
 
     /*!
@@ -125,12 +134,16 @@ public:
      *
      * Used by fasper() to extirpolate RR-intervals
      */
-    void spread(double y, std::vector<double> &yy, double x, int m);
+
+    void spread(float y, std::vector<float> &yy, float x, int m);
+    //void spread(double y, std::vector<double> &yy, double x, int m);
 
 
-    void four1(std::vector<double> &workspace, const int isign);
+    void four1(std::vector<float> &workspace, const int isign);
+    //void four1(std::vector<double> &workspace, const int isign);
 
-    void realft(std::vector<double> &workspace, const int isign);
+    void realft(std::vector<float> &workspace, const int isign);
+    //void realft(std::vector<double> &workspace, const int isign);
 
     /*!
      * \brief FASt computation of lomb PERiodogram
@@ -144,6 +157,8 @@ public:
     void fasper2();
 
     void CalculateHRV();
+
+    void CalculateStress();
 
     /*!
      * \brief DataProcessor deconstructor
@@ -165,6 +180,7 @@ private:
     int TriggerValueX;
     int TriggerValueY;
     int TriggerValueZ;
+    float Magnitude;
 
     int CurrentRValue = 0;
     int FirstRPeak;
@@ -172,23 +188,28 @@ private:
     bool PeakHasBeenFound = false;
 
     RRSeries RRData;
-    int RRInterval;
+    int RRInterval = 0, LastRRInterval = 0;
     int RRTotal = 0;
 	std::vector<RData>::iterator CurrentR, EndR;
+	bool LastBeatWasEctopic = false;
 
 	//spread
-	double y, x;
+	float y, x;
 	int m;
-	std::vector<double> yy;
+	std::vector<float> yy;
+	//std::vector<double> yy;
 
 	//realft
-	std::vector<double> workspace;
+	std::vector<float> workspace;
+	//std::vector<double> workspace;
 
 	//fasper
 	std::vector<Lomb>::iterator pLomb, CurrentLomb, EndLomb;
-	std::vector<RData>::iterator CurrentRR, EndRR , NextHRVMarker, CurrentRRHRVMarker;
-	std::vector<double> Workspace1, Workspace2;
-	std::vector<RData>::iterator FirstRRi, LastRRi, FirstRRt, LastRRt;
+	std::vector<RRSeries>::iterator CurrentRR, EndRR , NextHRVMarker, CurrentRRHRVMarker;
+	std::vector<RRSeries>::iterator FirstRRi, LastRRi, FirstRRt, LastRRt;
+	std::vector<float>::iterator pWorkspace1, pWorkspace2;
+	//std::vector<double>::iterator pWorkspace1, pWorkspace2;
+	bool OverlapCreated = false;
 	Lomb LombData;
 	//HRV
 	HRVData HRVSeries;
