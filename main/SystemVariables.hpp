@@ -274,7 +274,7 @@ typedef struct {
 /*! Oversampling factor for calculating
  * Lomb Periodogram
  */
-#define OversamplingFactor		2
+#define OversamplingFactor		4
 
 /*! Highest Frequency to be evaluated for the
  * Lomb Periodogram

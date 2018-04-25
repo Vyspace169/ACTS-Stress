@@ -121,19 +121,20 @@ void DataProcessor::CalculateRRInterval()
 					RRInterval = ((SecondRPeak - FirstRPeak) * 1000) / SAMPLE_RATE_H; //calculate RR-interval is milliseconds
 					//ESP_LOGI("DataProcessor","RBuffer hasn't been swapped: regular RR-interval calculation");
 				}else{
-					RRInterval = ((RBUFFER_SIZE - FirstRPeak + SecondRPeak) * 1000) / SAMPLE_RATE_H;
+					RRInterval = ((BINARY_BUFFER_SIZE - FirstRPeak + SecondRPeak) * 1000) / SAMPLE_RATE_H;
 					//ESP_LOGI("DataProcessor","RBuffer has been swapped, alternative RR-interval calculation");
 				}
 
 				if(RRInterval <= 0.8*LastRRInterval && LastBeatWasEctopic == false){
-					//ESP_LOGI("DataProcessor"," RR-interval found, RR-interval is: %d", RRInterval); // @suppress("Symbol is not resolved")
-					//ESP_LOGI("DataProcessor"," Ectopic beat found, ignore this RRInterval"); // @suppress("Symbol is not resolved")
+					ESP_LOGI("DataProcessor"," RR-interval found, RR-interval is: %d", RRInterval); // @suppress("Symbol is not resolved")
+					ESP_LOGI("DataProcessor"," Ectopic beat found, ignore this RRInterval"); // @suppress("Symbol is not resolved")
 					FirstRPeak = SecondRPeak;
 					LastBeatWasEctopic = true;
 				} else{
 					if(LastBeatWasEctopic == false){
-						//ESP_LOGI("DataProcessor"," RR-interval found, RR-interval is: %d", RRInterval); // @suppress("Symbol is not resolved")
+						ESP_LOGI("DataProcessor"," RR-interval found, RR-interval is: %d", RRInterval); // @suppress("Symbol is not resolved")
 						RRData.RRInterval = RRInterval;
+						RRData.RRTotal= 0;
 						LastRRInterval = RRInterval;
 						RRTotal += RRInterval;
 						this->DBHandler.storeRRData(RRData);
@@ -157,14 +158,11 @@ void DataProcessor::CalculateRRInterval()
 					//ESP_LOGI("DataProcessor"," it->potentialRPeak %d at sample %d", it->potentialRPeak, it->sampleNr);
 				}
 
-				ESP_LOGI("DataProcessor","RRTotal %d", RRTotal);
-
-				if(RRTotal > 225000){
+				if(RRTotal > 30000){
 					this->DBHandler.swapRR();
 					xEventGroupSetBits(GlobalEventGroupHandle, RRBufferReadyFlag);
 					ESP_LOGI("DataProcessor","RRBufferReadyFlag set");
 					RRTotal = 0;
-					//fasper();
 				}
 
 				if(CurrentR != EndR){
@@ -180,115 +178,148 @@ void DataProcessor::CalculateRRInterval()
 	ESP_LOGI("DataProcessor","RBufferReadyFlag cleared");
 }
 
-void DataProcessor::fasper(){
-	//xTimerStart(HRV_1_TIMER_ID, 0 );
+void DataProcessor::period() {
+	const double TWOPI=6.283185307179586476;
+	int i,j, RRTotalTMP = 0;
+	int n=this->DBHandler.nextRR->getRR().size();
+	int np = this->DBHandler.currentLomb->getLomb().size();
+	double AverageRR,c,cc,cwtau,effm,expy,pnow = 0, prob,pymax = 0,s,ss,sumc,sumcy,sums,sumsh,
+		sumsy,swtau,VarianceRR = 0, VarianceTMP = 0,wtau,xave,xdif,xmax,xmin,yy,arg,wtemp;
+	wi.resize(n), wpi.resize(n), wpr.resize(n),wr.resize(n);
+	int nout=int(0.5*OversamplingFactor*HighestFrequency*n);
 
-	ESP_LOGI("DataProcessor", "Calculating Lomb periodogram...");
-	pLomb = this->DBHandler.currentLomb->getLomb().begin();
-	int MACC=4;
-	int NrOfRR 	= this->DBHandler.nextRR->getRR().size();
-	int np 		= this->DBHandler.currentLomb->getLomb().size();
-	int nout 	= int(0.5 * OversamplingFactor * HighestFrequency * NrOfRR);
-	int nfreqt 	= int(OversamplingFactor * HighestFrequency * NrOfRR * MACC);
-	int nfreq	= 64;
-	int j, k, nwk;
-	float ck,ckk = 0,cterm,cwt,den,df,effm,expy,fac,fndim,hc2wt,hs2wt,
-		hypo,pmax,sterm,swt,VarianceTMP = 0,VarianceRR = 0,RRRange, AverageRR = 0;
-	//iterators
-	CurrentRR = this->DBHandler.nextRR->getRR().begin();
-	EndRR = this->DBHandler.nextRR->getRR().end();
-	//pointers
-	FirstRRi = this->DBHandler.nextRR->getRR().begin();
-	LastRRi = this->DBHandler.nextRR->getRR().end();
-	FirstRRt = this->DBHandler.nextRR->getRR().begin();
-	LastRRt = this->DBHandler.nextRR->getRR().end()-1;
-	RRRange = this->DBHandler.nextRR->getRR().size();
-	while (nfreq < nfreqt){
-		nfreq <<= 1;
-	}
-	nwk = nfreq << 1;
+	//iterators for RRBuffer
+	RRBegin = this->DBHandler.nextRR->getRR().begin();
+	RREnd = this->DBHandler.nextRR->getRR().end();
+
 	if (np < nout) {
 		this->DBHandler.currentLomb->getLomb().resize(nout);
 	}
-	//CurrentRRHRVMarker = this->DBHandler.currentRR->getRR().begin();
-	//Calculate ordinates and place marker before 1 minute mark
-	for(CurrentRR = this->DBHandler.nextRR->getRR().begin(); CurrentRR < EndRR; CurrentRR++){
-		CurrentRR->RRTotal = CurrentRR->RRInterval + (CurrentRR-1)->RRTotal;
-		if(CurrentRR->RRTotal >= OneMinute && OverlapCreated == false){
-			NextHRVMarker = CurrentRR-1;
-			this->DBHandler.currentRR->getRR().insert(this->DBHandler.currentRR->getRR().begin(), NextHRVMarker, EndRR);
+
+	//Loop through RRBuffer to calculate abscissas and create overlap
+	for(RRBegin = this->DBHandler.nextRR->getRR().begin(); RRBegin < RREnd; RRBegin++){
+		RRTotalTMP += RRBegin->RRInterval;
+		RRBegin->RRTotal= RRTotalTMP;
+		if(RRBegin->RRTotal >= OneMinute && OverlapCreated == false){
+			NextHRVMarker = RRBegin-1;
+			this->DBHandler.currentRR->getRR().insert(this->DBHandler.currentRR->getRR().begin(), NextHRVMarker, RREnd);
 			ESP_LOGI("DataProcessor", "insert last four minutes in other buffer");
 			OverlapCreated = true;
 		}
 	}
-	CurrentRR = this->DBHandler.nextRR->getRR().begin();
-	AverageRR = LastRRt->RRTotal/NrOfRR;
-	ESP_LOGI("DataProcessor", "nwk %d", nwk);
-	//ESP_LOGI("DataProcessor", "Total RR %f", LastRRt->RRTotal);
-	//ESP_LOGI("DataProcessor", "NRofRR RR %d", NrOfRR);
-	//ESP_LOGI("DataProcessor", "Average RR %f", AverageRR);
+
+	//Reset iterator to first element in vector
+	RRBegin = this->DBHandler.nextRR->getRR().begin();
+
+	AverageRR = (RREnd-1)->RRTotal/n;
+
+	ESP_LOGI("DataProcessor", "Total RR %ld", (RREnd-1)->RRTotal);
+	ESP_LOGI("DataProcessor", "NRofRR %d", n);
+	ESP_LOGI("DataProcessor", "Average RR %f", AverageRR);
+
 	//Calculate variance
-	while(CurrentRR != EndRR){
-		VarianceTMP += pow((CurrentRR->RRInterval-AverageRR),2);
-		CurrentRR++;
+	while(RRBegin != RREnd){
+		VarianceTMP += pow((RRBegin->RRInterval-AverageRR),2);
+		RRBegin++;
 	}
-	CurrentRR = this->DBHandler.nextRR->getRR().begin();
-	VarianceRR = VarianceTMP/NrOfRR;
-	//ESP_LOGI("DataProcessor", "Variance RR %f", VarianceRR);
+	VarianceRR = VarianceTMP/n;
+	ESP_LOGI("DataProcessor", "Variance RR %f", VarianceRR);
+
+	//Reset iterator to first element in vector
+	RRBegin = this->DBHandler.nextRR->getRR().begin();
+
 	if (VarianceRR == 0.0){
-		ESP_LOGE("DataProcessor::fasper", "zero variance in fasper");
+		ESP_LOGE("DataProcessor::period", "zero variance in period");
 	}
 
-	//DoubleBuffer::Workspace1.assign(nwk,0);
-	//DoubleBuffer::Workspace2.assign(nwk,0);
-	this->DBHandler.Workspace1.assign(nwk,0);
-	this->DBHandler.Workspace2.assign(nwk,0);
+	xmin = RRBegin->RRTotal;
+	xmax = (RREnd-1)->RRTotal;
+	xdif = xmax - xmin;
+	xave = 0.5 * (xmax + xmin);
 
-	pWorkspace1 = this->DBHandler.Workspace1.begin();
-	pWorkspace2 = this->DBHandler.Workspace2.begin()+2;
-	fac=nwk/(NrOfRR*OversamplingFactor);
-	fndim=nwk;
-	while(CurrentRR != EndRR){
-		ck=fmod((CurrentRR->RRTotal-FirstRRt->RRTotal)*fac,fndim);
-		ckk=2.0*(ck++);
-		ckk=fmod(ckk,fndim);
-		++ckk;
-		spread(CurrentRR->RRInterval-AverageRR, this->DBHandler.Workspace1, ck, MACC);
-		spread(1.0, this->DBHandler.Workspace2, ckk, MACC);
-		CurrentRR++;
+	for (j=0; j<n; j++, RRBegin++) {
+			arg=TWOPI*((RRBegin->RRTotal-xave)*pnow);
+			wpr.at(j)= -2.0*SQR(sin(0.5*arg));
+			wpi.at(j)=sin(arg);
+			wr.at(j)=cos(arg);
+			wi.at(j)=wpi.at(j);
 	}
-	realft(this->DBHandler.Workspace1, 1);
-	realft(this->DBHandler.Workspace2, 1);
-	df=1.0/(RRRange*OversamplingFactor);
-	pmax =-1.0;
-	for(j=0; j<nout; j++, pLomb++, pWorkspace1 += 2, pWorkspace2 += 2) {
-		hypo=sqrt((*pWorkspace2*(*pWorkspace2))+(*pWorkspace2+1)*(*pWorkspace2+1));
-		hc2wt=0.5*(*pWorkspace2/hypo);
-		hs2wt=0.5*(*pWorkspace2+1)/hypo;
-		cwt=sqrt(0.5+hc2wt);
-		swt=SIGN(sqrt(0.5-hc2wt),hs2wt);
-		den=0.5*NrOfRR+hc2wt*(*pWorkspace2)+hs2wt*(*pWorkspace2+1);
-		cterm=SQR(cwt*(*pWorkspace1)+swt*(*pWorkspace2+1))/den;
-		sterm=SQR(cwt**pWorkspace2+1)-swt*(*pWorkspace1)/(NrOfRR-den);
-		LombData.Frequency = (j+1)*df;
-		LombData.LombValue = (cterm+sterm)/(2.0*VarianceRR);
-		this->DBHandler.storeLombData(LombData);
-		ESP_LOGI("DataProcessorfasper","Frequency/Lomb : %f : %f", LombData.Frequency, LombData.LombValue);
+
+	//Reset iterator to first element in vector
+	RRBegin = this->DBHandler.nextRR->getRR().begin();
+
+	pnow = 1.0/(OversamplingFactor*xdif);
+	for (i=0;i<nout;i++) {
+		LombData.Frequency=pnow;
+		ESP_LOGI("DataProcessor", "pnow %f", pnow);
+		sumsh=sumc=0.0;
+		for (j=0;j<n;j++) {
+			c=wr.at(j);
+			ESP_LOGI("DataProcessor", "c %f", c);
+			s=wi.at(j);
+			ESP_LOGI("DataProcessor", "s %f", s);
+			sumsh += s*c;
+			ESP_LOGI("DataProcessor", "sumsh %f", sumsh);
+			sumc += (c-s)*(c+s);
+			ESP_LOGI("DataProcessor", "sumc %f", sumc);
+		}
+		wtau=0.5*atan2(2.0*sumsh,sumc);
+				swtau=sin(wtau);
+				ESP_LOGI("DataProcessor", "swtau %f", swtau);
+				cwtau=cos(wtau);
+				ESP_LOGI("DataProcessor", "cwtau %f", cwtau);
+				sums=sumc=sumsy=sumcy=0.0;
+				for (j=0;j<n;j++, RRBegin++) {
+					s=wi.at(j);
+					ESP_LOGI("DataProcessor", "s %f", s);
+					c=wr.at(j);
+					ESP_LOGI("DataProcessor", "c %f", c);
+					ss=s*cwtau-c*swtau;
+					ESP_LOGI("DataProcessor", "ss %f", ss);
+					cc=c*cwtau+s*swtau;
+					ESP_LOGI("DataProcessor", "cc %f", cc);
+					sums += ss*ss;
+					ESP_LOGI("DataProcessor", "sums %f", sums);
+					sumc += cc*cc;
+					ESP_LOGI("DataProcessor", "sumc %f", sumc);
+					yy=RRBegin->RRInterval-AverageRR;
+					ESP_LOGI("DataProcessor", "yy %f", yy);
+					sumsy += yy*ss;
+					ESP_LOGI("DataProcessor", "sumsy %f", sumsy);
+					sumcy += yy*cc;
+					ESP_LOGI("DataProcessor", "sumcy %f", sumcy);
+					wr.at(j)=((wtemp=wr.at(j))*wpr.at(j)-wi.at(j)*wpi.at(j))+wr.at(j);
+					ESP_LOGI("DataProcessor", "wr.at(j) %f", wr.at(j));
+					wi.at(j)=(wi.at(j)*wpr.at(j)+wtemp*wpi.at(j))+wi.at(j);
+					ESP_LOGI("DataProcessor", "wi.at(j) %f", wi.at(j));
+				}
+				LombData.LombValue=0.5*((sumcy*sumcy/sumc)+(sumsy*sumsy/sums))/VarianceRR;
+				if (LombData.LombValue >= pymax){
+					pymax=LombData.LombValue;
+				}
+				this->DBHandler.storeLombData(LombData);
+				ESP_LOGI("DataProcessor::period","Frequency: %f: Lombvalue : %f", LombData.Frequency, LombData.LombValue);
+				pnow += 1.0/(OversamplingFactor*xdif);
 	}
+	expy=exp(-pymax);
+	effm=2.0*nout/OversamplingFactor;
+	prob=effm*expy;
+	if (prob > 0.01) prob=1.0-pow(1.0-expy,effm);
+
 	this->DBHandler.swapLomb();
 	xEventGroupClearBits(GlobalEventGroupHandle, RRBufferReadyFlag);
-	ESP_LOGI("DataProcessor","RRBufferReadyFlag cleared");
+	ESP_LOGI("DataProcessor::period","RRBufferReadyFlag cleared");
 	xEventGroupSetBits(GlobalEventGroupHandle, LombBufferReadyFlag);
-	ESP_LOGI("DataProcessor","LombBufferReadyFlag Ready");
+	ESP_LOGI("DataProcessor::period","LombBufferReadyFlag Ready");
 	CalculateHRV();
 }
 
+/*
 void DataProcessor::period() {
-	pLomb = this->DBHandler.currentLomb->getLomb().begin();
 	int NrOfRR 	= this->DBHandler.nextRR->getRR().size();
 	int np 		= this->DBHandler.currentLomb->getLomb().size();
 	const double TWOPI=6.283185307179586476;
-	int i, j, RRTotalFront, RRTotalBack, RRIntervalFront, RRIntervalBack, RRRange;
+	int i, j, RRTotalFront, RRTotalBack, RRIntervalFront, RRIntervalBack, RRRange, RRTotalTMP= 0, RRTMP;
 	double c,cc,cwtau,effm,expy,CurrentFrequency,prob,pymax,s,ss,sumc,sumcy,sums,sumsh,
 		sumsy,swtau,wtau,xave,yy,arg,wtemp;
 	double AverageRR, VarianceRR, VarianceTMP = 0;
@@ -298,8 +329,9 @@ void DataProcessor::period() {
 	wr.resize(NrOfRR);
 	int nout=int(0.5*OversamplingFactor*HighestFrequency*NrOfRR);
 
-	//iterators
-	CurrentRR = this->DBHandler.nextRR->getRR().begin();
+	//iterators for RRBuffer
+	RRBegin = this->DBHandler.nextRR->getRR().begin();
+	RREnd = this->DBHandler.nextRR->getRR().end();
 	EndRR = this->DBHandler.nextRR->getRR().end();
 
 	//Resize LombBuffer if needed
@@ -308,18 +340,19 @@ void DataProcessor::period() {
 	}
 
 	//Loop through RRBuffer to calculate abscissas and create overlap
-	for(CurrentRR = this->DBHandler.nextRR->getRR().begin(); CurrentRR < EndRR; CurrentRR++){
-		CurrentRR->RRTotal = CurrentRR->RRInterval + (CurrentRR-1)->RRTotal;
-		if(CurrentRR->RRTotal >= OneMinute && OverlapCreated == false){
-			NextHRVMarker = CurrentRR-1;
-			this->DBHandler.currentRR->getRR().insert(this->DBHandler.currentRR->getRR().begin(), NextHRVMarker, EndRR);
+	for(RRBegin = this->DBHandler.nextRR->getRR().begin(); RRBegin < RREnd; RRBegin++){
+		RRTotalTMP += RRBegin->RRInterval;
+		RRBegin->RRTotal= RRTotalTMP;
+		if(RRBegin->RRTotal >= OneMinute && OverlapCreated == false){
+			NextHRVMarker = RRBegin-1;
+			this->DBHandler.currentRR->getRR().insert(this->DBHandler.currentRR->getRR().begin(), NextHRVMarker, RREnd);
 			ESP_LOGI("DataProcessor", "insert last four minutes in other buffer");
 			OverlapCreated = true;
 		}
 	}
 
 	RRBegin = this->DBHandler.nextRR->getRR().begin();
-	RREnd = this->DBHandler.nextRR->getRR().end();
+
 	RRIntervalFront = this->DBHandler.nextRR->getRR().front().RRInterval;
 	RRIntervalBack = this->DBHandler.nextRR->getRR().back().RRInterval;
 	RRTotalFront =	this->DBHandler.nextRR->getRR().front().RRTotal;
@@ -328,7 +361,7 @@ void DataProcessor::period() {
 	//Get range of abscissas
 	RRRange = (RRTotalBack - RRTotalFront);
 
-	CurrentRR = this->DBHandler.nextRR->getRR().begin();
+	RRBegin = this->DBHandler.nextRR->getRR().begin();
 	AverageRR = RRTotalBack/NrOfRR;
 	ESP_LOGI("DataProcessor", "Total RR %d", RRTotalBack);
 	ESP_LOGI("DataProcessor", "NRofRR RR %d", NrOfRR);
@@ -350,13 +383,15 @@ void DataProcessor::period() {
 	xave=0.5*(RRTotalBack+RRTotalFront);
 	pymax=0.0;
 	CurrentFrequency=1.0/(RRRange*OversamplingFactor);
-	for (j=0;j<NrOfRR;j++, RRTotalFront++) {
-		arg=TWOPI*((RRTotalFront-xave)*CurrentFrequency);
+	for (j=0;j<NrOfRR;j++, RRBegin++) {
+		arg=TWOPI*((RRBegin->RRTotal-xave)*CurrentFrequency);
 		wpr.at(j)= -2.0*SQR(sin(0.5*arg));
 		wpi.at(j)=sin(arg);
 		wr.at(j)=cos(arg);
 		wi.at(j)=wpi.at(j);
 	}
+
+	RRBegin = this->DBHandler.nextRR->getRR().begin();
 
 	for (i=0;i<nout;i++) {
 		LombData.Frequency=CurrentFrequency;
@@ -402,130 +437,8 @@ void DataProcessor::period() {
 	ESP_LOGI("DataProcessor::period","LombBufferReadyFlag Ready");
 	CalculateHRV();
 }
+*/
 
-void DataProcessor::spread(float y, std::vector<float> &yy, float x, int m) {
-	//ESP_LOGI("DataProcessor","Spreading data");
-	static int nfac[11]={0,1,1,2,6,24,120,720,5040,40320,362880};
-	int ihi, ilo, ix, j, nden, n=yy.size();
-	float fac;
-
-	//ESP_LOGI("DataProcessor:spread","yy.size %d", n);
-
-	if (m > 10){
-			ESP_LOGE("DataProccesor::Spread", "factorial table too small in spread"); // @suppress("Symbol is not resolved")
-		}
-
-		ix=static_cast<int>(x);
-
-		if (x == static_cast<float>(ix)){
-			yy.at(ix-1) += y;
-		}
-		else {
-			ilo=MIN(MAX(int(x-0.5*m),0),int(n-m));
-			ihi=ilo+m;
-			nden=nfac[m];
-			fac=x-ilo-1;
-		for (j=ilo+1;j<ihi;j++){
-			fac *= (x-j-1);
-		}
-
-		yy.at(ihi-1) += y*fac/(nden*(x-ihi));
-		for (j=ihi-1;j>ilo;j--) {
-			nden=(nden/(j-ilo))*(j-ihi);
-			yy.at(j-1) += y*fac/(nden*(x-j));
-		}
-	}
-}
-
-
-
-void DataProcessor::realft(std::vector<float> &workspace, const int isign){
-	int i,i1,i2,i3,i4;
-	float c1=0.5,c2,h1r,h1i,h2r,h2i,wr,wi,wpr,wpi,wtemp,theta;
-
-		int n = workspace.size();
-		theta=3.141592653589793238/DP(n>>1);
-		if (isign == 1) {
-			c2 = -0.5;
-			four1(workspace,1);
-		} else {
-			c2=0.5;
-			theta = -theta;
-		}
-		wtemp=sin(0.5*theta);
-		wpr = -2.0*wtemp*wtemp;
-		wpi=sin(theta);
-		wr=1.0+wpr;
-		wi=wpi;
-		for (i=1;i<(n>>2);i++) {
-			i2=1+(i1=i+i);
-			i4=1+(i3=n-i1);
-			h1r=c1*(workspace.at(i1)+workspace.at(i3));
-			h1i=c1*(workspace.at(i2)-workspace.at(i4));
-			h2r= -c2*(workspace.at(i2)+workspace.at(i4));
-			h2i=c2*(workspace.at(i1)-workspace.at(i3));
-			workspace.at(i1)=h1r+wr*h2r-wi*h2i;
-			workspace.at(i2)=h1i+wr*h2i+wi*h2r;
-			workspace.at(i3)=h1r-wr*h2r+wi*h2i;
-			workspace.at(i4)= -h1i+wr*h2i+wi*h2r;
-			wr=(wtemp=wr)*wpr-wi*wpi+wr;
-			wi=wi*wpr+wtemp*wpi+wi;
-		}
-		if (isign == 1) {
-			workspace.at(0) = (h1r=workspace.at(0))+workspace.at(1);
-			workspace.at(1) = h1r-workspace.at(1);
-		} else {
-			workspace.at(0)=c1*((h1r=workspace.at(0))+workspace.at(1));
-			workspace.at(1)=c1*(h1r-workspace.at(1));
-			four1(workspace,-1);
-		}
-}
-
-void DataProcessor::four1(std::vector<float> &workspace, const int isign)
-{
-	int n,mmax,m,j,istep,i;
-	DP wtemp,wr,wpr,wpi,wi,theta,tempr,tempi;
-
-	int nn=workspace.size()/2;
-	n=nn << 1;
-	j=1;
-	for (i=1;i<n;i+=2) {
-		if (j > i) {
-			SWAP(workspace.at(j-1), workspace.at(i-1));
-			SWAP(workspace.at(j), workspace.at(i));
-		}
-		m=nn;
-		while (m >= 2 && j > m) {
-			j -= m;
-			m >>= 1;
-		}
-		j += m;
-	}
-	mmax=2;
-	while (n > mmax) {
-		istep=mmax << 1;
-		theta=isign*(6.28318530717959/mmax);
-		wtemp=sin(0.5*theta);
-		wpr = -2.0*wtemp*wtemp;
-		wpi=sin(theta);
-		wr=1.0;
-		wi=0.0;
-		for (m=1;m<mmax;m+=2) {
-			for (i=m;i<=n;i+=istep) {
-				j=i+mmax;
-				tempr=wr*workspace.at(j-1)-wi*workspace.at(j);
-				tempi=wr*workspace.at(j)+wi*workspace.at(j-1);
-				workspace.at(j-1)=workspace.at(i-1)-tempr;
-				workspace.at(j)=workspace.at(i)-tempi;
-				workspace.at(i-1) += tempr;
-				workspace.at(i) += tempi;
-			}
-			wr=(wtemp=wr)*wpr-wi*wpi+wr;
-			wi=wi*wpr+wtemp*wpi+wi;
-		}
-		mmax=istep;
-	}
-}
 
 void DataProcessor::CalculateHRV(){
 	ESP_LOGI("DataProcessor","Calculating HRV..");

@@ -199,23 +199,8 @@ private:
 	std::vector<double> wi, wpi, wpr, wr;
 	std::vector<RRSeries>::iterator RRBegin, RREnd;
 	Lomb LombData;
-
-	//spread
-	float y, x;
-	int m;
-	std::vector<float> yy;
-	//std::vector<double> yy;
-
-	//realft
-	std::vector<float> workspace;
-	//std::vector<double> workspace;
-
-	//fasper
 	std::vector<Lomb>::iterator pLomb, CurrentLomb, EndLomb;
 	std::vector<RRSeries>::iterator CurrentRR, EndRR , NextHRVMarker, CurrentRRHRVMarker;
-	std::vector<RRSeries>::iterator FirstRRi, LastRRi, FirstRRt, LastRRt;
-	std::vector<float>::iterator pWorkspace1, pWorkspace2;
-	//std::vector<double>::iterator pWorkspace1, pWorkspace2;
 	bool OverlapCreated = false;
 	//Lomb LombData;
 	//HRV

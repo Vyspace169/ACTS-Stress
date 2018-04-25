@@ -1,8 +1,5 @@
 #include "DoubleBuffer.hpp"
 
-	std::vector<float> DoubleBuffer::Workspace1;
-	std::vector<float> DoubleBuffer::Workspace2;
-
 DoubleBuffer::DoubleBuffer(SDWriter &wr) :
 writer{wr}
 {
@@ -10,37 +7,26 @@ writer{wr}
 	this->secondBuffer = new BinaryBuffer();
 	this->current = this->firstBuffer;
 	this->next = this->secondBuffer;
-	this->firstBuffer->getSD().reserve(BINARY_BUFFER_SIZE);
-	this->secondBuffer->getSD().reserve(BINARY_BUFFER_SIZE);
 
 	this->firstRBuffer = new BinaryBuffer();
 	this->secondRBuffer = new BinaryBuffer();
 	this->currentR = this->firstRBuffer;
 	this->nextR = this->secondRBuffer;
-	this->firstRBuffer->getR().reserve(RBUFFER_SIZE);
-	this->secondRBuffer->getR().reserve(RBUFFER_SIZE);
 
 	this->firstRRBuffer = new BinaryBuffer();
 	this->secondRRBuffer = new BinaryBuffer();
 	this->currentRR = this->firstRRBuffer;
 	this->nextRR = this->secondRRBuffer;
-	this->firstRRBuffer->getRR().reserve(RRBUFFER_SIZE);
-	this->secondRRBuffer->getRR().reserve(RRBUFFER_SIZE);
 
 	this->firstLombBuffer = new BinaryBuffer();
 	this->secondLombBuffer = new BinaryBuffer();
 	this->currentLomb = this->firstLombBuffer;
 	this->nextLomb = this->secondLombBuffer;
-	this->firstLombBuffer->getLomb().reserve(LOMBBUFFER_SIZE);
-	this->secondLombBuffer->getLomb().reserve(LOMBBUFFER_SIZE);
 
 	this->firstHRVBuffer = new BinaryBuffer();
 	this->secondHRVBuffer = new BinaryBuffer();
 	this->currentHRV = this->firstHRVBuffer;
 	this->nextHRV = this->secondHRVBuffer;
-	this->firstHRVBuffer->getHRV().reserve(HRVBUFFER_SIZE);
-	this->secondHRVBuffer->getHRV().reserve(HRVBUFFER_SIZE);
-
 }
 
 void DoubleBuffer::storeData(SampleData in){
@@ -121,9 +107,9 @@ void DoubleBuffer::swapRR(){
 	ESP_LOGI("DoubleBuffer", "Swap RR buffer"); // @suppress("Symbol is not resolved")
 	BinaryBuffer * tmpRR = this->currentRR;
 	this->currentRR = this->nextRR;
-	this->currentRR->writeOnly();
+	//this->currentRR->writeOnly();
 	this->nextRR = tmpRR;
-	this->nextRR->readOnly();
+	//this->nextRR->readOnly();
 }
 
 void DoubleBuffer::swapLomb(){

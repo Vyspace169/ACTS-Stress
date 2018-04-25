@@ -240,8 +240,8 @@ private:
 	std::vector<Lomb> LombBuffer;
 	std::vector<HRVData> HRVBuffer;
 	const int BufferSize = BINARY_BUFFER_SIZE;
-	const int RBufferSize = RBUFFER_SIZE;
-	const int RRBufferSize = RRBUFFER_SIZE;
-	const int LombBufferSize = LOMBBUFFER_SIZE;
-	const int HRVBufferSize = HRVBUFFER_SIZE;
+	const int RBufferSize = BINARY_BUFFER_SIZE;
+	const int RRBufferSize = BINARY_BUFFER_SIZE;
+	const int LombBufferSize = BINARY_BUFFER_SIZE;
+	const int HRVBufferSize = BINARY_BUFFER_SIZE;
 };

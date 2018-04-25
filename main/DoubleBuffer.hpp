@@ -190,8 +190,6 @@ public:
 	BinaryBuffer * currentRR;
 	BinaryBuffer * currentLomb;
 	BinaryBuffer * nextLomb;
-	static std::vector<float> Workspace1, Workspace2;
-	//std::vector<double> Workspace1, Workspace2;
 private:
 	SDWriter &writer;
 	BinaryBuffer * firstBuffer;
