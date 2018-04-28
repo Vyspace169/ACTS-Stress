@@ -20,8 +20,24 @@ unsigned short* ECGImplementation::SensorRead() {
 	//sample_value[i] = adc1_get_raw(ADC_ECG);
 	sample_value[i] = sine[sample_number];
 
-	//memcpy(ECGData, &sine[sample_number], sizeof(int));
-	//memcpy(&ECGData[1], &sample_number, sizeof(int));
+	//Check for buffer overflow
+	if(SampleNumber > BINARY_BUFFER_SIZE-1){
+		SampleNumber = 0;
+	}
+
+	//Check kernel content
+	if(KernelFilled == true){
+		//Moving Average filter
+		for(int j = 0; j < KernelSize; j++){
+			ECGValue += SampleValue[j];
+		}
+		ECGValue = ECGValue/KernelSize;
+	}else {
+		//No filter
+		ECGValue = SampleValue[i];
+	}
+
+
 	sample_number++;
 	i++;
 
@@ -29,21 +45,13 @@ unsigned short* ECGImplementation::SensorRead() {
 		i = 0;
 	}
 
-	if(sample_number > BINARY_BUFFER_SIZE-1){
-		sample_number = 0;
-	}
 
-	for(int j = 0; j < kernel_size; j++){
-		sum += sample_value[j];
-	}
-	sample_value_filtered = (sum/kernel_size);
-	j = 0;
-	sum = 0;
+	//Copy ECGValue and SampleNumber to ECGData array
+	memcpy(ECGData, &ECGValue, sizeof(short));
+	memcpy(&ECGData[1], &SampleNumber, sizeof(short));
 
-	memcpy(ECGData, &sample_value_filtered, sizeof(int));
-	memcpy(&ECGData[1], &sample_number, sizeof(int));
-	//ESP_LOGW("ECG","%d", sample_value_filtered);
-	sample_value_filtered = 0;
+	//Reset ECGValue for next filter calculation
+	ECGValue = 0;
 
 	return &ECGData[0];
 

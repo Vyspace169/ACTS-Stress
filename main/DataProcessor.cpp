@@ -82,31 +82,28 @@ void DataProcessor::ResetActivityData() {
 
 void DataProcessor::CalculateRRInterval()
 {
-	ESP_LOGI("DataProcessor"," Calculate RR Interval")
 	CurrentR = this->DBHandler.nextR->getR().begin();
 	EndR = this->DBHandler.nextR->getR().end();
 
-	while(CurrentR != EndR){
-		while(PeakHasBeenFound == false && CurrentR != EndR){
-			if(CurrentR->potentialRPeak > CurrentRValue){ 		//loop through buffer until first local max is found
-				//ESP_LOGI("DataProcessor"," Samplevalue : %d : Samplenumber : %d", CurrentR->potentialRPeak, CurrentR->sampleNr);
-				CurrentRValue = CurrentR->potentialRPeak;
-				CurrentR++;
-			}else{											//found peak
-				PeakHasBeenFound = true;
-				FirstRPeak = (CurrentR->sampleNr-1);
-				//ESP_LOGI("DataProcessor"," First Peak found, peak is: %d at sample %d", CurrentRValue, FirstRPeak);
-				CurrentRValue = CurrentR->potentialRPeak;
-			}
-		}
-
-		while(CurrentR->potentialRPeak <= CurrentRValue && CurrentR != EndR){
-			//ESP_LOGI("DataProcessor"," Samplevalue : %d : Samplenumber : %d", CurrentR->potentialRPeak, CurrentR->sampleNr);
-			CurrentRValue = CurrentR->potentialRPeak;
+	//Loop through Rbuffer until first peak is found
+	while(PeakHasBeenFound == false && CurrentR != EndR){
+		//Check if current value if higher than last value. If so, keep looping
+		if(CurrentR->potentialRPeak > LastRValue){
+			LastRValue = CurrentR->potentialRPeak;
 			CurrentR++;
-			//ESP_LOGI("DataProcessor"," CurrentRValue %d", CurrentRValue);
-			//ESP_LOGI("DataProcessor"," it->potentialRPeak %d at sample %d", it->potentialRPeak, it->sampleNr);
+		}else{
+			//Peak has been found, assign previous sample number to FirstRPeak
+			FirstRPeak = (CurrentR->sampleNr-1);
+			PeakHasBeenFound = true;
+			LastRValue = CurrentR->potentialRPeak;
 		}
+	}
+
+	//Loop through RBuffer until valley is found
+	while(CurrentR->potentialRPeak <= CurrentRValue && CurrentR != EndR){
+		CurrentRValue = CurrentR->potentialRPeak;
+		CurrentR++;
+	}
 
 		while(PeakHasBeenFound == true && CurrentR != EndR){
 			if(CurrentR->potentialRPeak > CurrentRValue){
@@ -114,38 +111,36 @@ void DataProcessor::CalculateRRInterval()
 				CurrentRValue = CurrentR->potentialRPeak;
 				CurrentR++;
 			}else{
-				SecondRPeak = (CurrentR->sampleNr-1);
+				NextRPeak = (CurrentR->sampleNr-1);
 				//ESP_LOGI("DataProcessor"," Next Peak found, peak is: %d at sample %d", CurrentRValue, SecondRPeak);
 
-				if(SecondRPeak > FirstRPeak){
-					RRInterval = ((SecondRPeak - FirstRPeak) * 1000) / SAMPLE_RATE_H; //calculate RR-interval is milliseconds
-					//ESP_LOGI("DataProcessor","RBuffer hasn't been swapped: regular RR-interval calculation");
+				//Check if RBuffer has been swapped
+				if(NextRPeak > FirstRPeak){
+					//Regular RR-interval calculation
+					RRInterval = ((SecondRPeak - FirstRPeak) * 1000) / SAMPLE_RATE_H;
 				}else{
-					RRInterval = ((BINARY_BUFFER_SIZE - FirstRPeak + SecondRPeak) * 1000) / SAMPLE_RATE_H;
-					//ESP_LOGI("DataProcessor","RBuffer has been swapped, alternative RR-interval calculation");
+					//Alternative RR-interval calculation
+					RRInterval = ((BINARY_BUFFER_SIZE - FirstRPeak + NextRPeak) * 1000) / SAMPLE_RATE_H;
 				}
 
+				//Check for ectopic beat
 				if(RRInterval <= 0.8*LastRRInterval && LastBeatWasEctopic == false){
-					ESP_LOGI("DataProcessor"," RR-interval found, RR-interval is: %d", RRInterval); // @suppress("Symbol is not resolved")
-					ESP_LOGI("DataProcessor"," Ectopic beat found, ignore this RRInterval"); // @suppress("Symbol is not resolved")
+					//Invalid RR-interval
 					FirstRPeak = SecondRPeak;
 					LastBeatWasEctopic = true;
 				} else{
+					//Valid RR-interval
 					if(LastBeatWasEctopic == false){
-						ESP_LOGI("DataProcessor"," RR-interval found, RR-interval is: %d", RRInterval); // @suppress("Symbol is not resolved")
+						//Last RR-interval was also valid, store in RRBuffer
 						RRData.RRInterval = RRInterval;
-						RRData.RRTotal= 0;
-						LastRRInterval = RRInterval;
-						RRTotal += RRInterval;
 						this->DBHandler.storeRRData(RRData);
-						FirstRPeak = SecondRPeak;
+						LastRRInterval = RRInterval;
+						NextRPeak = SecondRPeak;
 					} else{
-						//ESP_LOGI("DataProcessor"," RR-interval found, RR-interval is: %d", RRInterval); // @suppress("Symbol is not resolved")
-						//ESP_LOGI("DataProcessor"," Ectopic beat found in last RRInterval, also ignore this RRInterval"); // @suppress("Symbol is not resolved")
+						//Last RR-interval wasn't valid, don't store
 						FirstRPeak = SecondRPeak;
 						LastBeatWasEctopic = false;
 					}
-
 				}
 
 				LastRRInterval = RRInterval;
@@ -196,14 +191,15 @@ void DataProcessor::period() {
 		this->DBHandler.currentLomb->getLomb().resize(nout);
 	}
 
-	//Loop through RRBuffer to calculate abscissas and create overlap
+	//Loop through RRBuffer to calculate abscissas
 	for(RRBegin = this->DBHandler.nextRR->getRR().begin(); RRBegin < RREnd; RRBegin++){
 		RRTotalTMP += RRBegin->RRInterval;
-		RRBegin->RRTotal= RRTotalTMP;
+		RRBegin->RRTotal = RRTotalTMP;
+		//Create overlap
 		if(RRBegin->RRTotal >= OneMinute && OverlapCreated == false){
 			NextHRVMarker = RRBegin-1;
-			this->DBHandler.currentRR->getRR().insert(this->DBHandler.currentRR->getRR().begin(), NextHRVMarker, RREnd);
-			ESP_LOGI("DataProcessor", "insert last four minutes in other buffer");
+			this->DBHandler.currentRR->getRR().insert(this->DBHandler.currentRR->getRR().begin(),
+					NextHRVMarker, RREnd);
 			OverlapCreated = true;
 		}
 	}

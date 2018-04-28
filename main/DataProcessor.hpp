@@ -185,8 +185,10 @@ private:
     float Magnitude;
 
     int CurrentRValue = 0;
+    int LastRValue;
     int FirstRPeak;
     int SecondRPeak;
+    int NextRPeak;
     bool PeakHasBeenFound = false;
 
     RRSeries RRData;

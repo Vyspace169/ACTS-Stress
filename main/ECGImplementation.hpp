@@ -61,7 +61,16 @@ private:
    int sample_number = 0;
    int sample_value[5] = {0};
    int sample_value_filtered = 0; //evt float van maken
-   unsigned short ECGData[4];
+   //unsigned short ECGData[4];
+
+   //tijdelijk
+   short SampleValue[5] ={0};
+   short KernelSize=5;
+   short SampleNumber;
+   short ECGValue;
+   short ECGData[2];
+   bool KernelFilled;
+
    int sine [1000] = {
 		   //1
 		   2048,2151,2255,2358,2460,2561,2660,2759,

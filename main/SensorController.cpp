@@ -14,7 +14,7 @@ SensorController::SensorController(unsigned int task_priority, DoubleBuffer &db,
 void sensor_handle_task(void *args)  {
 	SensorController *sTask = static_cast<SensorController*>(args);
 	SampleData SensorData;
-	RData Potential_R;
+	RData PotentialRPeak;
 	EventBits_t uxBits;
 	short MPUData[sTask->Sensor_MPU->DataSize() / sizeof(short)];
 	int BMPData[sTask->Sensor_BMP->DataSize() / sizeof(int)];
@@ -47,9 +47,9 @@ void sensor_handle_task(void *args)  {
         	sTask->DBHandle.storeData(SensorData);
 
         	if(SensorData.ecg > R_PEAK_THRESHOLD){
-        		Potential_R.potentialRPeak = 	SensorData.ecg;
-        		Potential_R.sampleNr = 			SensorData.sampleNr;
-        		sTask->DBHandle.storeRData(Potential_R);
+        		PotentialRPeak.potentialRPeak = 	SensorData.ecg;
+        		PotentialRPeak.sampleNr = 			SensorData.sampleNr;
+        		sTask->DBHandle.storeRData(PotentialRPeak);
         	}
         }
 
