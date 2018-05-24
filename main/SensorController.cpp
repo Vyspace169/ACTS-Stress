@@ -18,7 +18,7 @@ void sensor_handle_task(void *args)  {
 	EventBits_t uxBits;
 	short MPUData[sTask->Sensor_MPU->DataSize() / sizeof(short)];
 	int BMPData[sTask->Sensor_BMP->DataSize() / sizeof(int)];
-	short ECGData[sTask->Sensor_ECG->DataSize() / sizeof(short)];
+	short ECG[sTask->Sensor_ECG->DataSize() / sizeof(short)];
 
     while(1) {
         uxBits = xEventGroupWaitBits(GlobalEventGroupHandle, (SensorMeasurementFlag | StandbySensorTaskUnhandled), pdTRUE, pdFALSE, portMAX_DELAY);
@@ -26,7 +26,7 @@ void sensor_handle_task(void *args)  {
         if(uxBits & SensorMeasurementFlag)  {
         	memcpy(MPUData, sTask->Sensor_MPU->SensorRead(), sTask->Sensor_MPU->DataSize());
         	memcpy(BMPData, sTask->Sensor_BMP->SensorRead(), sTask->Sensor_BMP->DataSize());
-        	memcpy(ECGData, sTask->Sensor_ECG->SensorRead(), sTask->Sensor_ECG->DataSize());
+        	memcpy(ECG, sTask->Sensor_ECG->SensorRead(), sTask->Sensor_ECG->DataSize());
 
         	SensorData.accelX = 			MPUData[sTask->DATA_OFFSET_ACCELERO_X];
         	SensorData.accelY = 			MPUData[sTask->DATA_OFFSET_ACCELERO_Y];
@@ -40,15 +40,15 @@ void sensor_handle_task(void *args)  {
         	SensorData.temp = 				BMPData[sTask->DATA_OFFSET_TEMPERATURE];
         	SensorData.pressure = 			BMPData[sTask->DATA_OFFSET_PRESSURE];
         	SensorData.microTime =  		xTaskGetTickCount();
-        	SensorData.ECGSampleValue = 	ECGData[sTask->DATA_OFFSET_SAMPLE_VALUE];
-        	SensorData.ECGSampleNumber = 	ECGData[sTask->DATA_OFFSET_SAMPLE_NR];
+        	SensorData.ecg = 				ECG[sTask->DATA_OFFSET_SAMPLE_VALUE];
+        	SensorData.sampleNr =			ECG[sTask->DATA_OFFSET_SAMPLE_NR];
 
         	sTask->DataHandler.HandleData(SensorData);
         	sTask->DBHandle.storeData(SensorData);
 
-        	if(SensorData.ECGSampleValue > R_PEAK_THRESHOLD){
-        		Potential_R.potentialRPeak = 	SensorData.ECGSampleValue;
-        		Potential_R.sampleNr = 			SensorData.ECGSampleNumber;
+        	if(SensorData.ecg > R_PEAK_THRESHOLD){
+        		Potential_R.potentialRPeak = 	SensorData.ecg;
+        		Potential_R.sampleNr = 			SensorData.sampleNr;
         		sTask->DBHandle.storeRData(Potential_R);
         	}
         }
@@ -80,7 +80,7 @@ void print_struct(SampleData SensorData) {
    			SensorData.magnetoZ,
    			SensorData.temp,
    			SensorData.pressure,
-			SensorData.ECGSampleValue);
+			SensorData.ecg);
 }
 
 
@@ -88,6 +88,11 @@ void set_sensor_measurement_bit( TimerHandle_t xTimer )  {
     xEventGroupSetBits(GlobalEventGroupHandle, SensorMeasurementFlag);
 }
 
+/*
+void set_HRV_calculation_bit( TimerHandle_t xTimer )  {
+    xEventGroupSetBits(GlobalEventGroupHandle, HRVCalculationFlag);
+}
+*/
 void SensorController::main_task() {
 	ESP_LOGI("SENSOR TASK", "Task starting..."); // @suppress("Symbol is not resolved")
 
@@ -106,6 +111,23 @@ void SensorController::main_task() {
     	ESP_LOGI("SENSOR TASK", "Timer created"); // @suppress("Symbol is not resolved")
     }
 
+    /*
+	TimerHandle_t HRVTimer_5 = NULL;
+	HRVTimer_5 = xTimerCreate("HRVClock_5",
+			375000,
+			pdFALSE,
+			HRV_5_TIMER_ID,
+			set_HRV_calculation_bit);
+	xTimerStart(HRVTimer_5, 0 );
+
+
+    if(HRVTimer_5 == NULL) {
+    	// Something has failed creating the timer
+    	ESP_LOGI("SENSOR TASK", "First HRV Timer creation failed"); // @suppress("Symbol is not resolved")
+    } else {
+    	ESP_LOGI("SENSOR TASK", "First HRV Timer created"); // @suppress("Symbol is not resolved")
+    }
+    */
     TaskHandle_t xHandle = NULL;
     void* thisTask = static_cast<void*>(this);
     BaseType_t xReturned = xTaskCreatePinnedToCore(sensor_handle_task,

@@ -44,8 +44,8 @@ typedef struct {
 	short magnetoZ;			/**< Magnetometer Z axis */
 	int temp;				/**< Temperature */
 	int pressure;			/**< Air pressure */
-	int ECGSampleValue;		/**< ECG sample value */
-	int ECGSampleNumber;	/**< ECG sample number */
+	int ecg;
+	int sampleNr;
 } SampleData;
 
 typedef struct {
@@ -54,20 +54,20 @@ typedef struct {
 } RData;
 
 typedef struct {
-	double RRInterval;			/**< RR-interval is milliseconds */
-	double RRTotal;			/**< Cumulative RR-intervals */
+	int RRInterval;			/**< RR-interval is milliseconds */
+	long RRTotal;			/**< Cumulative RR-intervals */
 } RRSeries;
 
 typedef struct{
-	double Frequency;		/**< Evaluated frequency by Lomb Periodogram */
-	double LombValue;		/**< Value of Lomb Periodogram at corresponding frequency */
+	float Frequency;		/**< Evaluated frequency by Lomb Periodogram */
+	float LombValue;		/**< Value of Lomb Periodogram at corresponding frequency */
 } Lomb;
 
 typedef struct {
-	int LFPower;			/**< Power in 0.04-0.15 Hz band in m/s^2 */
-	int HFPower;			/**< Power in 0.15-0.4 Hz band in m/s^2 */
+	float LFPower;			/**< Power in 0.04-0.15 Hz band in m/s^2 */
+	float HFPower;			/**< Power in 0.15-0.4 Hz band in m/s^2 */
 	float LFHFRatio;		/**< Ratio of Power in LF-band divided by power in HF-band */
-	int StressIndex;		/**< Normalized stress index */
+	float StressIndex;		/**< Normalized stress index */
 } HRVData;
 
 /*! Flag for SensorTask to act upon */
@@ -97,11 +97,18 @@ typedef struct {
 /*! Flag to signal that one of the RR-interval buffers is full */
 #define RRBufferReadyFlag			( 1 << 13 )
 /*! Flag to signal that one of the Lomb buffers is full */
-#define RRBufferSDReadyFlag			( 1 << 13 )
+#define RRBufferSDReadyFlag			( 1 << 14 )
 /*! Flag to signal that one of the Lomb buffers is full */
 #define LombBufferReadyFlag			( 1 << 15 )
 /*! Flag to signal that one of the RR-interval buffers is full */
 #define HRVBufferReadyFlag			( 1 << 16 )
+/*! Flag to signal that one of the RR-interval buffers is full */
+#define DigitalFilterReadyFlag		( 1 << 17 )
+/*! Flag to signal that one of the RR-interval buffers is full */
+#define SensorBufferReady 		( 1 << 18 )
+
+#define HRVCalculationFlag 			( 1 << 19 )
+
 
 /*! Blue LED GPIO define */
 #define GPIO_LED_BLUE			GPIO_NUM_13
@@ -130,6 +137,15 @@ typedef struct {
 #define SAMPE_TIME_MS			8
 /*! Binary buffer size, the system initializes two of these on startup */
 #define BINARY_BUFFER_SIZE		1000
+/*! Binary buffer size, the system initializes two of these on startup */
+#define RBUFFER_SIZE			600
+/*! Binary buffer size, the system initializes two of these on startup */
+#define RRBUFFER_SIZE			1000
+/*! Binary buffer size, the system initializes two of these on startup */
+#define LOMBBUFFER_SIZE			500
+/*! Binary buffer size, the system initializes two of these on startup */
+#define HRVBUFFER_SIZE			20
+
 
 /*! SDWriter MISO pin define */
 #define PIN_NUM_MISO 			GPIO_NUM_23
@@ -250,20 +266,20 @@ typedef struct {
  * Values should be written to a separate buffer
  * for R-peak detection.
  */
-#define R_PEAK_THRESHOLD		700 //TODO determine threshold value
+#define R_PEAK_THRESHOLD		3000 //TODO determine threshold value
 
-#define OneMinute				60000
-#define FiveMinutes				300000
+#define OneMinute				75000
+#define FiveMinutes				375000
 
 /*! Oversampling factor for calculating
  * Lomb Periodogram
  */
-#define OversamplingFactor		4
+#define OversamplingFactor		2
 
 /*! Highest Frequency to be evaluated for the
  * Lomb Periodogram
  */
-#define HighestFrequency		5
+#define HighestFrequency		0.8
 
 /*! Sensortask core num define */
 #define SENSORTASK_CORE_NUM 	1
@@ -284,7 +300,7 @@ typedef struct {
 /*! Wifitask priority define */
 #define WIFITASK_PRIORITY 		0
 /*! Wifitask stack size define */
-#define WIFITASK_STACK_SIZE 	8192
+#define WIFITASK_STACK_SIZE 	4096
 
 /*! Standbycontroller core num define */
 #define STANDBYCONT_CORE_NUM 	1
@@ -308,13 +324,6 @@ typedef struct {
 #define BLINKTASK_PRIORITY 		5
 /*! SNTPtask stack size define */
 #define BLINKTASK_STACK_SIZE 	2048
-
-/*! HRVTask core num define */
-#define HRVTASK_CORE_NUM 		1
-/*! HRVTask priority define */
-#define HRVTASK_PRIORITY 		6
-/*! HRVTask stack size define */
-#define HRVTASK_STACK_SIZE 		8192
 
 /*! Wifi event bit used in WiFiC.c file */
 #define WIFI_EVENT_BIT			1

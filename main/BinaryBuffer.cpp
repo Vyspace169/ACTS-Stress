@@ -77,7 +77,7 @@ bool BinaryBuffer::addHRV( HRVData in ){
 	}
 }
 
-const std::vector<SampleData>& BinaryBuffer::getSD() {
+std::vector<SampleData>& BinaryBuffer::getSD() {
 	return buffer;
 }
 
@@ -102,20 +102,20 @@ bool BinaryBuffer::isFull(){
 }
 
 bool BinaryBuffer::isFullR(){
-	return RBuffer.size() >= BufferSize;
+	return RBuffer.size() >= RBufferSize;
 }
 
 bool BinaryBuffer::isFullRR(){
-	return RRBuffer.size() >= BufferSize;
+	return RRBuffer.size() >= RRBufferSize;
 }
 
 bool BinaryBuffer::isFullLomb(){
-	return LombBuffer.size() >= BufferSize;
+	return LombBuffer.size() >= LombBufferSize;
 }
 
 
 bool BinaryBuffer::isFullHRV(){
-	return HRVBuffer.size() >= BufferSize;
+	return HRVBuffer.size() >= HRVBufferSize;
 }
 
 BinaryBuffer::~BinaryBuffer(){

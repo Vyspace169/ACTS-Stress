@@ -45,6 +45,7 @@ private:
     DoubleBuffer &DBHandle;
     DataProcessor &DataHandler;
     void *SENSORTASK_TIMER_ID = 0;
+    void *HRV_5_TIMER_ID = 0;
 
     const int DATA_SIZE_MPU = 9;
     const int DATA_OFFSET_ACCELERO_X = 0;

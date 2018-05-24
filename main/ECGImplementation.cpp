@@ -17,7 +17,11 @@ int ECGImplementation::DataSize() {
 }
 
 unsigned short* ECGImplementation::SensorRead() {
-	sample_value[i] = adc1_get_voltage(ADC_ECG);
+	//sample_value[i] = adc1_get_raw(ADC_ECG);
+	sample_value[i] = sine[sample_number];
+
+	//memcpy(ECGData, &sine[sample_number], sizeof(int));
+	//memcpy(&ECGData[1], &sample_number, sizeof(int));
 	sample_number++;
 	i++;
 
@@ -25,7 +29,7 @@ unsigned short* ECGImplementation::SensorRead() {
 		i = 0;
 	}
 
-	if(sample_number > BINARY_BUFFER_SIZE){
+	if(sample_number > BINARY_BUFFER_SIZE-1){
 		sample_number = 0;
 	}
 

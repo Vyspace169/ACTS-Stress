@@ -198,7 +198,7 @@ SDWriterErrorCodes SDWriter::Write(SampleData in) {
 	BytesWritten += fwrite(&in.magnetoZ, sizeof(short), 1, FileForData);
 	BytesWritten += fwrite(&in.temp, sizeof(int), 1, FileForData);
 	BytesWritten += fwrite(&in.pressure, sizeof(int), 1, FileForData);
-	BytesWritten += fwrite(&in.ECGSampleValue, sizeof(short), 1, FileForData);
+	BytesWritten += fwrite(&in.ecg, sizeof(short), 1, FileForData);
 
 
 	CardIsWriting = false;

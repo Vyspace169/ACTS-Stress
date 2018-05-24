@@ -24,6 +24,7 @@ public:
 	 */
 	BinaryBuffer();
 
+
 	/*!
 	 * \brief readOnly method
 	 *
@@ -44,6 +45,13 @@ public:
 	 * This method clears the BinaryBuffer.
 	 */
 	void clear();
+
+	/*!
+	 * \brief clear method
+	 *
+	 * This method clears the BinaryBuffer.
+	 */
+	void clearECG();
 
 	/*!
 	 * \brief clear method
@@ -130,7 +138,7 @@ public:
 	 * This method returns a pointer to the
 	 * first sample of the buffer.
 	 */
-	const std::vector<SampleData>& getSD(); // should perhaps be a pointer, copy could be too slow on large scale operations?
+	std::vector<SampleData>& getSD(); // should perhaps be a pointer, copy could be too slow on large scale operations?
 
 	/*!
 	 * \brief get method
@@ -182,6 +190,14 @@ public:
 	 *
 	 * Returns true if the buffer is full
 	 */
+	bool isFullECG();
+
+	/*!
+	 * \brief isFull method
+	 * \return bool (true) if the buffer is full
+	 *
+	 * Returns true if the buffer is full
+	 */
 	bool isFullR();
 
 	/*!
@@ -224,4 +240,8 @@ private:
 	std::vector<Lomb> LombBuffer;
 	std::vector<HRVData> HRVBuffer;
 	const int BufferSize = BINARY_BUFFER_SIZE;
+	const int RBufferSize = RBUFFER_SIZE;
+	const int RRBufferSize = RRBUFFER_SIZE;
+	const int LombBufferSize = LOMBBUFFER_SIZE;
+	const int HRVBufferSize = HRVBUFFER_SIZE;
 };
